@@ -12,13 +12,13 @@ class LMD_object:
     
     
     def __init__(self):
-	"""This function takes a preprocessed image with low background noise and extracts and segments the cells.
-    	Extraction is performed based on global thresholding, therefore a preprocessed image with homogenous low noise background is needed.
+    """This function takes a preprocessed image with low background noise and extracts and segments the cells.
+        Extraction is performed based on global thresholding, therefore a preprocessed image with homogenous low noise background is needed.
     
-    	:param image: 2D numpy array of type float containing the image. 
-    	:type image: class:`numpy.array`
+        :param image: 2D numpy array of type float containing the image. 
+        :type image: class:`numpy.array`
     
-    	"""
+        """
         self.shapes = []
         self.calibration_points = []
         self.global_coordinates = 1
