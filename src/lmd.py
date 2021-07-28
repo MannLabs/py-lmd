@@ -8,23 +8,33 @@ import matplotlib.ticker as ticker
 from svgelements import SVG
 
 class LMD_object:
-    
-    
-    
-    def __init__(self):
 
-        """LMD Object
+    """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate systeme defined by calibration points and a collection of various shapes."""
+
     
-        :param image: 2D numpy array of type float containing the image. 
-        :type image: class:`numpy.array`
     
+    def __init__(self, calibration_points = []):
+
         """
+        :param calibration_points: Calibration coordinates in the form of (3, 2).
+        :type calibration_points: numpy.array, optional
+        """
+
         self.shapes = []
-        self.calibration_points = []
+        self.calibration_points = calibration_points
         self.global_coordinates = 1
     
     
     def plot(self, calibration=True, fig_size=(10,10)):
+        """This function can be used to plot all shapes of the corresponding :class:`lmd.LMD-object`.
+
+        :param calibration: Controls wether the calibration points should be plotted as crosshairs. Deactivating the crosshairs will result in the size of the canvas adapting to the shapes. Can be especially usefull for small shapes or debugging.
+        :type calibration: boolean, optional, defaults to True
+
+        :param fig_size: Controls the size of the figure. 
+        :type calibration: tuple, optional, defaults to (10, 10)
+        """
+
         # check for calibration points
         if len(self.calibration_points) > 0:
             cal = np.array(self.calibration_points).T
@@ -52,17 +62,36 @@ class LMD_object:
              
             
     def add_shape(self, shape):
+        """Add a new shape to the collection of shapes.
+
+        :param shape: Shape to append.
+        :type shape: `lmd.LMD_shape`
+        """
+
         self.shapes.append(shape)
         
     def new_shape(self, points, well = None):
+        """Directly create a new Shape in the current collection.
+
+        :param points: Array or list of lists in the shape of (N,2). Should contain the coordinates of the shape in the defined coordinate system.
+        :type points: numpy.array, optional
+
+        :param well: Well in which to sort the shape after cutting. For example A1, A2, B3.
+        :type well: string, optional
+        """
+
         to_add = LMD_shape(points=points, well=well)
         self.add_shape(to_add)
         
-
-            
     
     # load xml from file
     def load(self, file_location):
+        """Can be used to load the shape collection from a XML file. Both, XMLs generated with py-lmd and the Leica software can be used.
+
+        :param file_location: File path pointing to the XML file.
+        :type file_location: string
+        """
+
         tree = ET.parse(file_location)
         root = tree.getroot()        
         
@@ -175,17 +204,33 @@ class LMD_object:
         
             
 class LMD_shape:
+    """Class for creating a single shape object."""
     
     
-    
-    def __init__(self, points=[], well=None):
+    def __init__(self, points=[], well=None, name=""):
+        """Class for creating a single shape object.
+        
+        :param points: Array or list of lists in the shape of (N,2). Should contain the coordinates of the shape in the defined coordinate system.
+        :type points: numpy.array, optional
+
+        :param well: Well in which to sort the shape after cutting. For example A1, A2, B3.
+        :type well: string, optional
+
+        :param name: Name of the shape.
+        :type name: string, optional
+        """
         self.name = ""
         self.points = np.array(points, dtype=int)
         self.well = well
         
     def from_xml(self, root):
-        self.name = root.tag
+        """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
         
+        :param root: XML input node.
+        :type root: `lxml.etree.Element`
+        """
+        self.name = root.tag
+
         # get number of points
         point_count = int(root.find("PointCount").text)   
         self.points = np.ones((point_count,2),dtype=int)
@@ -207,6 +252,12 @@ class LMD_shape:
         self.points = np.array(self.points)
     
     def to_xml(self, id):
+        """Generate XML shape node needed internally for export.
+        
+        :param id: Sequential identifier of the shape as used in the LMD XML format.
+        :type id: int
+        """
+
         shape = ET.Element("Shape_{}".format(id))
         
         point_count = ET.SubElement(shape, "PointCount")
