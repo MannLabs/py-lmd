@@ -10,7 +10,9 @@ LMD_object
 -------------------
 
 .. autoclass:: lmd.LMD_object
+   :special-members: __init__,
    :members:
+   
 
 LMD_shape
 -------------------

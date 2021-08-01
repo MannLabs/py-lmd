@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="py-lmd",
-    version="0.1.0",
+    version="0.1.2",
     author="Georg Wallmann",
     author_email="g.wallmann@campus.lmu.de",
     description="Read, Modify and Create new shape files for the Leica LMD6 & LMD7",
@@ -13,6 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/GeorgWa/py-lmd",
     project_urls={
+        "Documentation":"https://py-lmd.readthedocs.io/en/latest/",
         "Bug Tracker": "https://github.com/GeorgWa/py-lmd/issues",
     },
     classifiers=[

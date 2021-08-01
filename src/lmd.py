@@ -10,15 +10,16 @@ from svgelements import SVG
 class LMD_object:
 
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate systeme defined by calibration points and a collection of various shapes."""
-
+    
+    
     
     
     def __init__(self, calibration_points = []):
-
         """
-        :param calibration_points: Calibration coordinates in the form of (3, 2).
-        :type calibration_points: numpy.array, optional
+        :param calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
+        :type calibration_points: :class:`numpy.array`, optional
         """
+        
 
         self.shapes = []
         self.calibration_points = calibration_points
@@ -31,8 +32,8 @@ class LMD_object:
         :param calibration: Controls wether the calibration points should be plotted as crosshairs. Deactivating the crosshairs will result in the size of the canvas adapting to the shapes. Can be especially usefull for small shapes or debugging.
         :type calibration: boolean, optional, defaults to True
 
-        :param fig_size: Controls the size of the figure. 
-        :type calibration: tuple, optional, defaults to (10, 10)
+        :param fig_size: Controls the size of the matplotlib figure. See `matplotlib documentation <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib-pyplot-figure>`_ for more information. 
+        :type fig_size: (float, float), optional, defaults to :math:`(10, 10)`
         """
 
         # check for calibration points
@@ -62,10 +63,10 @@ class LMD_object:
              
             
     def add_shape(self, shape):
-        """Add a new shape to the collection of shapes.
+        """Add a new shape to the current collection.
 
         :param shape: Shape to append.
-        :type shape: `lmd.LMD_shape`
+        :type shape: :class:`lmd.LMD_shape`
         """
 
         self.shapes.append(shape)
@@ -73,8 +74,8 @@ class LMD_object:
     def new_shape(self, points, well = None):
         """Directly create a new Shape in the current collection.
 
-        :param points: Array or list of lists in the shape of (N,2). Should contain the coordinates of the shape in the defined coordinate system.
-        :type points: numpy.array, optional
+        :param points: Array or list of lists in the shape of :math:`(N,2)`. Should contain the coordinates of the shape in the defined coordinate system.
+        :type points: :class:`numpy.array`, optional
 
         :param well: Well in which to sort the shape after cutting. For example A1, A2, B3.
         :type well: string, optional
@@ -86,7 +87,7 @@ class LMD_object:
     
     # load xml from file
     def load(self, file_location):
-        """Can be used to load the shape collection from a XML file. Both, XMLs generated with py-lmd and the Leica software can be used.
+        """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
 
         :param file_location: File path pointing to the XML file.
         :type file_location: string
@@ -125,6 +126,11 @@ class LMD_object:
                 
     #save xml to file            
     def save(self, filename):
+        """Can be used to save the shape collection as XML file.
+
+        :param filename: File path pointing to the XML file.
+        :type filename: string
+        """
        
         root = ET.Element("ImageData")
         
@@ -184,6 +190,12 @@ class LMD_object:
                     self.add_shape(to_add)    
                     
     def svg_to_lmd(self, path, offset=[0,0], divisor=3, multiplier=60):
+        """Can be used to save the shape collection as XML file.
+
+        :param filename: File path pointing to the XML file.
+        :type filename: string
+        """
+        
         svg = SVG.parse(path)
         paths = list(svg.elements())
 
@@ -211,7 +223,7 @@ class LMD_shape:
         """Class for creating a single shape object.
         
         :param points: Array or list of lists in the shape of (N,2). Should contain the coordinates of the shape in the defined coordinate system.
-        :type points: numpy.array, optional
+        :type points: :class:`numpy.array`, optional
 
         :param well: Well in which to sort the shape after cutting. For example A1, A2, B3.
         :type well: string, optional
@@ -227,7 +239,7 @@ class LMD_shape:
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
         
         :param root: XML input node.
-        :type root: `lxml.etree.Element`
+        :type root: :class:`lxml.etree.Element`
         """
         self.name = root.tag
 
