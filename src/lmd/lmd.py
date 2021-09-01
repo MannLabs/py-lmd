@@ -26,7 +26,7 @@ class LMD_object:
         self.global_coordinates = 1
     
     
-    def plot(self, calibration=True, fig_size=(10,10)):
+    def plot(self, calibration=True, mode="line", fig_size=(10,10)):
         """This function can be used to plot all shapes of the corresponding :class:`lmd.LMD-object`.
 
         :param calibration: Controls wether the calibration points should be plotted as crosshairs. Deactivating the crosshairs will result in the size of the canvas adapting to the shapes. Can be especially usefull for small shapes or debugging.
@@ -35,31 +35,39 @@ class LMD_object:
         :param fig_size: Controls the size of the matplotlib figure. See `matplotlib documentation <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib-pyplot-figure>`_ for more information. 
         :type fig_size: (float, float), optional, defaults to :math:`(10, 10)`
         """
-
+        modes = ["line","dots"]
+        
+        if not mode in modes:
+            raise ValueError("mode not known")
         # check for calibration points
-        if len(self.calibration_points) > 0:
-            cal = np.array(self.calibration_points).T
-            
+        
+        cal = np.array(self.calibration_points).T
 
-            plt.clf()
-            plt.cla()
-            plt.close("all")
 
-            fig, ax = plt.subplots(figsize=fig_size)
-            #ax.invert_yaxis()
-            if calibration:
-                plt.scatter(cal[1],cal[0],marker="x")
+        plt.clf()
+        plt.cla()
+        plt.close("all")
+
+        fig, ax = plt.subplots(figsize=fig_size)
+        #ax.invert_yaxis()
+        if calibration and len(self.calibration_points) > 0:
+            plt.scatter(cal[1],cal[0],marker="x")
             
+        if mode == "line":
             for shape in self.shapes:
-                
                 ax.plot(shape.points.T[1],shape.points.T[0])
-                
-            ax.grid(True)
+        elif mode == "dots":
+            for shape in self.shapes:
+                ax.scatter(shape.points.T[1],shape.points.T[0], s=10)
             
-            ax.ticklabel_format(useOffset=False)
-            plt.show()
-        else:
-            print("please define calibration points before plotting")
+        
+
+        ax.grid(True)
+
+        ax.ticklabel_format(useOffset=False)
+        plt.axis('equal')
+        plt.show()
+       
              
             
     def add_shape(self, shape):
@@ -189,7 +197,7 @@ class LMD_object:
                     to_add = LMD_shape(points=arr)
                     self.add_shape(to_add)    
                     
-    def svg_to_lmd(self, path, offset=[0,0], divisor=3, multiplier=60):
+    def svg_to_lmd(self, path, offset=[0,0], divisor=3, multiplier=60, rotation= np.eye(2), orientation_transform= np.eye(2)):
         """Can be used to save the shape collection as XML file.
 
         :param filename: File path pointing to the XML file.
@@ -210,9 +218,14 @@ class LMD_object:
                 poly = np.array(path.point(index))
                 pl.append([-poly[1],poly[0]])
 
-            arr = np.array(pl)*multiplier+offset
+            arr = np.array(pl)@rotation * multiplier+offset
+            arr = arr @ orientation_transform
             to_add = LMD_shape(points=arr)
             self.add_shape(to_add) 
+            
+    def join(self,  lmd_object_to_join):
+        
+        self.shapes += lmd_object_to_join.shapes
         
             
 class LMD_shape:
