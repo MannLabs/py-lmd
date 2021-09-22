@@ -1,0 +1,7 @@
+#### Required Packages #####
+numpy
+matplotlib
+lxml
+scikit-image
+svgelements
+pathlib
