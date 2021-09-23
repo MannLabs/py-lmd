@@ -34,5 +34,5 @@ python3 -m build
 
 Upload it to PyPi:
 ```
-python3 -m twine upload dist/*
+python3 -m twine upload dist/* --skip-existing
 ```
