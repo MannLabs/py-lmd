@@ -6,13 +6,33 @@ from skimage import data, color
 from xml.dom import minidom
 import matplotlib.ticker as ticker
 from svgelements import SVG
+from typing import Optional
+
+class Collection():
+    """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
+    """
+    
+    def __init__(self, calibration_points: Optional[np.ndarray] = None):
+        """
+        Args:
+            calibration_points (`numpy.ndarray`, optional): Calibration coordinates in the form of :math:`(3, 2)`.
+            
+        Attributes:
+            shapes: Contains all shapes which are collected in the lmd collection.
+        """
+        
+        self.shapes: List[LMD_shape] = []
+        
+        self.calibration_points: Optional[np.ndarray] = calibration_points
+        
+        self.global_coordinates = 1
+        
+        
 
 class LMD_object:
 
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate systeme defined by calibration points and a collection of various shapes."""
-    
-    
-    
+        
     
     def __init__(self, calibration_points = []):
         """
