@@ -22,10 +22,11 @@ def glyph_path(glyph):
     
     svg_path = os.path.join(file_path, f"glyphs/{glyph}.svg")
     
+    # Check if glyph exists, raise NotImplementedError if not
     if os.path.isfile(svg_path):
         return svg_path
     else:
-        raise NotImplementedError()
+        raise NotImplementedError(f'You tried to load the glyph {glyph}. This has not been implemented yet.')
     
 
 def glyph(glyph, 
@@ -55,18 +56,19 @@ def text(text,
            rotation = 0, 
            **kwargs):
     
+    # Convert text to str and assert 
+    text = str(text)
+    
     
     # delta offset for every digit
     delta = np.array([10, 0]) @ get_rotation_matrix(rotation) * multiplier
     
     heap = Collection()
     
-    for i, current_digit in enumerate(str(number)):
-        current_digit = int(current_digit)
+    # enumerate all glyphs and append shapes
+    for i, current_glyph in enumerate(text):
         
-        print(current_digit,offset+i*delta,multiplier,get_rotation_matrix(rotation))
-        
-        current = digit(current_digit, 
+        current = glyph(current_glyph, 
                         offset = offset+i*delta, 
                         multiplier = multiplier,  
                         rotation = rotation,
