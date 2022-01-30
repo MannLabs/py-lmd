@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import Optional
+
 import numpy as np
 import matplotlib.pyplot as plt
 from lxml import etree as ET
@@ -6,27 +9,350 @@ from skimage import data, color
 from xml.dom import minidom
 import matplotlib.ticker as ticker
 from svgelements import SVG
-from typing import Optional
 
-class Collection():
+
+
+
+class Collection:
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
     """
     
     def __init__(self, calibration_points: Optional[np.ndarray] = None):
-        """
+        """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
+        
         Args:
-            calibration_points (`numpy.ndarray`, optional): Calibration coordinates in the form of :math:`(3, 2)`.
+            calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
             
         Attributes:
-            shapes: Contains all shapes which are collected in the lmd collection.
+            shapes: Contains all shapes which are part of the collection.
+            
+            calibration_points: Calibration coordinates in the form of :math:`(3, 2).
+            
+            orientation_transform: defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orienation_transform provided.
         """
         
         self.shapes: List[LMD_shape] = []
         
         self.calibration_points: Optional[np.ndarray] = calibration_points
+            
+        
+        self.orientation_transform: np.ndarray = np.eye(2)
+            
+        self.scale = 100
         
         self.global_coordinates = 1
         
+    def plot(self, calibration: bool = True, 
+             mode: str = "line", 
+             fig_size: tuple = (10,10),
+            apply_orientation_transform: bool = True):
+        
+        """This function can be used to plot all shapes of the corresponding shape collection.
+        
+        Args:
+            calibration: Controls wether the calibration points should be plotted as crosshairs. Deactivating the crosshairs will result in the size of the canvas adapting to the shapes. Can be especially usefull for small shapes or debugging.
+
+            fig_size: Defaults to :math:`(10, 10)` Controls the size of the matplotlib figure. See `matplotlib documentation <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib-pyplot-figure>`_ for more information.
+            
+            apply_orientation_transform: Define wether the orientation transform should be applied before plotting.
+        """
+        
+        modes = ["line","dots"]
+        
+        if not mode in modes:
+            raise ValueError("mode not known")
+        # check for calibration points
+        
+        cal = np.array(self.calibration_points).T
+
+
+        plt.clf()
+        plt.cla()
+        plt.close("all")
+
+        fig, ax = plt.subplots(figsize=fig_size)
+        
+        # Plot calibration points
+        if calibration and self.calibration_points is not None:
+            
+            # Apply orientation transform as default behavior
+            if apply_orientation_transform:
+                calibration = self.calibration_points @ self.orientation_transform
+            else:
+                calibration = self.calibration_points
+                
+            plt.scatter(calibration[:,0],calibration[:,1],marker="x")
+            
+        for shape in self.shapes:
+            
+            # Apply orientation transform as default behavior
+            if apply_orientation_transform:
+                points = shape.points @ shape.orientation_transform
+            else:
+                points = shape.points
+     
+            
+            if mode == "line":
+                ax.plot(points[:,0],points[:,1])           
+                
+            elif mode == "dots":
+                ax.scatter(points[:,0],points[:,1], s=10)
+            
+        
+
+        ax.grid(True)
+        ax.ticklabel_format(useOffset=False)
+        plt.axis('equal')
+        plt.show()
+        
+    def add_shape(self, shape: Shape):
+        """Add a new shape to the collection.
+        
+        Args:
+            shape: Shape which should be added.
+        """
+        
+        if isinstance(shape, Shape):
+            self.shapes.append(shape)
+        else:
+            TypeError('Provided shape is not of type Shape')
+            
+        
+    def new_shape(self, points: np.ndarray, 
+                 well: Optional[str] = None, 
+                 name: Optional[str] = None):
+        
+        """Directly create a new Shape in the current collection.
+
+        Args:
+            points: Array or list of lists in the shape of `(N,2)`. Contains the points of the polygon forming a shape.
+            
+            well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
+            
+            name: Name of the shape.
+        """
+
+        to_add = Shape(points, well=well, name=name, orientation_transform = self.orientation_transform)
+        self.add_shape(to_add)
+    
+    def join(self,  collection: Collection):
+        """Join the collection with the shapes of a different collection. The calibration markers of the current collection are kept. Please keep in mind that coordinate systems and calibration points must be compatible for correct joining of collections.
+        
+        Args:
+            collection: Collection which should be joined with the current collection object.
+            
+        """
+        self.shapes += collection.shapes
+        
+    # load xml from file
+    def load(self, file_location: str):
+        """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
+        Args:
+            file_location: File path pointing to the XML file.
+
+        """
+
+        tree = ET.parse(file_location)
+        root = tree.getroot()        
+        
+        cal_point_len = 0
+        
+        # count calibration points
+        for child in root:
+            if "CalibrationPoint" in child.tag:
+                cal_point_len += 1
+                
+        self.calibration_points = np.ones((cal_point_len//2,2),dtype=int)
+        
+        
+        for child in root:
+            
+            if child.tag == "GlobalCoordinates":
+                self.global_coordinates = int(child.text)
+                
+            # Load calibration points
+            elif "CalibrationPoint" in child.tag:
+                axes = child.tag[0]
+                axes_id = 0 if axes == "X" else 1
+                shape_id = int(child.tag[-1])-1
+                value = int(child.text)
+                
+                self.calibration_points[shape_id,axes_id] = value
+            
+            
+            # Load shapes
+            elif "Shape_" in child.tag:  
+                new_shape = LMD_shape()
+                new_shape.from_xml(child)
+                self.shapes.append(new_shape)
+                
+    #save xml to file            
+    def save(self, file_location: str, encoding: str = 'utf-8'):
+        """Can be used to save the shape collection as XML file.
+
+        file_location: File path pointing to the XML file.
+        """
+       
+        root = ET.Element("ImageData")
+        
+        # write global coordinates
+        global_coordinates = ET.SubElement(root, 'GlobalCoordinates')
+        global_coordinates.text = "1"
+        
+        # write calibration points
+        for i, point in enumerate(self.calibration_points):
+            id = i +1
+            x = ET.SubElement(root, 'X_CalibrationPoint_{}'.format(id))
+            x.text = "{}".format(point[0])
+            
+            y = ET.SubElement(root, 'Y_CalibrationPoint_{}'.format(id))
+            y.text = "{}".format(point[1])
+            
+        # write shape length
+        shape_count = ET.SubElement(root, 'ShapeCount')
+        shape_count.text = "{}".format(len(self.shapes))
+        
+        # write shapes
+        for i, shape in enumerate(self.shapes):
+            id = i +1
+            root.append(shape.to_xml(id))
+        
+        # write root 
+        tree = ET.ElementTree(element=root)
+        tree.write(file_location, 
+                   encoding="utf-8", 
+                   xml_declaration=True, 
+                   pretty_print=True)
+        
+    def svg_to_lmd(self, file_location, 
+                   offset=[0,0], 
+                   divisor=3, 
+                   multiplier=60, 
+                   rotation_matrix = np.eye(2), 
+                   orientation_transform = None):
+        """Can be used to save the shape collection as XML file.
+        
+        Args: 
+            file_location: File path pointing to the SVG file.
+            
+            orientation_transform: Will superseed the global transform of the Collection.
+            
+            rotation_matrix: 
+            
+        """
+        
+        orientation_transform = self.orientation_transform if orientation_transform is None else orientation_transform
+        
+        svg = SVG.parse(file_location)
+        paths = list(svg.elements())
+
+        poly_list = []
+        for path in svg:
+
+            pl = []
+            n_points = int(path.length() // divisor)
+            linspace = np.linspace(0,1,n_points)
+
+            for index in linspace:
+                poly = np.array(path.point(index))
+                pl.append([poly[0],-poly[1]])
+
+            arr = np.array(pl)@rotation_matrix * multiplier+offset
+            to_add = Shape(points=arr, orientation_transform = orientation_transform)
+            self.add_shape(to_add) 
+        
+        
+class Shape:
+    """Class for creating a single shape object."""
+
+    def __init__(self, points: np.ndarray, 
+                 well: Optional[str] = None, 
+                 name: Optional[str] = None,
+                orientation_transform = np.eye(2)):
+        
+        """Class for creating a single shape.
+        
+        Args:
+            points: Array or list of lists in the shape of `(N,2)`. Contains the points of the polygon forming a shape.
+            
+            well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
+            
+            name: Name of the shape.
+        """
+        
+        # Orientation transform of shapes
+        self.orientation_transform: Optional[np.ndarray] = np.eye(2)
+            
+        # Allthoug a numpy array is recommended, list of lists is accepted
+        points = np.array(points)
+        
+        # Assert correct dimensions
+        point_shapes = points.shape
+        if ((len(point_shapes) != 2) or 
+            (point_shapes[1] != 2) or
+            (point_shapes[0] == 0)):
+            raise ValueError('please provide a numpy array of shape (N, 2)')
+            
+        self.points: np.ndarray = points
+            
+        self.name: Optional[str] = name
+        self.well: Optional[str] = well
+            
+    def from_xml(self, root):
+        """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
+        
+        Args:
+            root: XML input node.
+        """
+        self.name = root.tag
+
+        # get number of points
+        point_count = int(root.find("PointCount").text)   
+        self.points = np.ones((point_count,2),dtype=int)
+        
+        # parse all points
+        for child in root:
+            if "_" in child.tag: 
+                
+                tokens = child.tag.split("_")
+                
+                axes = tokens[0]
+                axes_id = 0 if axes == "X" else 1
+                
+                point_id = int(tokens[-1])-1
+                value = int(child.text)
+
+                self.points[point_id,axes_id] = value
+                
+        self.points = np.array(self.points)
+    
+    def to_xml(self, id: int):
+        """Generate XML shape node needed internally for export.
+        
+        Args:
+            id: Sequential identifier of the shape as used in the LMD XML format.
+        """
+
+        shape = ET.Element("Shape_{}".format(id))
+        
+        point_count = ET.SubElement(shape, "PointCount")
+        point_count.text = "{}".format(len(self.points))
+        
+        if self.well is not None:
+            cap_id = ET.SubElement(shape, "CapID")
+            cap_id.text = self.well
+        
+        
+        # write points
+        for i, point in enumerate(self.points):
+            id = i +1
+            x = ET.SubElement(shape, 'X_{}'.format(id))
+            x.text = "{}".format(point[0])
+            
+            y = ET.SubElement(shape, 'Y_{}'.format(id))
+            y.text = "{}".format(point[1])
+        
+        return shape
         
 
 class LMD_object:
