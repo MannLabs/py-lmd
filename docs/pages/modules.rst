@@ -1,28 +1,26 @@
 *******************
 Modules
 *******************
-.. contents:: Table of Contents
 
-lmd
+lmd.lib
 ================
 
-LMD_object
+Collection
 -------------------
 
-.. autoclass:: lmd.LMD_object
-   :special-members: __init__,
+.. autoclass:: lmd.lib.Collection
    :members:
    
-
-LMD_shape
+Shape
 -------------------
-
-.. autoclass:: lmd.LMD_shape
+   
+.. autoclass:: lmd.lib.Shape
    :members:
 
-
-tools
+lmd.tools
 ================
 
-Document Subsection
--------------------
+.. automodule:: lmd.tools
+    :members:
+
+.. autofunction:: lmd.tools.get_rotation_matrix

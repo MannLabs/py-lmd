@@ -1,4 +1,4 @@
-from lmd.lmd import Collection, Shape
+from lmd.lib import Collection, Shape
 from pathlib import Path
 import numpy as np
 import os
@@ -11,49 +11,50 @@ def get_rotation_matrix(degrees: float):
     
     return np.array([[np.cos(degrees), -np.sin(degrees)],[np.sin(degrees), np.cos(degrees)]])
 
-def digit_path(number ):
-    number = int(number)
-    if not 0 <= number <= 9:
-        raise ValueError('The number musst be a digit between 0 and 9')
+def glyph_path(glyph):
+    """Returns a rotation matrix for counterclock wise rotation.
+        Args: 
+            degrees: Rotation in degrees.            
+    """
         
-
     file_path = Path(os.path.realpath(__file__))
     file_path = file_path.parents[1]
     
-    svg_path = os.path.join(file_path, f"numbers/numbers_{number}.svg")
-    return svg_path
+    svg_path = os.path.join(file_path, f"glyphs/{glyph}.svg")
+    
+    if os.path.isfile(svg_path):
+        return svg_path
+    else:
+        raise NotImplementedError()
     
 
-def digit(number, 
+def glyph(glyph, 
           offset=np.array([0,0]), 
           rotation = 0, 
-          divisor=1, 
+          divisor=10, 
           multiplier=1, **kwargs):
-    
-    number = int(number)
-    
-    svg_path = digit_path(number)
+        
+    svg_path = glyph_path(glyph)
     
     local_multiplier = 0.01
     multiplier = multiplier * local_multiplier
     
     shapefile = Collection()
-    shapefile.svg_to_lmd(svg_path, offset=offset, rotation_matrix = get_rotation_matrix(rotation), multiplier=multiplier, **kwargs)
+    shapefile.svg_to_lmd(svg_path, 
+                         offset=offset, 
+                         rotation_matrix = get_rotation_matrix(rotation), 
+                         multiplier=multiplier, 
+                         **kwargs)
     
     return shapefile
 
-def number(number, 
+def text(text, 
            offset=np.array([0,0]), 
            divisor=1, 
            multiplier=1,
            rotation = 0, 
            **kwargs):
     
-    # Make sure number is valid integer
-    try:
-        number = int(number)
-    except ValueError:
-        ValueError("number is not a valid integer.")
     
     # delta offset for every digit
     delta = np.array([10, 0]) @ get_rotation_matrix(rotation) * multiplier
@@ -63,10 +64,12 @@ def number(number,
     for i, current_digit in enumerate(str(number)):
         current_digit = int(current_digit)
         
+        print(current_digit,offset+i*delta,multiplier,get_rotation_matrix(rotation))
+        
         current = digit(current_digit, 
-                        offset=offset+i*delta, 
-                        multiplier=multiplier,  
-                        rotation = rotation(rotation)
+                        offset = offset+i*delta, 
+                        multiplier = multiplier,  
+                        rotation = rotation,
                         **kwargs)
         heap.join(current)
         
@@ -98,6 +101,7 @@ def _letter(letter, offset=np.array([0,0]), divisor=1, multiplier=1, **kwargs):
 
     
 def letter(letter, offset=np.array([0,0]), divisor=1, multiplier=1, **kwargs):
+    
     delta = np.array([0, 80]) * multiplier
     
     heap = LMD_object()
