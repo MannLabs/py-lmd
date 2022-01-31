@@ -1,3 +1,5 @@
+[![Python package](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml)
+
 # py-lmd
 
 The py-lmd library allows to read, modify and write shape files for the Leica LMD6 & LMD7 microscope.
