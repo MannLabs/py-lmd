@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 from lxml import etree as ET
 from matplotlib import image
 from skimage import data, color
-from xml.dom import minidom
 import matplotlib.ticker as ticker
 from svgelements import SVG
 

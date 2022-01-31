@@ -1,4 +1,3 @@
-#### Required Packages #####
 numpy
 matplotlib
 lxml

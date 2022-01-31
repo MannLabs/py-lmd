@@ -77,42 +77,20 @@ def text(text,
         
     return heap
 
-def _letter(letter, offset=np.array([0,0]), divisor=1, multiplier=1, **kwargs):
+def square(width, height, 
+           offset = (0, 0), 
+           rotation = 0, 
+           rotation_offset = (0, 0)):
     
-    letter = str(letter).upper()
+    offset = np.array(offset)
+    rotation_offset = np.array(rotation_offset)
+    rotation_mat = get_rotation_matrix(rotation)
     
-    file_path = Path(os.path.realpath(__file__))
-    file_path = file_path.parents[1]
+    points = np.array([[-height/2,-width/2],
+                     [-height/2,width/2],
+                     [height/2,width/2],
+                     [height/2,-width/2],
+                     [-height/2,-width/2]])
     
-    svg_path = os.path.join(file_path, f"letters/Letters_{letter}.svg")
-    
-    local_offset = np.array([100,-20])*multiplier
-    offset = offset + local_offset
-    
-    local_divisor = 50
-    divisor = divisor * local_divisor
-    
-    local_multiplier = 0.1
-    multiplier = multiplier * local_multiplier
-    
-    shapefile = LMD_object()
-    shapefile.svg_to_lmd(svg_path, offset=offset, multiplier=multiplier, **kwargs)
-    
-    return shapefile
-
-
-    
-def letter(letter, offset=np.array([0,0]), divisor=1, multiplier=1, **kwargs):
-    
-    delta = np.array([0, 80]) * multiplier
-    
-    heap = LMD_object()
-    
-    for i, current_letter in enumerate(str(letter)):
-        current_letter = str(current_letter)
-        
-        current = _letter(current_letter, offset=offset+i*delta, multiplier=multiplier,  **kwargs)
-        heap.join(current)
-        
-    return heap  
-        
+    points = (points + rotation_offset) @ rotation_mat - rotation_offset + offset
+    return Shape(points)
