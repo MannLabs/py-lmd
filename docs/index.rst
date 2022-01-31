@@ -17,6 +17,5 @@ Welcome to the show
    :caption: Contents:
    :numbered:
    
-   pages/installation
    pages/quickstart
    pages/modules

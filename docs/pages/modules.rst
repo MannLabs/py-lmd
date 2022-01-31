@@ -23,4 +23,3 @@ lmd.tools
 .. automodule:: lmd.tools
     :members:
 
-.. autofunction:: lmd.tools.get_rotation_matrix

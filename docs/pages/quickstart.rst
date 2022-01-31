@@ -6,11 +6,11 @@ Quick Start
 Installation from Github
 ========================
 
-To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a conda environment. 
+To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a conda environment. Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
 ::
 
   git clone https://github.com/HornungLab/py-lmd
-  pip install py-lmd
+  pip install -e .
   
 Once installed the modules can be loaded as following:
 
@@ -117,5 +117,123 @@ We can then export and save our collection of shapes into xml cutting data.
     
 Looking at the generated xml output we can see the calibration points and different shapes. Furthermore, we see that the coordinate system has been scaled by a linear scaling factor. As all points are defined as integers scaling by a linear factor allows to use decimal numbers as coordinates.
     
-Creating digits 
-=================
+Using the py-lmd tools
+=======================
+
+A lot uf usefull functionality is included in the tools module of the py-lmd package. We will first use the rectangle functionality to create rectangle shapes fast. 
+
+.. code-block:: python
+
+    import numpy as np
+    from lmd.lib import Collection, Shape
+    from lmd import tools
+
+    calibration = np.array([[0, 0], [0, 100], [50, 50]])
+    my_first_collection = Collection(calibration_points = calibration)
+    
+After initiating the coordinate system we can use the :py:meth:`~lmd.tools.rectangle` helper function to create a :py:class:`~lmd.lib.Shape` object with a rectangle with specified size and position.
+
+.. code-block:: python
+
+    my_square = tools.rectangle(10, 10, offset=(10,10))
+    my_first_collection.add_shape(my_square)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig3.png
+   :scale: 100%
+    
+We can further specify an angle of rotation.
+
+.. code-block:: python
+
+    my_square = tools.rectangle(20, 20, offset=(30,30), rotation = np.pi/4)
+    my_first_collection.add_shape(my_square)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig4.png
+   :scale: 100%
+   
+Numbers and Letters
+=======================
+
+The py-lmd tools offer a limited support for numbers and some capital letters. The following glyphs are available: `ABCDEFGHI0123456789-_`. They were included in the package as they allow for the development of more consistent calibration and sample indexing.In screens with multiple slides, samples can be unambigously identified from imaged data. 
+
+We will first use :py:meth:`~lmd.tools.glyphs` to load single glyphs. The glyphs are included in the py-lmd package as SVG files and are loaded by the :py:meth:`~lmd.lib.Collection.svg_to_lmd` into an uncalibrated :py:class:`~lmd.lib.Collection`. This uncalibrated collection is returned and can be joined with a calibrated collection with the :py:meth:`~lmd.lib.Collection.join` function.
+
+.. code-block:: python
+
+    import numpy as np
+    from lmd.lib import Collection, Shape
+    from lmd import tools
+
+    calibration = np.array([[0, 0], [0, 100], [50, 50]])
+    my_first_collection = Collection(calibration_points = calibration)
+
+    digit_1 = tools.glyph(1)
+    my_first_collection.join(digit_1)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig7.png
+   :scale: 100%
+   
+By default glyphs and text have a height of ten units and are located by the top left corner. We can use the `offset` and `multiplier` parameters to change the size and position. 
+
+.. code-block:: python
+
+    digit_2 = tools.glyph(2, offset = (0,80), multiplier = 5)
+    my_first_collection.join(digit_2)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig8.png
+   :scale: 100%
+   
+Like with the previous rectangle example we can also use the `rotation` parameter to set a clockwise rotation.
+
+.. code-block:: python
+
+    glyph_A = tools.glyph('A', offset=(0,80), rotation =-np.pi/4)
+    my_first_collection.join(glyph_A)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig9.png
+   :scale: 100%
+    
+Text 
+======
+
+Next to individual glyphs the :py:meth:`~lmd.tools.text` method can be used to write text with specified position, size and rotation.
+
+.. code-block:: python
+
+    import numpy as np
+    from lmd.lib import Collection, Shape
+    from lmd import tools
+
+    calibration = np.array([[0, 0], [0, 100], [100, 50]])
+    my_first_collection = Collection(calibration_points = calibration)
+
+    identifier_1 = tools.text('0456_B2', offset=np.array([30, 40]), rotation = -np.pi/4)
+    my_first_collection.join(identifier_1)
+    my_first_collection.plot(calibration = True)
+    
+.. image:: images/fig10.png
+   :scale: 100%
+   
+Different Coordinate Systems
+=================================
+
+The coordinates for the Leica LMD are defined as `(x, y)` coordinates with the x-axis extending to the right and the y-axis extending to the top. All cutting data should exist in this coordinate system and should be calibrated accordingly. When cutting data is generated based on whole slide images we have to keep in mind that images are often indexed differently. Images in Fiji or Numpy are indexed as `(row, column)` with the rows extending downwards and the columns extending to the right. If we want to identify positions in image data - like calibration crosses or single cells - we have to translate their position in the `(row, column)` format to the `(x, y)` format. 
+
+.. image:: images/py-lmd-figures-01.png
+  
+The py-lmd library has been designed in a way which allows to transform the coordinate system prior to saving. Therefore one can specify all coordinates in the image coordinate system and rely on the library to handle the transformation. In this case the `orientation_transform` attribute needs to be set when the Collection is created.
+
+.. code-block:: python
+
+    calibration = np.array([[10, 10], [1000, 10], [500, 500]])
+
+    collection = Collection(calibration_points = calibration)
+    collection.orientation_transform = np.array([[0, -1], [1, 0]])
+    
+In this case  all coordinates for calibration points and shapes can be set in form of `(row, column)` coordinates. The orientation transform is only applied when the Collection is saved or, if desired, when the Collection is plotted.
+

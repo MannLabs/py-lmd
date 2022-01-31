@@ -53,7 +53,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store','**.ipynb_checkpoints']
 html_theme = "sphinx_rtd_theme"
 
 html_theme_options = {
-    'github_url': "https://github.com/GeorgWa/py-lmd",
     # Toc options
     'collapse_navigation': False,
     'sticky_navigation': True,
