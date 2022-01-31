@@ -1,0 +1,68 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter A
+  \item \spxentry{add\_shape()}\spxextra{lmd.lib.Collection method}, \hyperpage{13}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{calibration\_points}\spxextra{lmd.lib.Collection attribute}, \hyperpage{13}
+  \item \spxentry{Collection}\spxextra{class in lmd.lib}, \hyperpage{13}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{from\_xml()}\spxextra{lmd.lib.Shape method}, \hyperpage{14}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_rotation\_matrix()}\spxextra{in module lmd.tools}, \hyperpage{15}
+  \item \spxentry{glyph()}\spxextra{in module lmd.tools}, \hyperpage{15}
+  \item \spxentry{glyph\_path()}\spxextra{in module lmd.tools}, \hyperpage{15}
+
+  \indexspace
+  \bigletter J
+  \item \spxentry{join()}\spxextra{lmd.lib.Collection method}, \hyperpage{13}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{lmd.tools}
+    \subitem \spxentry{module}, \hyperpage{15}
+  \item \spxentry{load()}\spxextra{lmd.lib.Collection method}, \hyperpage{13}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{module}
+    \subitem \spxentry{lmd.tools}, \hyperpage{15}
+
+  \indexspace
+  \bigletter N
+  \item \spxentry{new\_shape()}\spxextra{lmd.lib.Collection method}, \hyperpage{13}
+
+  \indexspace
+  \bigletter O
+  \item \spxentry{orientation\_transform}\spxextra{lmd.lib.Collection attribute}, \hyperpage{13}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{plot()}\spxextra{lmd.lib.Collection method}, \hyperpage{14}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{rectangle()}\spxextra{in module lmd.tools}, \hyperpage{15}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{save()}\spxextra{lmd.lib.Collection method}, \hyperpage{14}
+  \item \spxentry{Shape}\spxextra{class in lmd.lib}, \hyperpage{14}
+  \item \spxentry{shapes}\spxextra{lmd.lib.Collection attribute}, \hyperpage{13}
+  \item \spxentry{svg\_to\_lmd()}\spxextra{lmd.lib.Collection method}, \hyperpage{14}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{text()}\spxextra{in module lmd.tools}, \hyperpage{16}
+  \item \spxentry{to\_xml()}\spxextra{lmd.lib.Shape method}, \hyperpage{14}
+
+\end{sphinxtheindex}

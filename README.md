@@ -1,40 +1,25 @@
-[![Python package](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml)
+
+[![Python package](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/version-v1.0.0-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml)
+
 
 # py-lmd
 
 The py-lmd library allows to read, modify and write shape files for the Leica LMD6 & LMD7 microscope.
 Additionally, functionality for the calibration, generation of final pulses and import of vektor files is included.
 
-Installation from pypi
-======================
-If you would like to install the py-lmd for use in your project, you can directly install it from the python package index.
-```
-pip install py-lmd
-```
 
 Installation from Github
 ========================
-You can also install py-lmd directly from Github for development purposes.
+To install the py-lmd library clone the Github repository and use pip to install the library in your current environment.
+It is recommended to use the library with a conda environment. Please make sure that the package is installed editable
+like described. Otherwise static glyph files might not be available.
+
+
 ```
-git clone https://github.com/GeorgWa/py-lmd.git
-pip install -e py-lmd
+git clone https://github.com/HornungLab/py-lmd
+pip install -e .
 ```
   
-Release a new Version
+Documentation
 ========================
-Make sure the version number on the main branch is up to date.
-
-```
-py-lmd/setup.py
-py-lmd/docs/conf.py
-```
-
-Create a new build.
-```
-python3 -m build
-```
-
-Upload it to PyPi:
-```
-python3 -m twine upload dist/* --skip-existing
-```
+The current documentation can be found under `docs\_build` as pdf and html.

@@ -14,27 +14,24 @@ import os
 import sys
 import sphinx_rtd_theme
 
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../src'))
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'py-lmd'
-copyright = '2021, Georg Wallmann'
-author = 'Georg Wallmann'
+copyright = '2021, Georg Wallmann, Sophia Mädler and Niklas Schmacke'
+author = 'Georg Wallmann, Sophia Mädler and Niklas Schmacke'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.3'
-
-sys.path.insert(0, os.path.abspath("../src/"))
+release = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx_rtd_theme']
+extensions = ['sphinx.ext.napoleon','sphinx.ext.autodoc', 'sphinx_rtd_theme']
 
 
 autodoc_mock_imports = ['numpy', 'matplotlib','lxml','skimage', 'svgelements']
@@ -46,8 +43,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store','**.ipynb_checkpoints']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -57,7 +53,6 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = "sphinx_rtd_theme"
 
 html_theme_options = {
-    'github_url': "https://github.com/GeorgWa/py-lmd",
     # Toc options
     'collapse_navigation': False,
     'sticky_navigation': True,
