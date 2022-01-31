@@ -4,3 +4,4 @@ lxml
 scikit-image
 svgelements
 pathlib
+setuptools
