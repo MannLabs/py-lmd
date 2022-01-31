@@ -46,10 +46,10 @@ def test_tools_square():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
 
-    my_square = tools.square(10, 10, offset=(10,10))
+    my_square = tools.rectangle(10, 10, offset=(10,10))
     my_first_collection.add_shape(my_square)
 
-    my_square = tools.square(10, 10, offset=(30,30))
+    my_square = tools.rectangle(10, 10, offset=(30,30))
     my_first_collection.add_shape(my_square)
                                   
 def test_glyphs():

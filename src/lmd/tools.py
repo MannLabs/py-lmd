@@ -2,21 +2,29 @@ from lmd.lib import Collection, Shape
 from pathlib import Path
 import numpy as np
 import os
+import pkgutil
 
-def get_rotation_matrix(degrees: float):
-    """Returns a rotation matrix for counterclock wise rotation.
+def get_rotation_matrix(angle: float):
+    """Returns a rotation matrix for clockwise rotation.
+    
         Args: 
-            degrees: Rotation in degrees.            
+            angle (float): Rotation in radian.      
+        Returns:
+            np.ndarray: Matrix in the shape of (2, 2).
     """
     
-    return np.array([[np.cos(degrees), -np.sin(degrees)],[np.sin(degrees), np.cos(degrees)]])
+    return np.array([[np.cos(angle), -np.sin(angle)],[np.sin(angle), np.cos(angle)]])
 
 def glyph_path(glyph):
-    """Returns a rotation matrix for counterclock wise rotation.
+    """Returns the path for a glyph of interest. Raises a NotImplementedError if an unknown glyph is requested.
+    
         Args: 
-            degrees: Rotation in degrees.            
-    """
+            glyph (str): Single glyph as string.
         
+        Returns:
+            str: Path for the glyph.
+    """
+    
     file_path = Path(os.path.realpath(__file__))
     file_path = file_path.parents[1]
     
@@ -34,6 +42,20 @@ def glyph(glyph,
           rotation = 0, 
           divisor=10, 
           multiplier=1, **kwargs):
+    """Get an uncalibrated lmd.lib.Collection for a glyph of interest.
+    
+        Args: 
+            glyph (str): Single glyph as string.
+            
+            divisor (int): Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph. Default value: 10
+            
+            offset (np.ndarray): Location of the glyph based on the top left corner. Default value: np.array((0, 0))
+            
+            multiplier (float): Scaling parameter for defining the size of the glyph. The default height of a glyph is 10 units. Default value: 1
+        
+        Returns:
+            lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the glyph.
+    """
         
     svg_path = glyph_path(glyph)
     
@@ -55,6 +77,38 @@ def text(text,
            multiplier=1,
            rotation = 0, 
            **kwargs):
+    """Get an uncalibrated lmd.lib.Collection for a text.
+    
+        Args: 
+            text (str): Text as string.
+            
+            divisor (int): Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph. Default value: 10
+            
+            offset (np.ndarray): Location of the text based on the top left corner. Default value: np.array((0, 0))
+            
+            multiplier (float): Scaling parameter for defining the size of the text. The default height of a glyph is 10 units. Default value: 1
+        
+        Returns:
+            lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the text.
+            
+        Example:
+        
+            .. code-block:: python
+
+                import numpy as np
+                from lmd.lib import Collection, Shape
+                from lmd import tools
+
+                calibration = np.array([[0, 0], [0, 100], [100, 50]])
+                my_first_collection = Collection(calibration_points = calibration)
+
+                identifier_1 = tools.text('0456_B2', offset=np.array([30, 40]), rotation = -np.pi/4)
+                my_first_collection.join(identifier_1)
+                my_first_collection.plot(calibration = True)
+                
+            .. image:: images/fig10.png
+               :scale: 100%
+    """
     
     # Convert text to str and assert 
     text = str(text)
@@ -77,14 +131,31 @@ def text(text,
         
     return heap
 
-def square(width, height, 
+def rectangle(width, height, 
            offset = (0, 0), 
-           rotation = 0, 
+           angle = 0, 
            rotation_offset = (0, 0)):
+    
+    """Get a lmd.lib.Shape for rectangle of choosen dimensions.
+    
+        Args: 
+            width (float): Width of the rectangle.
+            
+            offset (np.ndarray): Location of the rectangle based on the center. Default value: np.array((0, 0))
+            
+            angle (float): Rotation in radian.
+            
+            rotation_offset (np.ndarray): Location of the center of rotation relative to the center of the rectangle. Default value: np.array((0, 0))
+        
+        Returns:
+            lmd.lib.Shape: Shape which contains the rectangle.
+            
+        Example:
+    """
     
     offset = np.array(offset)
     rotation_offset = np.array(rotation_offset)
-    rotation_mat = get_rotation_matrix(rotation)
+    rotation_mat = get_rotation_matrix(angle)
     
     points = np.array([[-height/2,-width/2],
                      [-height/2,width/2],

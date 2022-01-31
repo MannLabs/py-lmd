@@ -1,0 +1,7 @@
+This is makeindex, version 2.15 [TeX Live 2019] (kpathsea + Thai support).
+Scanning style file ./python.ist.......done (7 attributes redefined, 0 ignored).
+Scanning input file py-lmd.idx....done (21 entries accepted, 0 rejected).
+Sorting entries....done (105 comparisons).
+Generating output file py-lmd.ind....done (68 lines written, 0 warnings).
+Output written in py-lmd.ind.
+Transcript written in py-lmd.ilg.
