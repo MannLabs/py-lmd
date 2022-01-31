@@ -19,7 +19,7 @@ class Collection:
             calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
             
         Attributes:
-            shapes (List[LMD_shape]): Contains all shapes which are part of the collection.
+            shapes (List[Shape]): Contains all shapes which are part of the collection.
             
             calibration_points (Optional[np.ndarray]): Calibration coordinates in the form of :math:`(3, 2)`.
             
@@ -201,7 +201,7 @@ class Collection:
             
             # Load shapes
             elif "Shape_" in child.tag:  
-                new_shape = LMD_shape()
+                new_shape = Shape()
                 new_shape.from_xml(child)
                 self.shapes.append(new_shape)
                 
