@@ -6,7 +6,7 @@ Quick Start
 Installation from Github
 ========================
 
-To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a conda environment. Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
+To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a Conda environment. Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
 ::
 
   git clone https://github.com/HornungLab/py-lmd
@@ -21,7 +21,7 @@ Once installed the modules can be loaded as following:
 
 Generating Shapes
 =================
-As first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as numpy array and should have the shape `(3, 2)`. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the `(x, y)` coordinate system. More on the usage of different coordinate systems can be found under XXX.
+As first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as Numpy array and should have the shape `(3, 2)`. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the `(x, y)` coordinate system. More on the usage of different coordinate systems can be found under XXX.
 
 .. code-block:: python
 
@@ -38,7 +38,7 @@ With these calibration coordinates we can create our :py:class:`~lmd.lib.Collect
 
     my_first_collection = Collection(calibration_points = calibration)
     
-We can then create our first rectangle by using the :py:class:`~lmd.lib.Shape` object and passing it to our collection by using the :py:class:`~lmd.lib.Collection.add_shape` method. For creating the Shape object we need to pass the vertices as numpy array. List of vertices should always be closed with the last vertex equaling the first one.
+We can then create our first rectangle by using the :py:class:`~lmd.lib.Shape` object and passing it to our collection by using the :py:class:`~lmd.lib.Collection.add_shape` method. For creating the Shape object we need to pass the vertices as Numpy array. List of vertices should always be closed with the last vertex equaling the first one.
 
 .. code-block:: python
 
@@ -156,7 +156,7 @@ We can further specify an angle of rotation.
 Numbers and Letters
 =======================
 
-The py-lmd tools offer a limited support for numbers and some capital letters. The following glyphs are available: `ABCDEFGHI0123456789-_`. They were included in the package as they allow for the development of more consistent calibration and sample indexing.In screens with multiple slides, samples can be unambigously identified from imaged data. 
+The py-lmd tools offer a limited support for numbers and some capital letters. The following glyphs are available: `ABCDEFGHI0123456789-_`. They were included in the package as they allow for the development of more consistent calibration and sample indexing.In screens with multiple slides, samples can be unambiguously identified from imaged data. 
 
 We will first use :py:meth:`~lmd.tools.glyphs` to load single glyphs. The glyphs are included in the py-lmd package as SVG files and are loaded by the :py:meth:`~lmd.lib.Collection.svg_to_lmd` into an uncalibrated :py:class:`~lmd.lib.Collection`. This uncalibrated collection is returned and can be joined with a calibrated collection with the :py:meth:`~lmd.lib.Collection.join` function.
 
