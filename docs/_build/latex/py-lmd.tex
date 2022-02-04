@@ -7,7 +7,7 @@
 \ifdefined\pdfimageresolution
     \pdfimageresolution= \numexpr \dimexpr1in\relax/\sphinxpxdimen\relax
 \fi
-%% let collapsible pdf bookmarks panel have high depth per default
+%% let collapsable pdf bookmarks panel have high depth per default
 \PassOptionsToPackage{bookmarksdepth=5}{hyperref}
 
 \PassOptionsToPackage{warn}{textcomp}
@@ -61,7 +61,7 @@
 
 
 \title{py\sphinxhyphen{}lmd}
-\date{Jan 31, 2022}
+\date{Feb 04, 2022}
 \release{1.0.0}
 \author{Georg Wallmann, Sophia Mädler and Niklas Schmacke}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -97,7 +97,7 @@ Welcome to the show
 \section{Installation from Github}
 \label{\detokenize{pages/quickstart:installation-from-github}}
 \sphinxAtStartPar
-To install the py\sphinxhyphen{}lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a conda environment. Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
+To install the py\sphinxhyphen{}lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a Conda environment. Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{git} \PYG{n}{clone} \PYG{n}{https}\PYG{p}{:}\PYG{o}{/}\PYG{o}{/}\PYG{n}{github}\PYG{o}{.}\PYG{n}{com}\PYG{o}{/}\PYG{n}{HornungLab}\PYG{o}{/}\PYG{n}{py}\PYG{o}{\PYGZhy{}}\PYG{n}{lmd}
@@ -115,7 +115,7 @@ Once installed the modules can be loaded as following:
 \section{Generating Shapes}
 \label{\detokenize{pages/quickstart:generating-shapes}}
 \sphinxAtStartPar
-As first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as numpy array and should have the shape \sphinxtitleref{(3, 2)}. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the \sphinxtitleref{(x, y)} coordinate system. More on the usage of different coordinate systems can be found under XXX.
+As first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as Numpy array and should have the shape \sphinxtitleref{(3, 2)}. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the \sphinxtitleref{(x, y)} coordinate system. More on the usage of different coordinate systems can be found under XXX.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
@@ -134,7 +134,7 @@ With these calibration coordinates we can create our {\hyperref[\detokenize{page
 \end{sphinxVerbatim}
 
 \sphinxAtStartPar
-We can then create our first rectangle by using the {\hyperref[\detokenize{pages/modules:lmd.lib.Shape}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{Shape}}}}} object and passing it to our collection by using the {\hyperref[\detokenize{pages/modules:lmd.lib.Collection.add_shape}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{add\_shape}}}}} method. For creating the Shape object we need to pass the vertices as numpy array. List of vertices should always be closed with the last vertex equaling the first one.
+We can then create our first rectangle by using the {\hyperref[\detokenize{pages/modules:lmd.lib.Shape}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{Shape}}}}} object and passing it to our collection by using the {\hyperref[\detokenize{pages/modules:lmd.lib.Collection.add_shape}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{add\_shape}}}}} method. For creating the Shape object we need to pass the vertices as Numpy array. List of vertices should always be closed with the last vertex equaling the first one.
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{rectangle\PYGZus{}coordinates} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{p}{[}\PYG{p}{[}\PYG{l+m+mi}{10}\PYG{p}{,}\PYG{l+m+mi}{10}\PYG{p}{]}\PYG{p}{,}
@@ -256,7 +256,7 @@ We can further specify an angle of rotation.
 \section{Numbers and Letters}
 \label{\detokenize{pages/quickstart:numbers-and-letters}}
 \sphinxAtStartPar
-The py\sphinxhyphen{}lmd tools offer a limited support for numbers and some capital letters. The following glyphs are available: \sphinxtitleref{ABCDEFGHI0123456789\sphinxhyphen{}\_}. They were included in the package as they allow for the development of more consistent calibration and sample indexing.In screens with multiple slides, samples can be unambigously identified from imaged data.
+The py\sphinxhyphen{}lmd tools offer a limited support for numbers and some capital letters. The following glyphs are available: \sphinxtitleref{ABCDEFGHI0123456789\sphinxhyphen{}\_}. They were included in the package as they allow for the development of more consistent calibration and sample indexing.In screens with multiple slides, samples can be unambiguously identified from imaged data.
 
 \sphinxAtStartPar
 We will first use \sphinxcode{\sphinxupquote{glyphs()}} to load single glyphs. The glyphs are included in the py\sphinxhyphen{}lmd package as SVG files and are loaded by the {\hyperref[\detokenize{pages/modules:lmd.lib.Collection.svg_to_lmd}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{svg\_to\_lmd()}}}}} into an uncalibrated {\hyperref[\detokenize{pages/modules:lmd.lib.Collection}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{Collection}}}}}. This uncalibrated collection is returned and can be joined with a calibrated collection with the {\hyperref[\detokenize{pages/modules:lmd.lib.Collection.join}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{join()}}}}} function.
@@ -607,7 +607,65 @@ If the Shape has a custom orientation\_transform defined, the custom orientation
 
 
 \section{lmd.tools}
-\label{\detokenize{pages/modules:module-lmd.tools}}\label{\detokenize{pages/modules:lmd-tools}}\index{module@\spxentry{module}!lmd.tools@\spxentry{lmd.tools}}\index{lmd.tools@\spxentry{lmd.tools}!module@\spxentry{module}}\index{get\_rotation\_matrix() (in module lmd.tools)@\spxentry{get\_rotation\_matrix()}\spxextra{in module lmd.tools}}
+\label{\detokenize{pages/modules:module-lmd.tools}}\label{\detokenize{pages/modules:lmd-tools}}\index{module@\spxentry{module}!lmd.tools@\spxentry{lmd.tools}}\index{lmd.tools@\spxentry{lmd.tools}!module@\spxentry{module}}\index{ellipse() (in module lmd.tools)@\spxentry{ellipse()}\spxextra{in module lmd.tools}}
+
+\begin{fulllineitems}
+\phantomsection\label{\detokenize{pages/modules:lmd.tools.ellipse}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{lmd.tools.}}\sphinxbfcode{\sphinxupquote{ellipse}}}{\emph{\DUrole{n}{major\_axis}}, \emph{\DUrole{n}{minor\_axis}}, \emph{\DUrole{n}{offset}\DUrole{o}{=}\DUrole{default_value}{(0, 0)}}, \emph{\DUrole{n}{rotation}\DUrole{o}{=}\DUrole{default_value}{0}}, \emph{\DUrole{n}{polygon\_resolution}\DUrole{o}{=}\DUrole{default_value}{1}}}{}
+\sphinxAtStartPar
+Get a lmd.lib.Shape for ellipse of choosen dimensions.
+\begin{quote}\begin{description}
+\item[{Parameters}] \leavevmode\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{major\_axis}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Major axis of the ellipse. The major axis is defined from the center to the perimeter and therefore half the diameter. The major axis is placed along the x\sphinxhyphen{}axis before rotation.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{minor\_axis}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Minor axis of the ellipse. The minor axis is defined from the center to the perimeter and therefore half the diameter. The minor axis is placed along the y\sphinxhyphen{}axis before rotation.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{offset}} (\sphinxstyleliteralemphasis{\sphinxupquote{np.ndarray}}) \textendash{} Location of the ellipse based on the center given in the form of \sphinxtitleref{(x, y)}. Default value: np.array((0, 0))
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{rotation}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Clockwise rotation in radian.
+
+\item {} 
+\sphinxAtStartPar
+\sphinxstyleliteralstrong{\sphinxupquote{polygon\_resolution}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} The polygon resolution defines how far the vertices should be spaced on average. A polygon\_resolution of 10 will place a vertex on average every ten units.
+
+\end{itemize}
+
+\item[{Returns}] \leavevmode
+\sphinxAtStartPar
+Shape which contains the ellipse.
+
+\item[{Return type}] \leavevmode
+\sphinxAtStartPar
+{\hyperref[\detokenize{pages/modules:lmd.lib.Shape}]{\sphinxcrossref{lmd.lib.Shape}}}
+
+\end{description}\end{quote}
+\subsubsection*{Example}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
+\PYG{k+kn}{from} \PYG{n+nn}{lmd}\PYG{n+nn}{.}\PYG{n+nn}{lib} \PYG{k+kn}{import} \PYG{n}{Collection}\PYG{p}{,} \PYG{n}{Shape}
+\PYG{k+kn}{from} \PYG{n+nn}{lmd} \PYG{k+kn}{import} \PYG{n}{tools}
+
+\PYG{n}{calibration} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{array}\PYG{p}{(}\PYG{p}{[}\PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{0}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{,} \PYG{l+m+mi}{100}\PYG{p}{]}\PYG{p}{,} \PYG{p}{[}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{]}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{my\PYGZus{}first\PYGZus{}collection} \PYG{o}{=} \PYG{n}{Collection}\PYG{p}{(}\PYG{n}{calibration\PYGZus{}points} \PYG{o}{=} \PYG{n}{calibration}\PYG{p}{)}
+
+\PYG{n}{my\PYGZus{}ellipse} \PYG{o}{=} \PYG{n}{tools}\PYG{o}{.}\PYG{n}{ellipse}\PYG{p}{(}\PYG{l+m+mi}{20}\PYG{p}{,} \PYG{l+m+mi}{10}\PYG{p}{,} \PYG{n}{offset} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{30}\PYG{p}{,} \PYG{l+m+mi}{50}\PYG{p}{)}\PYG{p}{,} \PYG{n}{polygon\PYGZus{}resolution} \PYG{o}{=} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n}{rotation} \PYG{o}{=} \PYG{l+m+mf}{1.8}\PYG{o}{*}\PYG{n}{np}\PYG{o}{.}\PYG{n}{pi}\PYG{p}{)}
+\PYG{n}{my\PYGZus{}first\PYGZus{}collection}\PYG{o}{.}\PYG{n}{add\PYGZus{}shape}\PYG{p}{(}\PYG{n}{my\PYGZus{}ellipse}\PYG{p}{)}
+\PYG{n}{my\PYGZus{}first\PYGZus{}collection}\PYG{o}{.}\PYG{n}{plot}\PYG{p}{(}\PYG{n}{calibration} \PYG{o}{=} \PYG{k+kc}{True}\PYG{p}{)}
+\end{sphinxVerbatim}
+
+\noindent\sphinxincludegraphics[scale=1.0]{{tools.ellipse.example}.png}
+
+\end{fulllineitems}
+
+\index{get\_rotation\_matrix() (in module lmd.tools)@\spxentry{get\_rotation\_matrix()}\spxextra{in module lmd.tools}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{pages/modules:lmd.tools.get_rotation_matrix}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{lmd.tools.}}\sphinxbfcode{\sphinxupquote{get\_rotation\_matrix}}}{\emph{\DUrole{n}{angle}\DUrole{p}{:} \DUrole{n}{float}}}{}
@@ -694,7 +752,7 @@ str
 \index{rectangle() (in module lmd.tools)@\spxentry{rectangle()}\spxextra{in module lmd.tools}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{pages/modules:lmd.tools.rectangle}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{lmd.tools.}}\sphinxbfcode{\sphinxupquote{rectangle}}}{\emph{\DUrole{n}{width}}, \emph{\DUrole{n}{height}}, \emph{\DUrole{n}{offset}\DUrole{o}{=}\DUrole{default_value}{(0, 0)}}, \emph{\DUrole{n}{angle}\DUrole{o}{=}\DUrole{default_value}{0}}, \emph{\DUrole{n}{rotation\_offset}\DUrole{o}{=}\DUrole{default_value}{(0, 0)}}}{}
+\phantomsection\label{\detokenize{pages/modules:lmd.tools.rectangle}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{lmd.tools.}}\sphinxbfcode{\sphinxupquote{rectangle}}}{\emph{\DUrole{n}{width}}, \emph{\DUrole{n}{height}}, \emph{\DUrole{n}{offset}\DUrole{o}{=}\DUrole{default_value}{(0, 0)}}, \emph{\DUrole{n}{rotation}\DUrole{o}{=}\DUrole{default_value}{0}}, \emph{\DUrole{n}{rotation\_offset}\DUrole{o}{=}\DUrole{default_value}{(0, 0)}}}{}
 \sphinxAtStartPar
 Get a lmd.lib.Shape for rectangle of choosen dimensions.
 \begin{quote}\begin{description}
@@ -709,7 +767,7 @@ Get a lmd.lib.Shape for rectangle of choosen dimensions.
 
 \item {} 
 \sphinxAtStartPar
-\sphinxstyleliteralstrong{\sphinxupquote{angle}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Rotation in radian.
+\sphinxstyleliteralstrong{\sphinxupquote{rotation}} (\sphinxstyleliteralemphasis{\sphinxupquote{float}}) \textendash{} Rotation in radian.
 
 \item {} 
 \sphinxAtStartPar

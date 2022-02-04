@@ -59,7 +59,7 @@ def glyph(glyph,
         
     svg_path = glyph_path(glyph)
     
-    local_multiplier = 0.01
+    local_multiplier = 0.2
     multiplier = multiplier * local_multiplier
     
     shapefile = Collection()
@@ -133,7 +133,7 @@ def text(text,
 
 def rectangle(width, height, 
            offset = (0, 0), 
-           angle = 0, 
+           rotation = 0, 
            rotation_offset = (0, 0)):
     
     """Get a lmd.lib.Shape for rectangle of choosen dimensions.
@@ -143,7 +143,7 @@ def rectangle(width, height,
             
             offset (np.ndarray): Location of the rectangle based on the center. Default value: np.array((0, 0))
             
-            angle (float): Rotation in radian.
+            rotation (float): Rotation in radian.
             
             rotation_offset (np.ndarray): Location of the center of rotation relative to the center of the rectangle. Default value: np.array((0, 0))
         
@@ -155,13 +155,81 @@ def rectangle(width, height,
     
     offset = np.array(offset)
     rotation_offset = np.array(rotation_offset)
-    rotation_mat = get_rotation_matrix(angle)
+    rotation_mat = get_rotation_matrix(rotation)
     
-    points = np.array([[-height/2,-width/2],
-                     [-height/2,width/2],
-                     [height/2,width/2],
-                     [height/2,-width/2],
-                     [-height/2,-width/2]])
+    points = np.array([[-width/2,-height/2],
+                     [-width/2,height/2],
+                     [width/2,height/2],
+                     [width/2,-height/2],
+                     [-width/2,-height/2]])
     
     points = (points + rotation_offset) @ rotation_mat - rotation_offset + offset
     return Shape(points)
+
+def ellipse(major_axis, 
+              minor_axis,
+              offset = (0, 0),
+              rotation = 0,
+              polygon_resolution = 1):
+    """Get a lmd.lib.Shape for ellipse of choosen dimensions.
+    
+        Args: 
+            major_axis (float): Major axis of the ellipse. The major axis is defined from the center to the perimeter and therefore half the diameter. The major axis is placed along the x-axis before rotation.
+            
+            minor_axis (float): Minor axis of the ellipse. The minor axis is defined from the center to the perimeter and therefore half the diameter. The minor axis is placed along the y-axis before rotation.
+            
+            offset (np.ndarray): Location of the ellipse based on the center given in the form of `(x, y)`. Default value: np.array((0, 0))
+            
+            rotation (float): Clockwise rotation in radian.
+            
+            polygon_resolution (float): The polygon resolution defines how far the vertices should be spaced on average. A polygon_resolution of 10 will place a vertex on average every ten units.
+        
+        Returns:
+            lmd.lib.Shape: Shape which contains the ellipse.
+            
+        Example:
+        
+            .. code-block:: python
+
+                import numpy as np
+                from lmd.lib import Collection, Shape
+                from lmd import tools
+
+                calibration = np.array([[0, 0], [0, 100], [50, 50]])
+                my_first_collection = Collection(calibration_points = calibration)
+
+                my_ellipse = tools.ellipse(20, 10, offset = (30, 50), polygon_resolution = 5, rotation = 1.8*np.pi)
+                my_first_collection.add_shape(my_ellipse)
+                my_first_collection.plot(calibration = True)
+                
+            .. image:: images/tools.ellipse.example.png
+               :scale: 100%
+    """
+    
+    
+    if polygon_resolution == 0:
+        raise ValueError("Polygon resolution has to be larger than 0")
+    
+    a = minor_axis
+    b = major_axis
+
+    h = ((a - b)**2)/((a + b)**2)
+
+    # Approximation of circumference according to Ramanujan
+    P = np.pi * (a + b) * (1+(3*h/(10+np.sqrt(4-3*h))))
+
+    # The number of vertices is given by the circumference and the polygon_resolution
+    n_vertices = np.round(P / polygon_resolution).astype(int)
+
+    # The radian space returns a list on n_vertices spaced between 0 and 2*pi
+    # datapoints are therefore spaced according to equal angle, not equal distance on the perimeter!
+    # If anybody has suggestions how to improve this, feel free to contribute (I should check Kepler)
+    radian_space = np.linspace(0, 2*np.pi, n_vertices)
+
+    unit_circle = np.array([np.cos(radian_space), np.sin(radian_space)]).T
+
+    # Scaling the unit circle gives the ellipse
+    ellipse_scale = np.array([major_axis, minor_axis])
+    ellipse = unit_circle * ellipse_scale @ get_rotation_matrix(rotation) + offset
+    
+    return Shape(ellipse)

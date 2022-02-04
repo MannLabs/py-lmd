@@ -69,7 +69,7 @@ class Collection:
             
             
         if not mode in modes:
-            raise ValueError("mode not known")
+            raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
         # check for calibration points
         
         cal = np.array(self.calibration_points).T
