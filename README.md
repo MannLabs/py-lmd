@@ -10,10 +10,10 @@ Additionally, functionality for the calibration, generation of final pulses and 
 
 Installation from Github
 ========================
+py-lmd has been tested with **Python 3.8 and 3.9**.
 To install the py-lmd library clone the Github repository and use pip to install the library in your current environment.
 It is recommended to use the library with a conda environment. Please make sure that the package is installed editable
 like described. Otherwise static glyph files might not be available.
-
 
 ```
 git clone https://github.com/HornungLab/py-lmd
