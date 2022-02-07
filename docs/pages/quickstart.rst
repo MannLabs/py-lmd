@@ -218,22 +218,5 @@ Next to individual glyphs the :py:meth:`~lmd.tools.text` method can be used to w
     
 .. image:: images/fig10.png
    :scale: 100%
-   
-Different Coordinate Systems
-=================================
 
-The coordinates for the Leica LMD are defined as `(x, y)` coordinates with the x-axis extending to the right and the y-axis extending to the top. All cutting data should exist in this coordinate system and should be calibrated accordingly. When cutting data is generated based on whole slide images we have to keep in mind that images are often indexed differently. Images in Fiji or Numpy are indexed as `(row, column)` with the rows extending downwards and the columns extending to the right. If we want to identify positions in image data - like calibration crosses or single cells - we have to translate their position in the `(row, column)` format to the `(x, y)` format. 
-
-.. image:: images/py-lmd-figures-01.png
-  
-The py-lmd library has been designed in a way which allows to transform the coordinate system prior to saving. Therefore one can specify all coordinates in the image coordinate system and rely on the library to handle the transformation. In this case the `orientation_transform` attribute needs to be set when the Collection is created.
-
-.. code-block:: python
-
-    calibration = np.array([[10, 10], [1000, 10], [500, 500]])
-
-    collection = Collection(calibration_points = calibration)
-    collection.orientation_transform = np.array([[0, -1], [1, 0]])
-    
-In this case  all coordinates for calibration points and shapes can be set in form of `(row, column)` coordinates. The orientation transform is only applied when the Collection is saved or, if desired, when the Collection is plotted.
 

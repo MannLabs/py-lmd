@@ -18,4 +18,5 @@ Welcome to the show
    :numbered:
    
    pages/quickstart
+   pages/segmentation_loader
    pages/modules
