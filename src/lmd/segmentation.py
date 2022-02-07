@@ -20,7 +20,7 @@ def _selected_coords_fast(mask, classes, debug=False, background=0):
     rows, cols = mask.shape
     
     for row in range(rows):
-        if row % 10000 == 0:
+        if row % 10000 == 0 and debug:
             print(row)
         for col in range(cols):
             return_id = mask[row, col]
@@ -44,20 +44,20 @@ def get_coordinate_form(inarr, classes, debug=False):
     
     # calculate all coords in list
     # due to typing issues in numba, every list and sublist contains np.array([0.,0.], dtype="int32") as first element
-    coords = _selected_coords_fast(inarr.astype("uint32"), nb.typed.List(classes))
-    
-    print("start removal of zero vectors")
+    coords = _selected_coords_fast(inarr.astype("uint32"), nb.typed.List(classes), debug = debug)
+    if debug:
+        print("start removal of zero vectors")
     # removal of np.array([0.,0.], dtype="int32")
     coords = [np.array(el[1:]) for el in coords[1:]]
-    
-    print("start removal of out of class cells")
+    if debug:
+        print("start removal of out of class cells")
     # remove empty elements, not in class list
     coords_filtered = [np.array(el) for i, el in enumerate(coords) if i+1 in classes]
-    
-    print("start center calculation")
+    if debug:
+        print("start center calculation")
     center = [np.mean(el, axis=0) for el in coords_filtered]
-    
-    print("start length calculation")
+    if debug:
+        print("start length calculation")
     length = [len(el) for el in coords_filtered]
     
     return center, length, coords_filtered

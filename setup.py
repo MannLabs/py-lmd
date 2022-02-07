@@ -16,7 +16,7 @@ if os.path.isfile(requirementPath):
 
 setuptools.setup(
     name="py-lmd",
-    version="1.0.0",
+    version="1.0.1",
     author="Georg Wallmann",
     author_email="g.wallmann@campus.lmu.de",
     description="Read, Modify and Create new shape files for the Leica LMD6 & LMD7",

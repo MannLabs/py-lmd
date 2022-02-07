@@ -55,6 +55,46 @@ class Collection:
         self.scale = 100
         
         self.global_coordinates = 1
+
+    def stats(self):
+        """Print statistics about the Collection in the form of:
+
+        .. code-block:: 
+
+            ===== Collection Stats =====
+            Number of shapes: 208
+            Number of vertices: 126,812
+            ============================
+            Mean vertices: 609.67
+            Min vertices: 220.00
+            5% percentile vertices: 380.20
+            Median vertices: 594.00
+            95% percentile vertices: 893.20
+            Max vertices: 1,300.00
+
+        """
+        lengths = np.array([len(shape.points) for shape in self.shapes])
+
+        num_shapes = len(self.shapes)
+        num_vertices = np.sum(lengths)
+        
+        median_dp = np.median(lengths).astype(np.float)
+        mean_dp = np.mean(lengths).astype(np.float)
+        max_dp = np.max(lengths).astype(np.float)
+        min_dp = np.min(lengths).astype(np.float)
+        percentile_5 = np.percentile(lengths, 5).astype(np.float)
+        percentile_95 = np.percentile(lengths, 95).astype(np.float)
+
+        print('===== Collection Stats =====')
+        print(f'Number of shapes: {num_shapes:,}')
+        print(f'Number of vertices: {num_vertices:,}')
+        print('============================')
+        print(f'Mean vertices: {mean_dp:,.0f}')
+        print(f'Min vertices: {min_dp:,.0f}')
+        print(f'5% percentile vertices: {percentile_5:,.0f}')
+        print(f'Median vertices: {median_dp:,.0f}')
+        print(f'95% percentile vertices: {percentile_95:,.0f}')
+        print(f'Max vertices: {max_dp:,.0f}')
         
     def plot(self, calibration: bool = True, 
              mode: str = "line", 
@@ -426,9 +466,90 @@ class Shape:
     
 
 class SegmentationLoader():
-    """Select single cells from a segmented hdf5 file and generate cutting data for the Leica LMD microscope.
-    
-    """
+    """Select single cells from a segmentation and generate cutting data
+        
+        Args:
+            config (dict): Dict containing configuration parameters. See Note for further explanation.
+            
+            cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
+            
+            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.                    
+                    
+        Example:
+                    
+            .. code-block:: python
+            
+                import numpy as np
+                from PIL import Image
+                from lmd.lib import SegmentationLoader
+
+                im = Image.open('segmentation_cytosol.tiff')
+                segmentation = np.array(im).astype(np.uint32)
+
+                all_classes = np.unique(segmentation)
+
+                cell_sets = [{"classes": all_classes, "well": "A1"}]
+
+                calibration_points = np.array([[0,0],[0,1000],[1000,1000]])
+
+                loader_config = {
+                    'orientation_transform': np.array([[0, -1],[1, 0]])
+                }
+
+                sl = SegmentationLoader(config = loader_config)
+                shape_collection = sl(segmentation, 
+                                    cell_sets, 
+                                    calibration_points)
+                                    
+                shape_collection.plot(fig_size = (10, 10))
+
+            .. image:: images/segmentation1.png
+                    
+        Note:
+            
+            Basic explanation of the parameters in the config dict:
+            
+            .. code-block:: yaml
+
+                # dilation of the cutting mask in pixel before intersecting shapes in a selection group are merged
+                shape_dilation: 0
+
+                # erosion of the cutting mask in pixel before intersecting shapes in a selection group are merged
+                shape_erosion: 0
+
+                # Cutting masks are transformed by binary dilation and erosion
+                binary_smoothing: 3
+
+                # number of datapoints which are averaged for smoothing
+                # the resoltion of datapoints is twice as high as the resolution of pixel
+                convolution_smoothing: 15
+
+                # fold reduction of datapoints for compression
+                poly_compression_factor: 30
+
+                # Optimization of the cutting path inbetween shapes
+                # optimized paths improve the cutting time and the microscopes focus
+                # valid options are ["none", "hilbert", "greedy"]
+                path_optimization: "hilbert"
+
+                # Paramter required for hilbert curve based path optimization.
+                # Defines the order of the hilbert curve used, which needs to be tuned with the total cutting area.
+                # For areas of 1 x 1 mm we recommend at least p = 4,  for whole slides we recommend p = 7.
+                hilbert_p: 7
+
+                # Parameter required for greedy path optimization. 
+                # Instead of a global distance matrix, the k nearest neighbours are approximated. 
+                # The optimization problem is then greedily solved for the known set of nearest neighbours until the first set of neighbours is exhausted.
+                # Established edges are then removed and the nearest neighbour approximation is recursivly repeated.
+                greedy_k: 20
+
+                # Overlapping shapes are merged based on a nearest neighbour heuristic.
+                # All selected shapes closer than distance_heuristic pixel are checked for overlap.
+                distance_heuristic: 300
+
+
+        """
+
     # define all valid path optimization methods used with the "path_optimization" argument in the configuration
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
     
@@ -440,7 +561,7 @@ class SegmentationLoader():
         self.register_parameter('shape_dilation', 0)
         self.register_parameter('shape_erosion', 0)
         self.register_parameter('binary_smoothing', 3)
-        self.register_parameter('convolution_smoothing', 25)
+        self.register_parameter('convolution_smoothing', 15)
         self.register_parameter('poly_compression_factor', 30)
         self.register_parameter('path_optimization', 'hilbert')
         self.register_parameter('greedy_k', 0)
@@ -527,14 +648,14 @@ class SegmentationLoader():
                                                  erosion = self.config['binary_smoothing'] ,
                                                  dilation = self.config['binary_smoothing']
                                                 ),
-                                                 shapes), total=len(center)))
+                                                 shapes), total=len(center), disable = not self.verbose))
         self.log("Calculating polygons")
         with multiprocessing.Pool(processes=self.config['processes']) as pool:      
             shapes = list(tqdm(pool.imap(partial(PolygonGenerator.create_poly, 
                                                  smoothing_filter_size = self.config['convolution_smoothing'],
                                                  poly_compression_factor = self.config['poly_compression_factor']
                                                 ),
-                                                 shapes), total=len(center)))
+                                                 shapes), total=len(center), disable = not self.verbose))
          
         
         self.log("Polygon calculation finished")
