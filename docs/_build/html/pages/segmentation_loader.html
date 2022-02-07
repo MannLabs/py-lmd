@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. Using Segmented Images &mdash; py-lmd 1.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Modules" href="modules.html" />
+    <link rel="prev" title="1. Quick Start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> py-lmd
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">1. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#installation-from-github">1.1. Installation from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#generating-shapes">1.2. Generating Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#using-the-py-lmd-tools">1.3. Using the py-lmd tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#numbers-and-letters">1.4. Numbers and Letters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#text">1.5. Text</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Using Segmented Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#background">2.1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview-of-configuration">2.4. Overview of Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">3. Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#lmd-lib">3.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#collection">3.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#shape">3.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">py-lmd</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li><span class="section-number">2. </span>Using Segmented Images</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/pages/segmentation_loader.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="using-segmented-images">
+<h1><span class="section-number">2. </span>Using Segmented Images<a class="headerlink" href="#using-segmented-images" title="Permalink to this headline">¶</a></h1>
+<section id="background">
+<h2><span class="section-number">2.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
+<a class="reference internal image-reference" href="../_images/watershed.png"><img alt="../_images/watershed.png" class="align-right" src="../_images/watershed.png" style="width: 400.0px; height: 400.0px;" /></a>
+<p>Although the py-lmd package is meant to serve as framework for creating your own workflows, generating cutting data based on segmentations is the central application of this package. When biological images are segmented, every pixel receives a class or label. Labels can be used to identify single cells and distinguish them from the background or can categorize cells or areas based on phenotypes, functions or location.</p>
+<p>In the following example we will assume that a segmentation was performed to assign labels to individual cells and distinguish their cytosol from the background. The procedures are though applicable to all types of labels.</p>
+<p>As this process is so central to the usage of the Leica LMD, the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a> can be used to create cutting data based on segmentation data. The workflow was specifically designed to work with whole slide images, as large as the LMD membrane slides, and large numbers of single cells. Therefore, different processing steps are included which optimize single cell shapes and decrease overall cutting time.</p>
+</section>
+<section id="different-coordinate-systems">
+<h2><span class="section-number">2.2. </span>Different Coordinate Systems<a class="headerlink" href="#different-coordinate-systems" title="Permalink to this headline">¶</a></h2>
+<p>Using images to generate cutting data with the py-lmd package makes it necessary to transform the image coordinate system to the Leica LMD coordinate system. Although this functionality is part of the package, it is important to highlight the differences in the coordinate systems and to keep in mind what coordinate system is used when calibration points are determined from image data.</p>
+<p>The coordinates for the Leica LMD are defined as <cite>(x, y)</cite> coordinates with the x-axis extending to the right and the y-axis extending to the top. All cutting data should exist in this coordinate system and should be calibrated accordingly. When cutting data is generated based on whole slide images we have to keep in mind that images are often indexed differently. Images in Fiji or Numpy are indexed as <cite>(row, column)</cite> with the rows extending downwards and the columns extending to the right. If we want to identify positions in image data - like calibration crosses or single cells - we have to translate their position in the <cite>(row, column)</cite> format to the <cite>(x, y)</cite> format.</p>
+<img alt="../_images/py-lmd-figures-01.png" src="../_images/py-lmd-figures-01.png" />
+<p>The py-lmd library has been designed in a way which allows to transform the coordinate system prior to saving. Therefore one can specify all coordinates in the image coordinate system and rely on the library to handle the transformation. In this case the <cite>orientation_transform</cite> attribute needs to be set when the Collection is created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">calibration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">]])</span>
+
+<span class="n">collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">)</span>
+<span class="n">collection</span><span class="o">.</span><span class="n">orientation_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+</pre></div>
+</div>
+<p>In this case  all coordinates for calibration points and shapes can be set in form of <cite>(row, column)</cite> coordinates. The orientation transform is only applied when the Collection is saved or, if desired, when the Collection is plotted.</p>
+</section>
+<section id="getting-started-with-the-segmentationloader">
+<h2><span class="section-number">2.3. </span>Getting started with the SegmentationLoader<a class="headerlink" href="#getting-started-with-the-segmentationloader" title="Permalink to this headline">¶</a></h2>
+<p>Before we can start with the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a>, we have to load our image which contains the labels for our cells. The segmentation loader expects a numpy array of integers where the background is assigned to label 0. There are no further restrictions to the shape or number of labels other than being continuos. All pixel with a certain label need to be in contact with each other. Functional labels which assign cells based on the cell type must be converted.</p>
+<p>As example we will use the cytosol segmentation seen above which can be found under <cite>notebooks/Image_Segmentation/segmentation_cytosol.tiff</cite>. First, we will load this image and convert it to a numpy array.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">im</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;segmentation_cytosol.tiff&#39;</span><span class="p">)</span>
+<span class="n">segmentation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Based on this segmentation we have to select group of cells. These groups can be assigned to separate wells and intersecting shapes and cutting paths will be optimized separately for every group. In our case, all cells will be selected and assigned to the same well A1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">all_classes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">segmentation</span><span class="p">)</span>
+<span class="n">cell_sets</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;classes&quot;</span><span class="p">:</span> <span class="n">all_classes</span><span class="p">,</span> <span class="s2">&quot;well&quot;</span><span class="p">:</span> <span class="s2">&quot;A1&quot;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>Next we need to specify the calibration points which were identified in the image and the coordinate transform which should be applied. By default, the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a> will read all coordinates as <cite>(row, column)</cite> based on the top left origin. Therefore, the calibration points should be specified in the same way.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">]])</span>
+
+<span class="n">loader_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;orientation_transform&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>We can now create an instance of the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a> and generate the cutting data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">SegmentationLoader</span>
+<span class="n">sl</span> <span class="o">=</span> <span class="n">SegmentationLoader</span><span class="p">(</span><span class="n">config</span> <span class="o">=</span> <span class="n">loader_config</span><span class="p">)</span>
+<span class="n">shape_collection</span> <span class="o">=</span> <span class="n">sl</span><span class="p">(</span><span class="n">segmentation</span><span class="p">,</span>
+                    <span class="n">cell_sets</span><span class="p">,</span>
+                    <span class="n">calibration_points</span><span class="p">)</span>
+
+<span class="n">shape_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+<img alt="../_images/segmentation1.png" src="../_images/segmentation1.png" />
+</section>
+<section id="overview-of-configuration">
+<h2><span class="section-number">2.4. </span>Overview of Configuration<a class="headerlink" href="#overview-of-configuration" title="Permalink to this headline">¶</a></h2>
+<p>To be extended…</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># dilation of the cutting mask in pixel before intersecting shapes in a selection group are merged</span>
+<span class="nt">shape_dilation</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+
+<span class="c1"># erosion of the cutting mask in pixel before intersecting shapes in a selection group are merged</span>
+<span class="nt">shape_erosion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+
+<span class="c1"># Cutting masks are transformed by binary dilation and erosion</span>
+<span class="nt">binary_smoothing</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">3</span>
+
+<span class="c1"># number of datapoints which are averaged for smoothing</span>
+<span class="c1"># the resoltion of datapoints is twice as high as the resolution of pixel</span>
+<span class="nt">convolution_smoothing</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">15</span>
+
+<span class="c1"># fold reduction of datapoints for compression</span>
+<span class="nt">poly_compression_factor</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">30</span>
+
+<span class="c1"># Optimization of the cutting path inbetween shapes</span>
+<span class="c1"># optimized paths improve the cutting time and the microscopes focus</span>
+<span class="c1"># valid options are [&quot;none&quot;, &quot;hilbert&quot;, &quot;greedy&quot;]</span>
+<span class="nt">path_optimization</span><span class="p">:</span> <span class="s">&quot;hilbert&quot;</span>
+
+<span class="c1"># Paramter required for hilbert curve based path optimization.</span>
+<span class="c1"># Defines the order of the hilbert curve used, which needs to be tuned with the total cutting area.</span>
+<span class="c1"># For areas of 1 x 1 mm we recommend at least p = 4,  for whole slides we recommend p = 7.</span>
+<span class="nt">hilbert_p</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">7</span>
+
+<span class="c1"># Parameter required for greedy path optimization.</span>
+<span class="c1"># Instead of a global distance matrix, the k nearest neighbours are approximated.</span>
+<span class="c1"># The optimization problem is then greedily solved for the known set of nearest neighbours until the first set of neighbours is exhausted.</span>
+<span class="c1"># Established edges are then removed and the nearest neighbour approximation is recursivly repeated.</span>
+<span class="nt">greedy_k</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">20</span>
+
+<span class="c1"># Overlapping shapes are merged based on a nearest neighbour heuristic.</span>
+<span class="c1"># All selected shapes closer than distance_heuristic pixel are checked for overlap.</span>
+<span class="nt">distance_heuristic</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">300</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="modules.html" class="btn btn-neutral float-right" title="3. Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="1. Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, Georg Wallmann, Sophia Mädler and Niklas Schmacke
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

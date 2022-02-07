@@ -17,6 +17,13 @@ Shape
 .. autoclass:: lmd.lib.Shape
    :members:
 
+   
+SegmentationLoader
+-------------------
+   
+.. autoclass:: lmd.lib.SegmentationLoader
+   :members:
+
 lmd.tools
 ================
 

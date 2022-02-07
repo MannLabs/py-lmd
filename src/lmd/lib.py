@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import Optional
-
+from functools import partial, reduce
+import multiprocessing
 import numpy as np
 import matplotlib.pyplot as plt
 from lxml import etree as ET
@@ -8,9 +9,24 @@ from matplotlib import image
 from skimage import data, color
 import matplotlib.ticker as ticker
 from svgelements import SVG
+from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len
+from tqdm import tqdm
+
+from skimage.morphology import dilation as binary_dilation
+from skimage.morphology import binary_erosion, disk
+
+import os
+import csv
+from pathlib import Path
+
+from scipy.spatial import cKDTree
+import networkx as nx
 
 
-
+import scipy
+from scipy import ndimage
+from scipy.signal import convolve2d
+import skimage as sk
 
 class Collection:
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
@@ -160,8 +176,12 @@ class Collection:
         Args:
             collection: Collection which should be joined with the current collection object.
             
+        Returns:
+            returns self
         """
         self.shapes += collection.shapes
+
+        return self
         
     # load xml from file
     def load(self, file_location: str):
@@ -402,3 +422,531 @@ class Shape:
             y.text = "{}".format(np.floor(point[1]).astype(int))
         
         return shape
+
+    
+
+class SegmentationLoader():
+    """Select single cells from a segmented hdf5 file and generate cutting data for the Leica LMD microscope.
+    
+    """
+    # define all valid path optimization methods used with the "path_optimization" argument in the configuration
+    VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
+    
+    
+    def __init__(self, config = {}, verbose = False):
+        self.config = config
+        self.verbose = verbose
+
+        self.register_parameter('shape_dilation', 0)
+        self.register_parameter('shape_erosion', 0)
+        self.register_parameter('binary_smoothing', 3)
+        self.register_parameter('convolution_smoothing', 25)
+        self.register_parameter('poly_compression_factor', 30)
+        self.register_parameter('path_optimization', 'hilbert')
+        self.register_parameter('greedy_k', 0)
+        self.register_parameter('segmentation_channel', 15)
+        self.register_parameter('hilbert_p', 7)
+        self.register_parameter('xml_decimal_transform', 100)
+        self.register_parameter('distance_heuristic', 300)
+        self.register_parameter('processes', 10)
+        self.register_parameter('join_intersecting', True)
+        self.register_parameter('orientation_transform', np.eye(2))
+
+    def __call__(self, input_segmentation, cell_sets, calibration_points):
+
+        self.input_segmentation = input_segmentation
+        self.calibration_points = calibration_points
+
+        sets = []
+
+        # iterate over all defined sets, perform sanity checks and load external data
+        for i, cell_set in enumerate(cell_sets):
+            self.log(f"sanity check for cell set {i}")
+            self.check_cell_set_sanity(cell_set)
+            cell_set["classes_loaded"] = self.load_classes(cell_set)
+            sets.append(cell_set)
+            self.log(f"cell set {i} passed sanity check")
+        
+        collections = []
+        for i, cell_set in enumerate(cell_sets):
+            collections.append(self.generate_cutting_data(cell_set))
+
+        return reduce(lambda a, b: a.join(b), collections)
+
+    def generate_cutting_data(self, cell_set):
+        
+        self.log("Convert label format into coordinate format")
+        
+        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"])
+        
+        self.log("Conversion finished, sanity check")
+        
+        # Sanity check 1
+        if len(center) == len(cell_set["classes_loaded"]):
+            self.log("Check passed")
+        else:
+            self.log("Check failed, returned lengths do not match cell set.\n Some classes were not found in the segmentation and were therefore removed.\n Please make sure all classes specified are present in your segmentation.")
+            elements_removed =  len(cell_set["classes_loaded"]) - len(center)
+            self.log(f"{elements_removed} classes were not found and therefore removed.")
+        
+        # Sanity check 2: for the returned coordinates
+        if len(center) == len(length) == len(length):
+            self.log("Check passed")
+        else:
+            self.log("Check failed, returned lengths do not match. Please check if all classes specified are present in your segmentation")
+        
+        # Sanity check 3
+        zero_elements = 0
+        for el in coords:
+            if len(el) == 0:
+                zero_elements += 1
+                
+        if zero_elements == 0:
+            self.log("Check passed")
+        else:
+            self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
+
+
+        if self.config['join_intersecting']:
+            center, length, coords = self.merge_dilated_shapes(center, length, coords, 
+                                                                dilation = self.config['shape_dilation'],
+                                                                erosion = self.config['shape_erosion'])
+
+        self.log("Initializing shapes for polygon creation")
+        
+        shapes = []
+        for i in range(len(center)):
+            s = PolygonGenerator(center[i],length[i],coords[i])
+            if i % 1000 == 0:
+                self.log(f"Initializing shape {i}")
+            shapes.append(s)
+        
+        self.log("Create shapes for merged cells")
+        with multiprocessing.Pool(processes=self.config['processes']) as pool:                                          
+            shapes = list(tqdm(pool.imap(partial(PolygonGenerator.tranform_to_map, 
+                                                 erosion = self.config['binary_smoothing'] ,
+                                                 dilation = self.config['binary_smoothing']
+                                                ),
+                                                 shapes), total=len(center)))
+        self.log("Calculating polygons")
+        with multiprocessing.Pool(processes=self.config['processes']) as pool:      
+            shapes = list(tqdm(pool.imap(partial(PolygonGenerator.create_poly, 
+                                                 smoothing_filter_size = self.config['convolution_smoothing'],
+                                                 poly_compression_factor = self.config['poly_compression_factor']
+                                                ),
+                                                 shapes), total=len(center)))
+         
+        
+        self.log("Polygon calculation finished")
+
+        
+        center = np.array(center)
+        unoptimized_length = calc_len(center)
+        self.log(f"Current path length: {unoptimized_length:,.2f} units")
+
+        # check if optimizer key has been set
+        if 'path_optimization' in self.config:
+            
+
+            optimization_method = self.config['path_optimization']
+            self.log(f"Path optimizer defined in config: {optimization_method}")
+
+            # check if the optimizer is a valid option
+            if optimization_method in self.VALID_PATH_OPTIMIZERS:
+                pathoptimizer = optimization_method
+
+            else:
+                self.log("Path optimizer is no valid option, no optimization will be used.")
+                pathoptimizer = "none"
+                
+        else:
+            self.log("No path optimizer has been defined")
+            pathoptimizer = "none"
+            
+        if pathoptimizer == "greedy":
+            optimized_idx = tsp_greedy_solve(center, k=self.config['greedy_k'])
+    
+        elif pathoptimizer == "hilbert":
+            optimized_idx = tsp_hilbert_solve(center, p=self.config['hilbert_p'])
+        
+        else:
+            optimized_idx = list(range(len(center)))
+            
+        center = center[optimized_idx]
+
+        # calculate optimized path length and optimization factor
+        optimized_length = calc_len(center)
+        self.log(f"Optimized path length: {optimized_length:,.2f} units")
+
+        optimization_factor = unoptimized_length / optimized_length
+        self.log(f"Optimization factor: {optimization_factor:,.1f}x")
+        
+        # order list of shapes by the optimized index array
+        shapes = [x for _, x in sorted(zip(optimized_idx, shapes))]
+
+        
+
+        # Plot coordinates if in debug mode
+        if self.verbose:
+            
+            center = np.array(center)
+            plt.figure(figsize=(8, 8), dpi=120)
+            ax = plt.gca()
+
+            if 'background_image' in self.config:
+
+                ax.imshow(self.config['background_image'])
+
+            ax.scatter(center[:,1],center[:,0], s=1)
+
+            for shape in shapes:
+                shape.plot(ax, color="red",linewidth=1)
+
+            ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
+            ax.plot(center[:,1],center[:,0], color="white")
+
+            plt.show()
+    
+        # Generate array of marker cross positions
+        ds = Collection(calibration_points = self.calibration_points)
+        ds.orientation_transform = self.config['orientation_transform']
+
+        for shape in shapes:
+            s = shape.get_poly() 
+
+            # Check if well key is set in cell set definition
+            if "well" in cell_set:
+                ds.new_shape(s, well=cell_set["well"])
+            else:
+                ds.new_shape(s)
+        return ds
+
+    def merge_dilated_shapes(self,
+                        input_center, 
+                        input_length, 
+                        input_coords, 
+                        dilation = 0,
+                        erosion = 0):
+    
+        # initialize all shapes and create dilated coordinates
+        # coordinates are created as complex numbers to facilitate comparison with np.isin
+        dilated_coords = []
+
+        for i in range(len(input_center)):
+            s = PolygonGenerator(input_center[i],input_length[i],input_coords[i])
+            s.tranform_to_map(dilation = dilation, erosion=erosion)
+
+            dilated_coord = s.get_coords()
+            dilated_coord = np.apply_along_axis(lambda args: [complex(*args)], 1, dilated_coord).flatten()
+            dilated_coords.append(dilated_coord)
+
+        # number of shapes to merge
+        num_shapes = len(input_center)
+
+
+
+        # A sparse distance matrix is calculated for all cells which are closer than distance_heuristic
+        center_arr = np.array(input_center)
+        center_tree = cKDTree(center_arr)
+
+        sparse_distance = center_tree.sparse_distance_matrix(center_tree, self.config['distance_heuristic'])
+        sparse_distance = scipy.sparse.tril(sparse_distance)
+
+
+        # sparse intersection matrix is calculated based on the sparse distance matrix
+        intersect_data = []
+        for col, row in zip(sparse_distance.col, sparse_distance.row):
+
+            # diagonal entries are known to intersect
+            if col == row:
+                intersect_data.append(1)
+            else:
+
+                # np.isin is used with the two complex coordinate arrays
+                do_intersect = np.isin(dilated_coords[col], dilated_coords[row]).any()
+                # intersect_data uses the same columns and rows as sparse_distance
+                # if two shapes intersect, an edge is created otherwise, no edge is created.
+                # zero entries will be dropped later
+                intersect_data.append(1 if do_intersect else 0)
+
+        # create sparse intersection matrix and drop zero elements
+        sparse_intersect = scipy.sparse.coo_matrix((intersect_data, (sparse_distance.row, sparse_distance.col)))
+        sparse_intersect.eliminate_zeros()
+
+        # create networkx graph from sparse intersection matrix
+        g = nx.from_scipy_sparse_matrix(sparse_intersect)
+
+        # find unconnected subgraphs
+        # to_merge contains a list of lists with indexes pointing to shapes to be merged
+        to_merge = [list(g.subgraph(c).nodes()) for c in nx.connected_components(g)]
+
+        output_center = []
+        output_length = []
+        output_coords = []
+
+        # merge coords
+        for new_shape in to_merge:
+            coords = []
+
+            for idx in new_shape:
+                coords.append(dilated_coords[idx])
+
+            coords_complex = np.concatenate(coords)
+            coords_complex = np.unique(coords_complex)
+            coords_2d = np.array([coords_complex.real, coords_complex.imag], dtype=int).T
+
+            # calculate properties length and center from coords
+            new_center = np.mean(coords_2d ,axis=0)
+            new_len = len(coords_2d)
+
+            # append values to output lists
+            output_center.append(new_center)
+            output_length.append(new_len)
+            output_coords.append(coords_2d)
+
+        return output_center, output_length, output_coords
+
+    def check_cell_set_sanity(self, cell_set):
+        """Check if cell_set dictionary contains the right keys
+
+        """
+        
+        if "classes" in cell_set:
+            if not isinstance(cell_set["classes"], (list, str, np.ndarray)):
+                self.log("No list of classes specified for cell set")
+                raise TypeError("No list of classes specified for cell set")
+        else:
+            self.log("No classes specified for cell set")
+            raise KeyError("No classes specified for cell set")
+            
+        if "well" in cell_set:
+            if not isinstance(cell_set["well"], str):
+                self.log("No well of type str specified for cell set")
+                raise TypeError("No well of type str specified for cell set")
+                
+    def load_classes(self, cell_set):
+        """Identify cell class definition and load classes
+        
+        Identify if cell classes are provided as list of integers or as path pointing to a csv file.
+        Depending on the type of the cell set, the classes are loaded and returned for selection.
+        """
+        if isinstance(cell_set["classes"], list):
+            return cell_set["classes"]
+
+        if isinstance(cell_set["classes"], np.ndarray):
+            if np.issubdtype(cell_set["classes"].dtype.type, np.integer):
+                return cell_set["classes"]
+        
+        if isinstance(cell_set["classes"], str):
+            # If the path is relative, it is interpreted relative to the project directory
+            if os.path.isabs(cell_set["classes"]):
+                path = cell_set["classes"]
+            else:
+                path = os.path.join(Path(self.directory).parents[0],cell_set["classes"])        
+            
+    
+            if os.path.isfile(path):
+                try:
+                    cr = csv.reader(open(path,'r'))
+                    filtered_classes = np.array([int(el[0]) for el in list(cr)], dtype = "int64")
+                    self.log("Loaded {} classes from csv".format(len(filtered_classes)))
+                    return filtered_classes
+                except:
+                    self.log("CSV file could not be converted to list of integers: {path}")
+                    raise ValueError()
+            else:
+     
+                self.log("Path containing classes could not be read: {path}")
+                raise ValueError()
+
+        else:
+            self.log("classes argument for a cell set needs to be a list of integer ids or a path pointing to a csv of integer ids.")
+            raise TypeError("classes argument for a cell set needs to be a list of integer ids or a path pointing to a csv of integer ids.")
+
+    def log(self, msg):
+        if self.verbose:
+            print(msg)
+
+    def register_parameter(self, key, value):
+            
+            if isinstance(key, str):
+                config_handle = self.config
+                
+            elif isinstance(key, list):
+                raise NotImplementedError('registration of parameters is not yet supported for nested parameters')
+                
+            else:
+                raise TypeError('Key musst be of string or a list of strings')
+            
+            if not key in config_handle:
+                self.log(f'No configuration for {key} found, parameter will be set to {value}')
+                config_handle[key] = value
+
+class PolygonGenerator:
+    """
+    Helper class which is created for every segment. Can be used to convert a list of pixels into a polygon.
+    Reasonable results should only be expected for fully connected sets of coordinates. 
+    The resulting polygon has a resolution of twice the pixel density.
+    
+    """
+    
+    def __init__(self, center,length,coords):
+        self.center = center
+        self.length = length
+        self.coords = np.array(coords)
+        
+        #print(self.center,self.length)
+        
+        #print(self.coords.shape)
+        # may be needed for further debugging
+        """
+        fig = plt.figure(frameon=False)
+        fig.set_size_inches(10,10)
+        ax = plt.Axes(fig, [0., 0., 1., 1.])
+        ax.set_axis_off()
+        fig.add_axes(ax)
+        ax.imshow(bounds)
+        ax.plot(edges[:,1]*2,edges[:,0]*2)"""
+        
+    def tranform_to_map(self, 
+                        dilation = 0,
+                        erosion = 0,
+                   debug = False):
+        # safety boundary which extands the generated map size
+        safety_offset = 3
+        dilation_offset = dilation 
+        
+
+        # top left offset used for creating the offset map
+        self.offset = np.min(self.coords, axis=0).astype(np.int16) - safety_offset - dilation_offset
+        mat = np.array([self.offset, [0,0]])
+        self.offset = np.max(mat, axis=0) 
+
+        self.offset_coords = self.coords-self.offset
+        
+        self.offset_map = np.zeros(np.max(self.offset_coords,axis=0)+2*safety_offset+dilation_offset)
+        
+        
+        y = tuple(self.offset_coords.T[0])
+        x = tuple(self.offset_coords.T[1])
+
+        self.offset_map[(y,x)] = 1
+        self.offset_map = self.offset_map.astype(int)
+        
+        
+        
+        if debug:
+            plt.imshow(self.offset_map)
+            plt.show()
+        
+        self.offset_map = binary_dilation(self.offset_map , selem=disk(dilation))
+        self.offset_map = binary_erosion(self.offset_map , selem=disk(erosion))
+        self.offset_map = ndimage.binary_fill_holes(self.offset_map).astype(int)
+        
+        if debug:
+            plt.imshow(self.offset_map)
+            plt.show()
+            
+        return self
+        
+    def get_coords(self):
+        if not hasattr(self, 'offset_map'):
+            return self.coords
+        else:
+            idx_local = np.argwhere(self.offset_map == 1)
+            idx_global = idx_local+self.offset
+            return(idx_global)
+        
+    def create_poly(self, 
+                    smoothing_filter_size = 12,
+                    poly_compression_factor = 8,
+                   debug = False):
+
+        """ Converts a list of pixels into a polygon.
+        Args
+            smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
+            
+            poly_compression_factor (int, default = 8 ): When compression is wanted, only every n-th element is kept for n = poly_compression_factor.
+
+            dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
+        """
+        
+        # find polygon bounds from mask
+        bounds = sk.segmentation.find_boundaries(self.offset_map, connectivity=1, mode="subpixel", background=0)
+        
+        
+        
+        edges = np.array(np.where(bounds == 1))/2
+        edges = edges.T
+        edges = self.sort_edges(edges)
+        
+        # smoothing resulting shape
+        smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
+        edges = convolve2d(edges,smk,mode="full",boundary="wrap")
+        
+        
+        # compression of the resulting polygon      
+        newlen = np.round(len(edges)/poly_compression_factor).astype(int)
+        
+        mine = 0
+        maxe= len(edges)-1
+        
+        indices = np.linspace(mine,maxe,newlen).astype(int)
+
+        self.poly = edges[indices]
+        
+        # debuging
+        """
+        print(self.poly.shape)
+        fig = plt.figure(frameon=False)
+        fig.set_size_inches(10,10)
+        ax = plt.Axes(fig, [0., 0., 1., 1.])
+        ax.set_axis_off()
+        fig.add_axes(ax)
+        ax.imshow(bounds)
+        ax.plot(edges[:,1]*2,edges[:,0]*2)
+        ax.plot(self.poly[:,1]*2,self.poly[:,0]*2)
+        """
+        
+        return self
+    
+    def get_poly(self):
+        return self.poly+self.offset
+    
+        
+    def sort_edges(self, edges):
+        """Sorts the vertices of the polygon.
+        Greedy sorting is performed, might have difficulties with complex shapes.
+        
+        """
+
+        it = len(edges)
+        new = []
+        new.append(edges[0])
+
+        edges = np.delete(edges,0,0)
+
+        for i in range(1,it):
+
+            old = np.array(new[i-1])
+
+
+            dist = np.linalg.norm(edges-old,axis=1)
+
+            min_index = np.argmin(dist)
+            new.append(edges[min_index])
+            edges = np.delete(edges,min_index,0)
+        
+        return(np.array(new))
+    
+    def plot(self, axis,  flip=True, **kwargs):
+        """ Plot a shape on a given matplotlib axis.
+        Args
+            axis (matplotlib.axis): Axis for an existing matplotlib figure.
+
+            flip (bool, True): If shapes are still in the (row, col) format they need to bee flipped if plotted with a (x, y) coordinate system.
+        """
+        if flip:
+            axis.plot(self.poly[:,1]+self.offset[1],self.poly[:,0]+self.offset[0], **kwargs)
+        else:
+            axis.plot(self.poly[:,0]+self.offset[0],self.poly[:,1]+self.offset[1], **kwargs)
