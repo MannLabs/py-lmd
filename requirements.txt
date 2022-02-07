@@ -5,3 +5,6 @@ scikit-image
 svgelements
 pathlib
 setuptools
+numba
+tqdm
+hilbertcurve
