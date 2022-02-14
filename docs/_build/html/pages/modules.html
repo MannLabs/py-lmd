@@ -481,7 +481,7 @@ Depending on the type of the cell set, the classes are loaded and returned for s
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lmd.tools.makeCross">
-<span class="sig-prename descclassname"><span class="pre">lmd.tools.</span></span><span class="sig-name descname"><span class="pre">makeCross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmdobject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lmd.tools.makeCross" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lmd.tools.</span></span><span class="sig-name descname"><span class="pre">makeCross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lmd.tools.makeCross" title="Permalink to this definition"></a></dt>
 <dd><p>Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -490,11 +490,13 @@ Depending on the type of the cell set, the classes are loaded and returned for s
 <li><p><strong>arms</strong> (<em>numpy.array</em>) – length of the individual arms [top, right, bottom, left]</p></li>
 <li><p><strong>width</strong> (<em>float</em>) – width of each individual element of the crosshair</p></li>
 <li><p><strong>dist</strong> (<em>float</em>) – distance between the center of the cross hair and each arm</p></li>
-<li><p><strong>lmdobject</strong> (<a class="reference internal" href="#lmd.lib.Collection" title="lmd.lib.Collection"><em>lmd.lib.Collection</em></a>) – existing Collection object to which the crosshair should be added</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
+<dd class="field-even"><p>Uncalibrated Collection which contains the Shapes for the calibration cross.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#lmd.lib.Collection" title="lmd.lib.Collection">lmd.lib.Collection</a></p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
@@ -505,7 +507,8 @@ Depending on the type of the cell set, the classes are loaded and returned for s
 <span class="n">calibration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">]])</span>
 <span class="n">my_first_collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">)</span>
 
-<span class="n">tools</span><span class="o">.</span><span class="n">makeCross</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">my_first_collection</span><span class="p">)</span>
+<span class="n">cross_1</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">makeCross</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">my_first_collection</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cross_1</span><span class="p">)</span>
 <span class="n">my_first_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">calibration</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
