@@ -19,6 +19,12 @@ like described. Otherwise static glyph files might not be available.
 git clone https://github.com/HornungLab/py-lmd
 pip install -e .
 ```
+
+If you are installing on an M1 apple silicon Mac you will need to install `numba` via conda instead of pip before proceeding with the installation of the py-lmd library.
+
+```
+conda install numba
+```
   
 Documentation
 ========================
