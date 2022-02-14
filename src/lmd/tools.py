@@ -233,3 +233,69 @@ def ellipse(major_axis,
     ellipse = unit_circle * ellipse_scale @ get_rotation_matrix(rotation) + offset
     
     return Shape(ellipse)
+
+def makeCross(center, arms, width, dist, lmdobject):
+    """Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.
+
+        Args: 
+            center (numpy.array): center of the new crosshair 
+
+            arms (numpy.array): length of the individual arms [top, right, bottom, left]
+
+            width (float): width of each individual element of the crosshair
+            
+            dist (float): distance between the center of the cross hair and each arm
+
+            lmdobject (lmd.lib.Collection): existing Collection object to which the crosshair should be added
+        
+        Returns:
+             None
+
+        Example:
+            
+            .. code-block:: python
+
+                import numpy as np
+                from lmd.lib import Collection, Shape
+                from lmd import tools
+
+                calibration = np.array([[0, 0], [0, 100], [50, 50]])
+                my_first_collection = Collection(calibration_points = calibration)
+
+                tools.makeCross([20, 20], [50,50,50,50], 1, 10, my_first_collection)
+                my_first_collection.plot(calibration = True)
+                
+            .. image:: images/tools.makeCross.example.png
+               :scale: 50%
+        
+    """
+    #generate central dot and add to collection
+    centerdot = rectangle(width, width, offset = center)
+    lmdobject.add_shape(centerdot)
+    
+    #generate top arm 
+    local_transform = np.array([0,+arms[0]/2 + 2*dist])
+    offset_toparm = center + local_transform
+    toparm = rectangle(width, arms[0], offset = offset_toparm)
+    lmdobject.add_shape(toparm)
+    
+    #generate right arm
+    local_transform = np.array([+arms[1]/2 + 2*dist, 0])
+    offset_rightarm = center + local_transform
+    toparm = rectangle(arms[1], width, offset = offset_rightarm)
+    lmdobject.add_shape(toparm)
+    
+    #generate bottom arm
+    local_transform = np.array([0, -arms[2]/2 - 2*dist])
+    offset_bottomarm = center + local_transform
+    bottomarm = rectangle(width, arms[2], offset = offset_bottomarm)
+    lmdobject.add_shape(bottomarm)
+    
+    #generate left arm
+    local_transform = np.array([-arms[3]/2 - 2*dist, 0])
+    offset_leftarm = center + local_transform
+    leftarm = rectangle(arms[3], width, offset = offset_leftarm)
+    lmdobject.add_shape(leftarm)
+
+    return None
+    
