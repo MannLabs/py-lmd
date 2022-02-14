@@ -87,42 +87,40 @@ We can now create an instance of the :py:class:`~lmd.lib.SegmentationLoader` and
 Overview of Configuration
 ================================================
 
+.. list-table:: Overview of Configuration Parameters.
+    :widths: 10 5 25
+    :header-rows: 1
+    :stub-columns: 1
+
+    * - Parameter
+      - Default Value
+      - Description
+    * - ``shape_dilation``
+      - ``0``
+      - dilation of the cutting mask in pixel before intersecting shapes in a selection group are merged
+    * - ``shape_erosion``
+      - ``0``
+      - erosion of the cutting mask in pixel before intersecting shapes in a selection group are merged
+    * - ``binary_smoothing``
+      - ``3``
+      - Cutting masks are transformed by binary dilation and erosion
+    * - ``convolution_smoothing``
+      - ``15``
+      - number of datapoints which are averaged for smoothing. The resolution of datapoints is twice as high as the resolution of pixels.
+    * - ``poly_compression_factor``
+      - ``30``
+      - fold reduction of datapoints for compression
+    * - ``path_optimization``
+      - ``"hilbert"``
+      - Optimization of the cutting path inbetween shapes. Optimized paths improve the cutting time and the microscopes focus. valid options are ``["none", "hilbert", "greedy"]``
+    * - ``hilbert_p``
+      - ``7``
+      - Paramter required for hilbert curve based path optimization. Defines the order of the hilbert curve used, which needs to be tuned with the total cutting area.
+    * - ``greedy_k``
+      - ``20``
+      - Parameter required for greedy path optimization. Instead of a global distance matrix, the k nearest neighbours are approximated. The optimization problem is then greedily solved for the known set of nearest neighbours until the first set of neighbours is exhausted.Established edges are then removed and the nearest neighbour approximation is recursivly repeated.
+    * - ``distance_heuristic``
+      - ``300``
+      - Overlapping shapes are merged based on a nearest neighbour heuristic. All selected shapes closer than distance_heuristic pixel are checked for overlap.
+
 To be extended...
-
-.. code-block:: yaml
-
-    # dilation of the cutting mask in pixel before intersecting shapes in a selection group are merged
-    shape_dilation: 0
-
-    # erosion of the cutting mask in pixel before intersecting shapes in a selection group are merged
-    shape_erosion: 0
-
-    # Cutting masks are transformed by binary dilation and erosion
-    binary_smoothing: 3
-
-    # number of datapoints which are averaged for smoothing
-    # the resoltion of datapoints is twice as high as the resolution of pixel
-    convolution_smoothing: 15
-
-    # fold reduction of datapoints for compression
-    poly_compression_factor: 30
-
-    # Optimization of the cutting path inbetween shapes
-    # optimized paths improve the cutting time and the microscopes focus
-    # valid options are ["none", "hilbert", "greedy"]
-    path_optimization: "hilbert"
-
-    # Paramter required for hilbert curve based path optimization.
-    # Defines the order of the hilbert curve used, which needs to be tuned with the total cutting area.
-    # For areas of 1 x 1 mm we recommend at least p = 4,  for whole slides we recommend p = 7.
-    hilbert_p: 7
-
-    # Parameter required for greedy path optimization. 
-    # Instead of a global distance matrix, the k nearest neighbours are approximated. 
-    # The optimization problem is then greedily solved for the known set of nearest neighbours until the first set of neighbours is exhausted.
-    # Established edges are then removed and the nearest neighbour approximation is recursivly repeated.
-    greedy_k: 20
-
-    # Overlapping shapes are merged based on a nearest neighbour heuristic.
-    # All selected shapes closer than distance_heuristic pixel are checked for overlap.
-    distance_heuristic: 300
