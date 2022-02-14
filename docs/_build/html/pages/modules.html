@@ -480,6 +480,39 @@ Depending on the type of the cell set, the classes are loaded and returned for s
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="lmd.tools.makeCross">
+<span class="sig-prename descclassname"><span class="pre">lmd.tools.</span></span><span class="sig-name descname"><span class="pre">makeCross</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arms</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lmdobject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lmd.tools.makeCross" title="Permalink to this definition"></a></dt>
+<dd><p>Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>center</strong> (<em>numpy.array</em>) – center of the new crosshair</p></li>
+<li><p><strong>arms</strong> (<em>numpy.array</em>) – length of the individual arms [top, right, bottom, left]</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – width of each individual element of the crosshair</p></li>
+<li><p><strong>dist</strong> (<em>float</em>) – distance between the center of the cross hair and each arm</p></li>
+<li><p><strong>lmdobject</strong> (<a class="reference internal" href="#lmd.lib.Collection" title="lmd.lib.Collection"><em>lmd.lib.Collection</em></a>) – existing Collection object to which the crosshair should be added</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Shape</span>
+<span class="kn">from</span> <span class="nn">lmd</span> <span class="kn">import</span> <span class="n">tools</span>
+
+<span class="n">calibration</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">]])</span>
+<span class="n">my_first_collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">)</span>
+
+<span class="n">tools</span><span class="o">.</span><span class="n">makeCross</span><span class="p">([</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">my_first_collection</span><span class="p">)</span>
+<span class="n">my_first_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">calibration</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="../_images/tools.makeCross.example.png"><img alt="../_images/tools.makeCross.example.png" src="../_images/tools.makeCross.example.png" style="width: 344.0px; height: 321.0px;" /></a>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="lmd.tools.rectangle">
 <span class="sig-prename descclassname"><span class="pre">lmd.tools.</span></span><span class="sig-name descname"><span class="pre">rectangle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation_offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lmd.tools.rectangle" title="Permalink to this definition"></a></dt>
 <dd><p>Get a lmd.lib.Shape for rectangle of choosen dimensions.</p>
