@@ -87,6 +87,7 @@ We can now create an instance of the :py:class:`~lmd.lib.SegmentationLoader` and
 Overview of Configuration
 ================================================
 
+
 .. list-table:: Overview of Configuration Parameters.
     :widths: 10 5 25
     :header-rows: 1
@@ -124,3 +125,51 @@ Overview of Configuration
       - Overlapping shapes are merged based on a nearest neighbour heuristic. All selected shapes closer than distance_heuristic pixel are checked for overlap.
 
 To be extended...
+
+Here's a grid table followed by a simple table:
+
+**Order of processing:**
+
+shape_dilation
+shape_erosion
+join_intersecting
+
+binary_smoothing
+binary_fill_holes
+convolution_smoothing
+poly_compression
+
+path optimization
+
++---------------------------------------------------------------------------------------------+
+| **convolution_smoothing**                                                                   |
++=============================================================================================+
+| Smooth the polygon by applying a circular, linear convolution of given size.                |
+| The default convolution kernel with ``n`` elements is ``[1/n, 1/n, ... , 1/n]``.            |
+| By default a value of 15 is used. Values below 3 are not recommended.                       |
+| In contrast to ``binary_smoothing``, ``convolution_smoothing`` does not increase            | 
+| the convex hull of the shape. When there are many deep recessions in the shape              | 
+| ``convolution_smoothing`` might not be able to smooth these out and                         |
+| ``binary_smoothing`` should be used. ``convolution_smoothing`` does not change the number   |
+| of vertices in the polygon of a shape. Please see ``poly_compression_factor``.              |
++-----------------------------+-------------------------------+-------------------------------+
+|``convolution_smoothing: 1`` | ``convolution_smoothing: 40`` | ``convolution_smoothing: 80`` |
++-----------------------------+-------------------------------+-------------------------------+
+| .. image:: images/conv1.png | .. image:: images/conv40.png  | .. image:: images/conv80.png  |
++-----------------------------+-------------------------------+-------------------------------+
+
++---------------------------------------------------------------------------------------------+
+| **binary_smoothing**                                                                        |
++=============================================================================================+
+| Smooth the polygon by applying a circular, linear convolution of given size.                |
+| The default convolution kernel with ``n`` elements is ``[1/n, 1/n, ... , 1/n]``.            |
+| In contrast to ``binary_smoothing``, ``convolution_smoothing`` does not increase            | 
+| the convex hull of the shape. When there are many deep recessions in the shape              | 
+| ``convolution_smoothing`` might not be able to smooth these out and                         |
+| ``binary_smoothing`` should be used. ``convolution_smoothing`` does not change the number   |
+| of vertices in the polygon of a shape. Please see ``poly_compression_factor``.              |
++-----------------------------+-------------------------------+-------------------------------+
+|``convolution_smoothing: 1`` | ``convolution_smoothing: 40`` | ``convolution_smoothing: 80`` |
++-----------------------------+-------------------------------+-------------------------------+
+| .. image:: images/bin0.png  | .. image:: images/bin15.png   | .. image:: images/bin30.png   |
++-----------------------------+-------------------------------+-------------------------------+

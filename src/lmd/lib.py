@@ -101,7 +101,7 @@ class Collection:
              fig_size: tuple = (5,5),
              apply_orientation_transform: bool = True,
              apply_scale: bool = False, 
-             save_name: Optional[str] = None):
+             save_name: Optional[str] = None, **kwargs):
         
         """This function can be used to plot all shapes of the corresponding shape collection.
         
@@ -641,12 +641,15 @@ class SegmentationLoader():
             if i % 1000 == 0:
                 self.log(f"Initializing shape {i}")
             shapes.append(s)
-        
+
+        dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
+        erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
+
         self.log("Create shapes for merged cells")
         with multiprocessing.Pool(processes=self.config['processes']) as pool:                                          
             shapes = list(tqdm(pool.imap(partial(PolygonGenerator.tranform_to_map, 
-                                                 erosion = self.config['binary_smoothing'] ,
-                                                 dilation = self.config['binary_smoothing']
+                                                 erosion = erosion ,
+                                                 dilation = dilation 
                                                 ),
                                                  shapes), total=len(center), disable = not self.verbose))
         self.log("Calculating polygons")
@@ -711,7 +714,7 @@ class SegmentationLoader():
         if self.verbose:
             
             center = np.array(center)
-            plt.figure(figsize=(8, 8), dpi=120)
+            plt.figure(figsize=(20, 20), dpi=300)
             ax = plt.gca()
 
             if 'background_image' in self.config:
@@ -724,7 +727,7 @@ class SegmentationLoader():
                 shape.plot(ax, color="red",linewidth=1)
 
             ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
-            ax.plot(center[:,1],center[:,0], color="white")
+            ax.plot(center[:,1],center[:,0], color="black")
 
             plt.show()
     
