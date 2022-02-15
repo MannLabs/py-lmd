@@ -4,8 +4,8 @@
 
 # py-lmd
 
-The py-lmd library allows to read, modify and write shape files for the Leica LMD6 & LMD7 microscope.
-Additionally, functionality for the calibration, generation of final pulses and import of vektor files is included.
+Read, create and write cutting data for the Leica LMD6 & LMD7 microscope.
+Build reproducible workflows to calibrate, import SVG files and convert single-cell segmentation masks.
 
 
 Installation from Github
