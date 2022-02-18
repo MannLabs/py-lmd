@@ -29,3 +29,5 @@ conda install numba
 Documentation
 ========================
 The current documentation can be found under `docs\_build` as pdf and html.
+
+The complete pdf documentation can be found here : https://github.com/HornungLab/py-lmd/blob/main/docs/_build/latex/py-lmd.pdf
