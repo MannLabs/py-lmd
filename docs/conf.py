@@ -67,6 +67,12 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+##----- OPtions for Latex output 
+
+latex_engine = 'pdflatex'
+
 latex_elements = {
-  'extraclassoptions': 'openany,oneside'
+  'extraclassoptions': 'openany,oneside',
+  'papersize': 'a4paper',
+  'pointsize': '10pt',
 }
