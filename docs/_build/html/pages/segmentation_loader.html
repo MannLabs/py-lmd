@@ -1,24 +1,33 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>2. Using Segmented Images &mdash; py-lmd 1.0.1 documentation</title>
   
 
   
-  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -30,12 +39,6 @@
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3. Modules" href="modules.html" />
@@ -78,6 +81,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -100,6 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview-of-configuration">2.4. Overview of Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processing-order">2.5. Processing Order</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">3. Modules</a><ul>
@@ -117,6 +122,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -151,18 +157,20 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li><span class="section-number">2. </span>Using Segmented Images</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="../_sources/pages/segmentation_loader.rst.txt" rel="nofollow"> View page source</a>
           
         
@@ -176,16 +184,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section id="using-segmented-images">
+  <div class="section" id="using-segmented-images">
 <h1><span class="section-number">2. </span>Using Segmented Images<a class="headerlink" href="#using-segmented-images" title="Permalink to this headline">¶</a></h1>
-<section id="background">
+<div class="section" id="background">
 <h2><span class="section-number">2.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this headline">¶</a></h2>
 <a class="reference internal image-reference" href="../_images/watershed.png"><img alt="../_images/watershed.png" class="align-right" src="../_images/watershed.png" style="width: 400.0px; height: 400.0px;" /></a>
 <p>Although the py-lmd package is meant to serve as framework for creating your own workflows, generating cutting data based on segmentations is the central application of this package. When biological images are segmented, every pixel receives a class or label. Labels can be used to identify single cells and distinguish them from the background or can categorize cells or areas based on phenotypes, functions or location.</p>
 <p>In the following example we will assume that a segmentation was performed to assign labels to individual cells and distinguish their cytosol from the background. The procedures are though applicable to all types of labels.</p>
 <p>As this process is so central to the usage of the Leica LMD, the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a> can be used to create cutting data based on segmentation data. The workflow was specifically designed to work with whole slide images, as large as the LMD membrane slides, and large numbers of single cells. Therefore, different processing steps are included which optimize single cell shapes and decrease overall cutting time.</p>
-</section>
-<section id="different-coordinate-systems">
+</div>
+<div class="section" id="different-coordinate-systems">
 <h2><span class="section-number">2.2. </span>Different Coordinate Systems<a class="headerlink" href="#different-coordinate-systems" title="Permalink to this headline">¶</a></h2>
 <p>Using images to generate cutting data with the py-lmd package makes it necessary to transform the image coordinate system to the Leica LMD coordinate system. Although this functionality is part of the package, it is important to highlight the differences in the coordinate systems and to keep in mind what coordinate system is used when calibration points are determined from image data.</p>
 <p>The coordinates for the Leica LMD are defined as <cite>(x, y)</cite> coordinates with the x-axis extending to the right and the y-axis extending to the top. All cutting data should exist in this coordinate system and should be calibrated accordingly. When cutting data is generated based on whole slide images we have to keep in mind that images are often indexed differently. Images in Fiji or Numpy are indexed as <cite>(row, column)</cite> with the rows extending downwards and the columns extending to the right. If we want to identify positions in image data - like calibration crosses or single cells - we have to translate their position in the <cite>(row, column)</cite> format to the <cite>(x, y)</cite> format.</p>
@@ -198,8 +206,8 @@
 </pre></div>
 </div>
 <p>In this case  all coordinates for calibration points and shapes can be set in form of <cite>(row, column)</cite> coordinates. The orientation transform is only applied when the Collection is saved or, if desired, when the Collection is plotted.</p>
-</section>
-<section id="getting-started-with-the-segmentationloader">
+</div>
+<div class="section" id="getting-started-with-the-segmentationloader">
 <h2><span class="section-number">2.3. </span>Getting started with the SegmentationLoader<a class="headerlink" href="#getting-started-with-the-segmentationloader" title="Permalink to this headline">¶</a></h2>
 <p>Before we can start with the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a>, we have to load our image which contains the labels for our cells. The segmentation loader expects a numpy array of integers where the background is assigned to label 0. There are no further restrictions to the shape or number of labels other than being continuos. All pixel with a certain label need to be in contact with each other. Functional labels which assign cells based on the cell type must be converted.</p>
 <p>As example we will use the cytosol segmentation seen above which can be found under <cite>notebooks/Image_Segmentation/segmentation_cytosol.tiff</cite>. First, we will load this image and convert it to a numpy array.</p>
@@ -234,8 +242,8 @@
 </pre></div>
 </div>
 <img alt="../_images/segmentation1.png" src="../_images/segmentation1.png" />
-</section>
-<section id="overview-of-configuration">
+</div>
+<div class="section" id="overview-of-configuration">
 <h2><span class="section-number">2.4. </span>Overview of Configuration<a class="headerlink" href="#overview-of-configuration" title="Permalink to this headline">¶</a></h2>
 <table class="colwidths-given docutils align-default" id="id1">
 <caption><span class="caption-text">Overview of Configuration Parameters.</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
@@ -289,17 +297,62 @@
 </tr>
 </tbody>
 </table>
-<p>To be extended…</p>
-<p>Here’s a grid table followed by a simple table:</p>
-<p><strong>Order of processing:</strong></p>
-<p>shape_dilation
-shape_erosion
-join_intersecting</p>
-<p>binary_smoothing
-binary_fill_holes
-convolution_smoothing
-poly_compression</p>
-<p>path optimization</p>
+</div>
+<div class="section" id="processing-order">
+<h2><span class="section-number">2.5. </span>Processing Order<a class="headerlink" href="#processing-order" title="Permalink to this headline">¶</a></h2>
+<table class="colwidths-given docutils align-default" id="id2">
+<caption><span class="caption-text">Processing Order</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 100%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Binary dilation of cell masks</p></td>
+</tr>
+<tr class="row-even"><td><p>Binary erosion of cell masks</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>If activated</strong> join intersecting shapes</p></td>
+</tr>
+<tr class="row-even"><td><p>Binary smoothing of joined cell masks</p></td>
+</tr>
+<tr class="row-odd"><td><p>Filling holes of joined cell masks</p></td>
+</tr>
+<tr class="row-even"><td><p>Smoothing by convolution</p></td>
+</tr>
+<tr class="row-odd"><td><p>Compress polygons</p></td>
+</tr>
+<tr class="row-even"><td><p>Optimize global cut path</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 34%" />
+<col style="width: 34%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head" colspan="3"><p><strong>binary_smoothing</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="3"><p>Binary smoothing by applying a binary dilation followed by a erosion of the same size.
+Binary smoothing can extend above the convex hull and therefore lead to intersection with
+other shapes. <code class="docutils literal notranslate"><span class="pre">binary_smoothing</span></code> does not change the number
+of vertices in the polygon of a shape. Please see <code class="docutils literal notranslate"><span class="pre">poly_compression_factor</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">binary_smoothing:</span> <span class="pre">0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">binary_smoothing:</span> <span class="pre">15</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">binary_smoothing:</span> <span class="pre">30</span></code></p></td>
+</tr>
+<tr class="row-even"><td><img alt="../_images/bin0.png" src="../_images/bin0.png" />
+</td>
+<td><img alt="../_images/bin15.png" src="../_images/bin15.png" />
+</td>
+<td><img alt="../_images/bin30.png" src="../_images/bin30.png" />
+</td>
+</tr>
+</tbody>
+</table>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 32%" />
@@ -335,67 +388,108 @@ of vertices in the polygon of a shape. Please see <code class="docutils literal 
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 32%" />
-<col style="width: 34%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
 <col style="width: 34%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head" colspan="3"><p><strong>binary_smoothing</strong></p></th>
+<tr class="row-odd"><th class="head" colspan="3"><p><strong>poly_compression_factor</strong></p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td colspan="3"><p>Smooth the polygon by applying a circular, linear convolution of given size.
-The default convolution kernel with <code class="docutils literal notranslate"><span class="pre">n</span></code> elements is <code class="docutils literal notranslate"><span class="pre">[1/n,</span> <span class="pre">1/n,</span> <span class="pre">...</span> <span class="pre">,</span> <span class="pre">1/n]</span></code>.
-In contrast to <code class="docutils literal notranslate"><span class="pre">binary_smoothing</span></code>, <code class="docutils literal notranslate"><span class="pre">convolution_smoothing</span></code> does not increase
-the convex hull of the shape. When there are many deep recessions in the shape
-<code class="docutils literal notranslate"><span class="pre">convolution_smoothing</span></code> might not be able to smooth these out and
-<code class="docutils literal notranslate"><span class="pre">binary_smoothing</span></code> should be used. <code class="docutils literal notranslate"><span class="pre">convolution_smoothing</span></code> does not change the number
-of vertices in the polygon of a shape. Please see <code class="docutils literal notranslate"><span class="pre">poly_compression_factor</span></code>.</p></td>
+<tr class="row-even"><td colspan="3"><p>Compress the number of vertices by a given factor.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">convolution_smoothing:</span> <span class="pre">1</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">convolution_smoothing:</span> <span class="pre">40</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">convolution_smoothing:</span> <span class="pre">80</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">poly_compression_factor:</span> <span class="pre">1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">poly_compression_factor:</span> <span class="pre">20</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">poly_compression_factor:</span> <span class="pre">40</span></code></p></td>
 </tr>
-<tr class="row-even"><td><img alt="../_images/bin0.png" src="../_images/bin0.png" />
+<tr class="row-even"><td><img alt="../_images/comp1.png" src="../_images/comp1.png" />
 </td>
-<td><img alt="../_images/bin15.png" src="../_images/bin15.png" />
+<td><img alt="../_images/comp20.png" src="../_images/comp20.png" />
 </td>
-<td><img alt="../_images/bin30.png" src="../_images/bin30.png" />
+<td><img alt="../_images/comp40.png" src="../_images/comp40.png" />
+</td>
+</tr>
+<tr class="row-odd"><td><img alt="../_images/comp_dots1.png" src="../_images/comp_dots1.png" />
+</td>
+<td><img alt="../_images/comp_dots20.png" src="../_images/comp_dots20.png" />
+</td>
+<td><img alt="../_images/comp_dots40.png" src="../_images/comp_dots40.png" />
+</td>
+</tr>
+<tr class="row-even"><td><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=====</span> <span class="n">Collection</span> <span class="n">Stats</span> <span class="o">=====</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">shapes</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span><span class="mi">913</span>
+<span class="o">============================</span>
+<span class="n">Mean</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">702</span>
+<span class="n">Min</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">599</span>
+<span class="mi">5</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">617</span>
+<span class="n">Median</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">687</span>
+<span class="mi">95</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">811</span>
+<span class="n">Max</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">839</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=====</span> <span class="n">Collection</span> <span class="n">Stats</span> <span class="o">=====</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">shapes</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">245</span>
+<span class="o">============================</span>
+<span class="n">Mean</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">35</span>
+<span class="n">Min</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">30</span>
+<span class="mi">5</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">31</span>
+<span class="n">Median</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">34</span>
+<span class="mi">95</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">40</span>
+<span class="n">Max</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">42</span>
+</pre></div>
+</div>
+</td>
+<td><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">=====</span> <span class="n">Collection</span> <span class="n">Stats</span> <span class="o">=====</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">shapes</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">123</span>
+<span class="o">============================</span>
+<span class="n">Mean</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">18</span>
+<span class="n">Min</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">15</span>
+<span class="mi">5</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">15</span>
+<span class="n">Median</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">17</span>
+<span class="mi">95</span><span class="o">%</span> <span class="n">percentile</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">20</span>
+<span class="n">Max</span> <span class="n">vertices</span><span class="p">:</span> <span class="mi">21</span>
+</pre></div>
+</div>
 </td>
 </tr>
 </tbody>
 </table>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="modules.html" class="btn btn-neutral float-right" title="3. Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="1. Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="modules.html" class="btn btn-neutral float-right" title="3. Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="1. Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2021, Georg Wallmann, Sophia Mädler and Niklas Schmacke
+        &#169; Copyright 2021, Georg Wallmann, Sophia Mädler and Niklas Schmacke.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -403,7 +497,6 @@ of vertices in the polygon of a shape. Please see <code class="docutils literal 
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

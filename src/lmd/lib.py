@@ -714,7 +714,7 @@ class SegmentationLoader():
         if self.verbose:
             
             center = np.array(center)
-            plt.figure(figsize=(20, 20), dpi=300)
+            plt.figure(figsize=(10, 10), dpi=300)
             ax = plt.gca()
 
             if 'background_image' in self.config:
@@ -727,7 +727,7 @@ class SegmentationLoader():
                 shape.plot(ax, color="red",linewidth=1)
 
             ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
-            ax.plot(center[:,1],center[:,0], color="black")
+            ax.plot(center[:,1],center[:,0], color="white")
 
             plt.show()
     

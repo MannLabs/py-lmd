@@ -85,7 +85,7 @@ We can now create an instance of the :py:class:`~lmd.lib.SegmentationLoader` and
 .. image:: images/segmentation1.png
 
 Overview of Configuration
-================================================
+==========================
 
 
 .. list-table:: Overview of Configuration Parameters.
@@ -124,22 +124,33 @@ Overview of Configuration
       - ``300``
       - Overlapping shapes are merged based on a nearest neighbour heuristic. All selected shapes closer than distance_heuristic pixel are checked for overlap.
 
-To be extended...
+Processing Order
+==========================
 
-Here's a grid table followed by a simple table:
+.. list-table:: Processing Order
+  :widths: 10 
 
-**Order of processing:**
+  * - Binary dilation of cell masks
+  * - Binary erosion of cell masks
+  * - **If activated** join intersecting shapes
+  * - Binary smoothing of joined cell masks
+  * - Filling holes of joined cell masks
+  * - Smoothing by convolution
+  * - Compress polygons
+  * - Optimize global cut path
 
-shape_dilation
-shape_erosion
-join_intersecting
-
-binary_smoothing
-binary_fill_holes
-convolution_smoothing
-poly_compression
-
-path optimization
++---------------------------------------------------------------------------------------------+
+| **binary_smoothing**                                                                        |
++=============================================================================================+
+| Binary smoothing by applying a binary dilation followed by a erosion of the same size.      |
+| Binary smoothing can extend above the convex hull and therefore lead to intersection with   |
+| other shapes. ``binary_smoothing`` does not change the number                               |
+| of vertices in the polygon of a shape. Please see ``poly_compression_factor``.              |
++-----------------------------+-------------------------------+-------------------------------+
+|``binary_smoothing: 0``      | ``binary_smoothing: 15``      | ``binary_smoothing: 30``      |
++-----------------------------+-------------------------------+-------------------------------+
+| .. image:: images/bin0.png  | .. image:: images/bin15.png   | .. image:: images/bin30.png   |
++-----------------------------+-------------------------------+-------------------------------+
 
 +---------------------------------------------------------------------------------------------+
 | **convolution_smoothing**                                                                   |
@@ -158,18 +169,27 @@ path optimization
 | .. image:: images/conv1.png | .. image:: images/conv40.png  | .. image:: images/conv80.png  |
 +-----------------------------+-------------------------------+-------------------------------+
 
-+---------------------------------------------------------------------------------------------+
-| **binary_smoothing**                                                                        |
-+=============================================================================================+
-| Smooth the polygon by applying a circular, linear convolution of given size.                |
-| The default convolution kernel with ``n`` elements is ``[1/n, 1/n, ... , 1/n]``.            |
-| In contrast to ``binary_smoothing``, ``convolution_smoothing`` does not increase            | 
-| the convex hull of the shape. When there are many deep recessions in the shape              | 
-| ``convolution_smoothing`` might not be able to smooth these out and                         |
-| ``binary_smoothing`` should be used. ``convolution_smoothing`` does not change the number   |
-| of vertices in the polygon of a shape. Please see ``poly_compression_factor``.              |
-+-----------------------------+-------------------------------+-------------------------------+
-|``convolution_smoothing: 1`` | ``convolution_smoothing: 40`` | ``convolution_smoothing: 80`` |
-+-----------------------------+-------------------------------+-------------------------------+
-| .. image:: images/bin0.png  | .. image:: images/bin15.png   | .. image:: images/bin30.png   |
-+-----------------------------+-------------------------------+-------------------------------+
++------------------------------------------------------------------------------------------------------------+
+| **poly_compression_factor**                                                                                |
++============================================================================================================+
+| Compress the number of vertices by a given factor.                                                         |
++-----------------------------------+-----------------------------------+------------------------------------+
+|``poly_compression_factor: 1``     | ``poly_compression_factor: 20``   | ``poly_compression_factor: 40``    |
++-----------------------------------+-----------------------------------+------------------------------------+
+| .. image:: images/comp1.png       | .. image:: images/comp20.png      | .. image:: images/comp40.png       |
++-----------------------------------+-----------------------------------+------------------------------------+
+| .. image:: images/comp_dots1.png  | .. image:: images/comp_dots20.png | .. image:: images/comp_dots40.png  |
++-----------------------------------+-----------------------------------+------------------------------------+
+| .. code-block::                   | .. code-block::                   | .. code-block::                    |
+|                                   |                                   |                                    | 
+|   ===== Collection Stats =====    |   ===== Collection Stats =====    |   ===== Collection Stats =====     |
+|   Number of shapes: 7             |   Number of shapes: 7             |   Number of shapes: 7              |
+|   Number of vertices: 4,913       |   Number of vertices: 245         |   Number of vertices: 123          |
+|   ============================    |   ============================    |   ============================     |
+|   Mean vertices: 702              |   Mean vertices: 35               |   Mean vertices: 18                |
+|   Min vertices: 599               |   Min vertices: 30                |   Min vertices: 15                 |
+|   5% percentile vertices: 617     |   5% percentile vertices: 31      |   5% percentile vertices: 15       |
+|   Median vertices: 687            |   Median vertices: 34             |   Median vertices: 17              |
+|   95% percentile vertices: 811    |   95% percentile vertices: 40     |   95% percentile vertices: 20      |
+|   Max vertices: 839               |   Max vertices: 42                |   Max vertices: 21                 |      
++-----------------------------------+-----------------------------------+------------------------------------+
