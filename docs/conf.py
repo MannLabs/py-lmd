@@ -34,7 +34,7 @@ release = '1.0.1'
 extensions = ['sphinx.ext.napoleon','sphinx.ext.autodoc', 'sphinx_rtd_theme']
 
 
-autodoc_mock_imports = ['numpy', 'matplotlib','lxml','skimage', 'svgelements', "skfmm", "scipy", "numba"]
+autodoc_mock_imports = ['numpy', 'matplotlib','lxml','skimage', 'svgelements', "skfmm", "scipy", "numba", "hilbertcurve", "tqdm", "networkx "]
 
 
 # Add any paths that contain templates here, relative to this directory.

@@ -14,6 +14,7 @@ from tqdm import tqdm
 
 from skimage.morphology import dilation as binary_dilation
 from skimage.morphology import binary_erosion, disk
+from skimage.segmentation import find_boundaries
 
 import os
 import csv
@@ -26,7 +27,7 @@ import networkx as nx
 import scipy
 from scipy import ndimage
 from scipy.signal import convolve2d
-import skimage as sk
+
 
 class Collection:
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
@@ -996,7 +997,7 @@ class PolygonGenerator:
         """
         
         # find polygon bounds from mask
-        bounds = sk.segmentation.find_boundaries(self.offset_map, connectivity=1, mode="subpixel", background=0)
+        bounds = find_boundaries(self.offset_map, connectivity=1, mode="subpixel", background=0)
         
         
         
