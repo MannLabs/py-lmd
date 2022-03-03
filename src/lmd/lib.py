@@ -964,8 +964,8 @@ class PolygonGenerator:
             plt.imshow(self.offset_map)
             plt.show()
         
-        self.offset_map = binary_dilation(self.offset_map , selem=disk(dilation))
-        self.offset_map = binary_erosion(self.offset_map , selem=disk(erosion))
+        self.offset_map = binary_dilation(self.offset_map , footprint=disk(dilation))
+        self.offset_map = binary_erosion(self.offset_map , footprint=disk(erosion))
         self.offset_map = ndimage.binary_fill_holes(self.offset_map).astype(int)
         
         if debug:

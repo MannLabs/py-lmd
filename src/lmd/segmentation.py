@@ -1,7 +1,6 @@
 
 import numpy as np
-from numba import njit
-from numba import prange
+from numba import njit, types, prange
 import numba as nb
 import numpy as np
 
@@ -27,10 +26,12 @@ def _selected_coords_fast(mask, classes, debug=False, background=0):
             if return_id != background:
                 coords[return_id].append(np.array([row, col], dtype="uint32")) # coords[translated_id].append(np.array([x,y]))
     
-    for i, el in enumerate(coords):
-        #print(i, el)
+    
+    # use arange explicitely to create uint32 array for comparison with uint32 classes
+    all_classes = np.arange(0, len(coords), dtype=types.uint32)
+
+    for i in all_classes:
         if i not in classes:
-            #print(i)
             coords[i] = [np.array([0.,0.], dtype="uint32")]
                 
         #return
