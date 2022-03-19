@@ -28,6 +28,7 @@ import scipy
 from scipy import ndimage
 from scipy.signal import convolve2d
 
+import gc
 
 class Collection:
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
@@ -136,7 +137,7 @@ class Collection:
         plt.cla()
         plt.close("all")
 
-        fig, ax = plt.subplots(figsize=fig_size)
+        fig, ax = plt.subplots(figsize=fig_size,  **kwargs)
         
         # Plot calibration points
         if calibration and self.calibration_points is not None:
@@ -566,7 +567,6 @@ class SegmentationLoader():
         self.register_parameter('poly_compression_factor', 30)
         self.register_parameter('path_optimization', 'hilbert')
         self.register_parameter('greedy_k', 0)
-        self.register_parameter('segmentation_channel', 15)
         self.register_parameter('hilbert_p', 7)
         self.register_parameter('xml_decimal_transform', 100)
         self.register_parameter('distance_heuristic', 300)
@@ -634,28 +634,22 @@ class SegmentationLoader():
                                                                 dilation = self.config['shape_dilation'],
                                                                 erosion = self.config['shape_erosion'])
 
-        self.log("Initializing shapes for polygon creation")
-        
-        shapes = []
-        for i in range(len(center)):
-            s = PolygonGenerator(center[i],length[i],coords[i])
-            if i % 1000 == 0:
-                self.log(f"Initializing shape {i}")
-            shapes.append(s)
-
+        # Calculate dilation and erosion based on if merging was activated
         dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
         erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
 
         self.log("Create shapes for merged cells")
-        with multiprocessing.Pool(processes=self.config['processes']) as pool:                                          
-            shapes = list(tqdm(pool.imap(partial(PolygonGenerator.tranform_to_map, 
-                                                 erosion = erosion ,
-                                                 dilation = dilation 
-                                                ),
-                                                 shapes), total=len(center), disable = not self.verbose))
+        with multiprocessing.Pool(processes=self.config['processes']) as pool:           
+            shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
+                                                 erosion = erosion,
+                                                 dilation = dilation,
+                                                 coord_format = False),
+                                                 coords), total=len(center), disable = not self.verbose))
+            
+            
         self.log("Calculating polygons")
         with multiprocessing.Pool(processes=self.config['processes']) as pool:      
-            shapes = list(tqdm(pool.imap(partial(PolygonGenerator.create_poly, 
+            shapes = list(tqdm(pool.imap(partial(create_poly, 
                                                  smoothing_filter_size = self.config['convolution_smoothing'],
                                                  poly_compression_factor = self.config['poly_compression_factor']
                                                 ),
@@ -725,11 +719,13 @@ class SegmentationLoader():
             ax.scatter(center[:,1],center[:,0], s=1)
 
             for shape in shapes:
-                shape.plot(ax, color="red",linewidth=1)
+                ax.plot(shape[:,1],shape[:,0], color="red",linewidth=1)
+    
 
             ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
             ax.plot(center[:,1],center[:,0], color="white")
-
+            plt.axis('equal')
+            
             plt.show()
     
         # Generate array of marker cross positions
@@ -737,13 +733,11 @@ class SegmentationLoader():
         ds.orientation_transform = self.config['orientation_transform']
 
         for shape in shapes:
-            s = shape.get_poly() 
-
             # Check if well key is set in cell set definition
             if "well" in cell_set:
-                ds.new_shape(s, well=cell_set["well"])
+                ds.new_shape(shape, well=cell_set["well"])
             else:
-                ds.new_shape(s)
+                ds.new_shape(shape)
         return ds
 
     def merge_dilated_shapes(self,
@@ -756,19 +750,16 @@ class SegmentationLoader():
         # initialize all shapes and create dilated coordinates
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
-
-        for i in range(len(input_center)):
-            s = PolygonGenerator(input_center[i],input_length[i],input_coords[i])
-            s.tranform_to_map(dilation = dilation, erosion=erosion)
-
-            dilated_coord = s.get_coords()
-            dilated_coord = np.apply_along_axis(lambda args: [complex(*args)], 1, dilated_coord).flatten()
-            dilated_coords.append(dilated_coord)
+        
+        with multiprocessing.Pool(processes=self.config['processes']) as pool:           
+            dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
+                                                 dilation = dilation),
+                                                 input_coords), total=len(input_center)))
+            
+        dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
 
         # number of shapes to merge
         num_shapes = len(input_center)
-
-
 
         # A sparse distance matrix is calculated for all cells which are closer than distance_heuristic
         center_arr = np.array(input_center)
@@ -906,86 +897,68 @@ class SegmentationLoader():
             if not key in config_handle:
                 self.log(f'No configuration for {key} found, parameter will be set to {value}')
                 config_handle[key] = value
-
-class PolygonGenerator:
-    """
-    Helper class which is created for every segment. Can be used to convert a list of pixels into a polygon.
-    Reasonable results should only be expected for fully connected sets of coordinates. 
-    The resulting polygon has a resolution of twice the pixel density.
-    
-    """
-    
-    def __init__(self, center,length,coords):
-        self.center = center
-        self.length = length
-        self.coords = np.array(coords)
-        
-        #print(self.center,self.length)
-        
-        #print(self.coords.shape)
-        # may be needed for further debugging
-        """
-        fig = plt.figure(frameon=False)
-        fig.set_size_inches(10,10)
-        ax = plt.Axes(fig, [0., 0., 1., 1.])
-        ax.set_axis_off()
-        fig.add_axes(ax)
-        ax.imshow(bounds)
-        ax.plot(edges[:,1]*2,edges[:,0]*2)"""
-        
-    def tranform_to_map(self, 
-                        dilation = 0,
-                        erosion = 0,
-                   debug = False):
-        # safety boundary which extands the generated map size
-        safety_offset = 3
-        dilation_offset = dilation 
-        
-
-        # top left offset used for creating the offset map
-        self.offset = np.min(self.coords, axis=0).astype(np.int16) - safety_offset - dilation_offset
-        mat = np.array([self.offset, [0,0]])
-        self.offset = np.max(mat, axis=0) 
-
-        self.offset_coords = self.coords-self.offset
-        
-        self.offset_map = np.zeros(np.max(self.offset_coords,axis=0)+2*safety_offset+dilation_offset)
-        
-        
-        y = tuple(self.offset_coords.T[0])
-        x = tuple(self.offset_coords.T[1])
-
-        self.offset_map[(y,x)] = 1
-        self.offset_map = self.offset_map.astype(int)
-        
-        
-        
-        if debug:
-            plt.imshow(self.offset_map)
-            plt.show()
-        
-        self.offset_map = binary_dilation(self.offset_map , footprint=disk(dilation))
-        self.offset_map = binary_erosion(self.offset_map , footprint=disk(erosion))
-        self.offset_map = ndimage.binary_fill_holes(self.offset_map).astype(int)
-        
-        if debug:
-            plt.imshow(self.offset_map)
-            plt.show()
             
-        return self
+            
+def tranform_to_map(coords, 
+                    dilation = 0, 
+                    erosion = 0, 
+                    coord_format = True,
+                    debug = False):
+    # safety boundary which extands the generated map size
+    safety_offset = 3
+    dilation_offset = int(dilation)
+    
+    coords = np.array(coords).astype(np.uint)
+
+
+    # top left offset used for creating the offset map
+    offset = np.min(coords, axis=0).astype(np.uint) - safety_offset - dilation_offset
+    mat = np.array([offset, [0,0]])
+    offset = np.max(mat, axis=0) 
+
+    offset_coords = coords - offset
+    offset_coords = offset_coords.astype(np.uint)
+    
+    offset_map_size = np.max(offset_coords,axis=0)+2*safety_offset+dilation_offset
+    offset_map_size = offset_map_size.astype(np.uint)
+    
+    offset_map = np.zeros(offset_map_size, dtype=np.ubyte)
+
+    y = tuple(offset_coords.T[0])
+    x = tuple(offset_coords.T[1])
+
+    offset_map[(y,x)] = 1
+
+    if debug:
+        plt.imshow(offset_map)
+        plt.show()
+
+    offset_map = binary_dilation(offset_map , footprint=disk(dilation))
+    offset_map = binary_erosion(offset_map , footprint=disk(erosion))
+    offset_map = ndimage.binary_fill_holes(offset_map).astype(int)
+
+    if debug:
+        plt.imshow(offset_map)
+        plt.show()
         
-    def get_coords(self):
-        if not hasattr(self, 'offset_map'):
-            return self.coords
-        else:
-            idx_local = np.argwhere(self.offset_map == 1)
-            idx_global = idx_local+self.offset
-            return(idx_global)
-        
-    def create_poly(self, 
-                    smoothing_filter_size = 12,
-                    poly_compression_factor = 8,
-                   debug = False):
+    # coord_format will return a sparse format of [[2, 1],[1, 2],[0, 2]]
+    # otherwise will return a dense matrix and the offset [[0, 0, 1],[0, 0, 1],[0, 1, 0]]
+
+    if coord_format:
+        idx_local = np.argwhere(offset_map == 1)
+        idx_global = idx_local+offset
+        return(idx_global)
+    else:
+        return (offset_map, offset)
+
+    idx_local = np.argwhere(offset_map == 1).astype(np.uint)
+    idx_global = idx_local+offset
+    return(idx_global)
+
+def create_poly(in_tuple, 
+                smoothing_filter_size = 12,
+                poly_compression_factor = 8,
+                debug = False):
 
         """ Converts a list of pixels into a polygon.
         Args
@@ -995,19 +968,20 @@ class PolygonGenerator:
 
             dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
         """
+        (offset_map, offset) = in_tuple
         
         # find polygon bounds from mask
-        bounds = find_boundaries(self.offset_map, connectivity=1, mode="subpixel", background=0)
+        bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
         
         
         
         edges = np.array(np.where(bounds == 1))/2
         edges = edges.T
-        edges = self.sort_edges(edges)
+        edges = sort_edges(edges)
         
         # smoothing resulting shape
         smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
-        edges = convolve2d(edges,smk,mode="full",boundary="wrap")
+        edges = convolve2d(edges, smk,mode="full",boundary="wrap")
         
         
         # compression of the resulting polygon      
@@ -1018,7 +992,7 @@ class PolygonGenerator:
         
         indices = np.linspace(mine,maxe,newlen).astype(int)
 
-        self.poly = edges[indices]
+        poly = edges[indices]
         
         # debuging
         """
@@ -1033,45 +1007,30 @@ class PolygonGenerator:
         ax.plot(self.poly[:,1]*2,self.poly[:,0]*2)
         """
         
-        return self
+        return poly + offset
     
-    def get_poly(self):
-        return self.poly+self.offset
-    
-        
-    def sort_edges(self, edges):
-        """Sorts the vertices of the polygon.
-        Greedy sorting is performed, might have difficulties with complex shapes.
-        
-        """
 
-        it = len(edges)
-        new = []
-        new.append(edges[0])
+def sort_edges( edges):
+    """Sorts the vertices of the polygon.
+    Greedy sorting is performed, might have difficulties with complex shapes.
 
-        edges = np.delete(edges,0,0)
+    """
 
-        for i in range(1,it):
+    it = len(edges)
+    new = []
+    new.append(edges[0])
 
-            old = np.array(new[i-1])
+    edges = np.delete(edges,0,0)
+
+    for i in range(1,it):
+
+        old = np.array(new[i-1])
 
 
-            dist = np.linalg.norm(edges-old,axis=1)
+        dist = np.linalg.norm(edges-old,axis=1)
 
-            min_index = np.argmin(dist)
-            new.append(edges[min_index])
-            edges = np.delete(edges,min_index,0)
-        
-        return(np.array(new))
-    
-    def plot(self, axis,  flip=True, **kwargs):
-        """ Plot a shape on a given matplotlib axis.
-        Args
-            axis (matplotlib.axis): Axis for an existing matplotlib figure.
+        min_index = np.argmin(dist)
+        new.append(edges[min_index])
+        edges = np.delete(edges,min_index,0)
 
-            flip (bool, True): If shapes are still in the (row, col) format they need to bee flipped if plotted with a (x, y) coordinate system.
-        """
-        if flip:
-            axis.plot(self.poly[:,1]+self.offset[1],self.poly[:,0]+self.offset[0], **kwargs)
-        else:
-            axis.plot(self.poly[:,0]+self.offset[0],self.poly[:,1]+self.offset[1], **kwargs)
+    return(np.array(new))
