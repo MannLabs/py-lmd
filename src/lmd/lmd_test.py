@@ -1,7 +1,10 @@
 import numpy as np
 from lmd.lib import Collection, Shape
 from lmd import tools
-
+from PIL import Image
+from lmd.lib import SegmentationLoader
+import pathlib
+import os
 
 def test_collection():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
@@ -69,8 +72,6 @@ def test_text():
     calibration = np.array([[0, 0], [0, 100], [100, 50]])
     my_first_collection = Collection(calibration_points = calibration)
 
-
-
     identifier_1 = tools.text('0123_A1', offset=np.array([0, 40]), rotation = -np.pi/4)
     my_first_collection.join(identifier_1)
 
@@ -79,4 +80,25 @@ def test_text():
 
     identifier_3 = tools.text('0123456789-_ABCDEFGHI', offset=np.array([60, 40]), rotation = -np.pi/4)
     my_first_collection.join(identifier_3)                 
-                    
+
+def test_segmentation_loader():
+    
+    dir = pathlib.Path(__file__).parent.resolve().absolute()
+    print(dir)
+    im = Image.open(os.path.join(dir,'..', '..', 'notebooks', 'Image_Segmentation', 'segmentation_cytosol.tiff'))
+    segmentation = np.array(im).astype(np.uint32)
+
+    all_classes = np.unique(segmentation)
+
+    cell_sets = [{"classes": all_classes, "well": "A1"}]
+
+    calibration_points = np.array([[0,0],[0,1000],[1000,1000]])
+
+    loader_config = {
+        'orientation_transform': np.array([[0, -1],[1, 0]])
+    }
+
+    sl = SegmentationLoader(config = loader_config)
+    shape_collection = sl(segmentation, 
+                        cell_sets, 
+                        calibration_points)

@@ -1,5 +1,5 @@
 
-[![Python package](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/version-v1.0.1-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml)
+[![Python package](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/version-v1.0.2-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/HornungLab/py-lmd/actions/workflows/python-package.yml)
 
 
 # py-lmd

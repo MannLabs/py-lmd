@@ -24,7 +24,7 @@ copyright = '2021, Georg Wallmann, Sophia Mädler and Niklas Schmacke'
 author = 'Georg Wallmann, Sophia Mädler and Niklas Schmacke'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.1'
+release = '1.0.2'
 
 # -- General configuration ---------------------------------------------------
 
@@ -34,7 +34,7 @@ release = '1.0.1'
 extensions = ['sphinx.ext.napoleon','sphinx.ext.autodoc', 'sphinx_rtd_theme']
 
 
-autodoc_mock_imports = ['numpy', 'matplotlib','lxml','skimage', 'svgelements', "skfmm", "scipy", "numba", "hilbertcurve", "tqdm", "networkx "]
+autodoc_mock_imports = ['numpy', 'matplotlib','lxml','skimage', 'svgelements', "skfmm", "scipy", "numba", "hilbertcurve", "tqdm", "networkx"]
 
 
 # Add any paths that contain templates here, relative to this directory.

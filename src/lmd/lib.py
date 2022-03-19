@@ -709,7 +709,7 @@ class SegmentationLoader():
         if self.verbose:
             
             center = np.array(center)
-            plt.figure(figsize=(10, 10), dpi=300)
+            plt.figure(figsize=(10, 10))
             ax = plt.gca()
 
             if 'background_image' in self.config:
@@ -724,6 +724,7 @@ class SegmentationLoader():
 
             ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
             ax.plot(center[:,1],center[:,0], color="white")
+            ax.invert_yaxis()
             plt.axis('equal')
             
             plt.show()
@@ -908,13 +909,13 @@ def tranform_to_map(coords,
     safety_offset = 3
     dilation_offset = int(dilation)
     
-    coords = np.array(coords).astype(np.uint)
+    coords = np.array(coords).astype(np.int)
 
 
     # top left offset used for creating the offset map
-    offset = np.min(coords, axis=0).astype(np.uint) - safety_offset - dilation_offset
+    offset = np.min(coords, axis=0) - safety_offset - dilation_offset
     mat = np.array([offset, [0,0]])
-    offset = np.max(mat, axis=0) 
+    offset = np.max(mat, axis=0)
 
     offset_coords = coords - offset
     offset_coords = offset_coords.astype(np.uint)
@@ -951,63 +952,59 @@ def tranform_to_map(coords,
     else:
         return (offset_map, offset)
 
-    idx_local = np.argwhere(offset_map == 1).astype(np.uint)
-    idx_global = idx_local+offset
-    return(idx_global)
-
 def create_poly(in_tuple, 
                 smoothing_filter_size = 12,
                 poly_compression_factor = 8,
                 debug = False):
 
-        """ Converts a list of pixels into a polygon.
-        Args
-            smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
-            
-            poly_compression_factor (int, default = 8 ): When compression is wanted, only every n-th element is kept for n = poly_compression_factor.
+    """ Converts a list of pixels into a polygon.
+    Args
+        smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
+        
+        poly_compression_factor (int, default = 8 ): When compression is wanted, only every n-th element is kept for n = poly_compression_factor.
 
-            dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
-        """
-        (offset_map, offset) = in_tuple
-        
-        # find polygon bounds from mask
-        bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
-        
-        
-        
-        edges = np.array(np.where(bounds == 1))/2
-        edges = edges.T
-        edges = sort_edges(edges)
-        
-        # smoothing resulting shape
-        smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
-        edges = convolve2d(edges, smk,mode="full",boundary="wrap")
-        
-        
-        # compression of the resulting polygon      
-        newlen = np.round(len(edges)/poly_compression_factor).astype(int)
-        
-        mine = 0
-        maxe= len(edges)-1
-        
-        indices = np.linspace(mine,maxe,newlen).astype(int)
+        dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
+    """
+    (offset_map, offset) = in_tuple
+    
+    # find polygon bounds from mask
+    bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
+    
+    
+    
+    edges = np.array(np.where(bounds == 1))/2
+    edges = edges.T
+    edges = sort_edges(edges)
+    
+    # smoothing resulting shape
+    smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
+    edges = convolve2d(edges, smk,mode="full",boundary="wrap")
+    
+    
+    # compression of the resulting polygon      
+    newlen = np.round(len(edges)/poly_compression_factor).astype(int)
+    
+    mine = 0
+    maxe= len(edges)-1
+    
+    indices = np.linspace(mine,maxe,newlen).astype(int)
 
-        poly = edges[indices]
-        
-        # debuging
-        """
-        print(self.poly.shape)
-        fig = plt.figure(frameon=False)
-        fig.set_size_inches(10,10)
-        ax = plt.Axes(fig, [0., 0., 1., 1.])
-        ax.set_axis_off()
-        fig.add_axes(ax)
-        ax.imshow(bounds)
-        ax.plot(edges[:,1]*2,edges[:,0]*2)
-        ax.plot(self.poly[:,1]*2,self.poly[:,0]*2)
-        """
-        
-        return poly + offset
+    poly = edges[indices]
+    
+    # debuging
+    """
+    print(self.poly.shape)
+    fig = plt.figure(frameon=False)
+    fig.set_size_inches(10,10)
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.imshow(bounds)
+    ax.plot(edges[:,1]*2,edges[:,0]*2)
+    ax.plot(self.poly[:,1]*2,self.poly[:,0]*2)
+    """
+    
+    return poly + offset
     
 
 def sort_edges( edges):
