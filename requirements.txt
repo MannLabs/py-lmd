@@ -1,7 +1,7 @@
 numpy
 matplotlib
 lxml
-scikit-image
+scikit-image>=0.19
 svgelements
 setuptools
 numba
