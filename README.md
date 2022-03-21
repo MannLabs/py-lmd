@@ -22,7 +22,7 @@ git clone https://github.com/HornungLab/py-lmd
 
 conda create -n "py-lmd-env"
 conda activate py-lmd-env
-conda install python=3.9 scipy scikit-image numpy numba
+conda install python=3.9 scipy scikit-image>=0.19 numpy numba -c conda-forge
 pip install -e .
 
 ```
