@@ -282,11 +282,11 @@ class Collection:
         global_coordinates = ET.SubElement(root, 'GlobalCoordinates')
         global_coordinates.text = "1"
         
+        # transform calibration points
+        transformed_calibration_points = self.calibration_points @ self.orientation_transform * self.scale
+        
         # write calibration points
-        for i, point in enumerate(self.calibration_points):
-            
-            # apply scaling factor
-            point = point * self.scale
+        for i, point in enumerate(transformed_calibration_points):
             
             print(point)
             
