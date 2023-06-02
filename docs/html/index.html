@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>py-lmd &mdash; py-lmd 1.0.2 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="1. Quick Start" href="pages/quickstart.html" />
+    <link href="_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#">
+            <img src="_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/quickstart.html">1. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#installation-from-github">1.1. Installation from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#generating-shapes">1.2. Generating Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#using-the-py-lmd-tools">1.3. Using the py-lmd tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#numbers-and-letters">1.4. Numbers and Letters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#text">1.5. Text</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/segmentation_loader.html">2. Using Segmented Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#background">2.1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#overview-of-configuration">2.4. Overview of Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">3. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">3.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">3.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">3.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">py-lmd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">py-lmd</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="py-lmd">
+<h1>py-lmd<a class="headerlink" href="#py-lmd" title="Permalink to this headline"></a></h1>
+<p>The py-lmd package provides an opensource python interface to generate cutting directions for the Leica LMD6 &amp; LMD7 laser microdissection microscopes. These cutting directions can be used to perform laser microdissection on arbitrary sample types.</p>
+<p>py-lmd interfaces directly with your existing python workflows to make your samples accessible via LMD. For example you could use the output of your ML-based region detection on clinical tissue samples to export cutting shapes to excise these same regions on the LMD.</p>
+<p>In addition, you can build reproducible workflows to calibrate slides, import SVG files and convert them to cutting masks, and can convert existing segmentation masks to cutting XMLs.</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>py-lmd has been tested with Python 3.8 and 3.9. To install the py-lmd library clone the Github repository and use pip to install the library in your current environment.
+It is recommended to use the library with a conda environment.
+Please make sure that the package is installed editable like described.
+Otherwise static glyph files might not be available.</p>
+<p>We recommend installing the non-python dependencies with conda before installing py-lmd:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">MannLabs</span><span class="o">/</span><span class="n">py</span><span class="o">-</span><span class="n">lmd</span>
+
+<span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="s2">&quot;py-lmd-env&quot;</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">py</span><span class="o">-</span><span class="n">lmd</span><span class="o">-</span><span class="n">env</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.9</span> <span class="n">scipy</span> <span class="n">scikit</span><span class="o">-</span><span class="n">image</span><span class="o">&gt;=</span><span class="mf">0.19</span> <span class="n">numpy</span> <span class="n">numba</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>If you are installing on an M1 apple silicon Mac you will need to install numba via conda instead of pip before
+proceeding with the installation of the py-lmd library.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">numba</span>
+</pre></div>
+</div>
+</section>
+<section id="citing-our-work">
+<h2>Citing our Work<a class="headerlink" href="#citing-our-work" title="Permalink to this headline"></a></h2>
+<p>py-lmd was developed by Georg Wallmann, Sophia Mädler and Niklas Schmacke in the labs of Veit Hornung and
+Matthias Mann. If you use our code please cite the following manuscript:</p>
+<p>CITATION HERE</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pages/quickstart.html">1. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#installation-from-github">1.1. Installation from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#generating-shapes">1.2. Generating Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#using-the-py-lmd-tools">1.3. Using the py-lmd tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#numbers-and-letters">1.4. Numbers and Letters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/quickstart.html#text">1.5. Text</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/segmentation_loader.html">2. Using Segmented Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#background">2.1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#overview-of-configuration">2.4. Overview of Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">3. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">3.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">3.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">3.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pages/quickstart.html" class="btn btn-neutral float-right" title="1. Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Georg Wallmann, Sophia Mädler and Niklas Schmacke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

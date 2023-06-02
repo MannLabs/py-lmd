@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Generate a Cutting XML from segmentation mask using the Segmentation Loader. &mdash; py-lmd 1.0.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="2. Generate cutting XML from exported results from QUPath" href="generate_xml_from_qupath_export.html" />
+    <link rel="prev" title="Example Notebooks" href="../example_notebooks.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">1. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#installation-from-github">1.1. Installation from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#generating-shapes">1.2. Generating Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#using-the-py-lmd-tools">1.3. Using the py-lmd tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#numbers-and-letters">1.4. Numbers and Letters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#text">1.5. Text</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../segmentation_loader.html">2. Using Segmented Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#background">2.1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#overview-of-configuration">2.4. Overview of Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../example_notebooks.html">Example Notebooks</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Define-cell-sets">1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calibration-points">1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#XML-generation">1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-to-XML">1.5. write to XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">3. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">3.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">3.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">3.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">py-lmd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../example_notebooks.html">Example Notebooks</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/notebooks/generate_xml_from_segmentation_mask.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Generate-a-Cutting-XML-from-segmentation-mask-using-the-Segmentation-Loader.">
+<h1><span class="section-number">1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.<a class="headerlink" href="#Generate-a-Cutting-XML-from-segmentation-mask-using-the-Segmentation-Loader." title="Permalink to this headline"></a></h1>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">SegmentationLoader</span>
+</pre></div>
+</div>
+</div>
+<section id="Load-Segmentation-Mask">
+<h2><span class="section-number">1.1. </span>Load Segmentation Mask<a class="headerlink" href="#Load-Segmentation-Mask" title="Permalink to this headline"></a></h2>
+<p>The stitched images were segmented in cellpose and saved to file.</p>
+<img alt="Cellpose Segmentation" src="../../_images/cellpose_segmentation.png" />
+<p>The results can then easily be loaded into python and transformed into an XML for excision using the LMD.</p>
+<p>Besides Cellpose, the py-lmd is compatible with any segmentation method that results in a segmentation mask where each pixel is assigned to either background (0) or a cellid (not 0).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+
+<span class="n">im_frame</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;./test_data/cellculture_example/stitching_test_Alexa488_cp_masks.png&quot;</span><span class="p">)</span>
+<span class="n">segmentation_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">im_frame</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">);</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_3_0.png" src="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_3_0.png" />
+</div>
+</div>
+</section>
+<section id="Define-cell-sets">
+<h2><span class="section-number">1.2. </span>Define cell sets<a class="headerlink" href="#Define-cell-sets" title="Permalink to this headline"></a></h2>
+<p>Define cell sets and assign specific cell ids to the well into which they should be excised.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cell_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">)</span>
+<span class="n">cell_sets</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;classes&quot;</span><span class="p">:</span> <span class="n">cell_ids</span><span class="p">,</span> <span class="s2">&quot;well&quot;</span><span class="p">:</span> <span class="s2">&quot;A1&quot;</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Calibration-points">
+<h2><span class="section-number">1.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Permalink to this headline"></a></h2>
+<p>Calibration points can be determined by reading out the coordinates of the chosen points (e.g. in FIJI). When working with cell culture models the built in calibration crosses within pylmd can be used to generate easily recognizable points to identify both in the imaging data and while loading the XML at the microscope.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1000</span><span class="p">],[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1000</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="XML-generation">
+<h2><span class="section-number">1.4. </span>XML generation<a class="headerlink" href="#XML-generation" title="Permalink to this headline"></a></h2>
+<p>Finally the calibration points and segmentation_mask are passed to the SegmentationLoader and they can be transformed into LMD compatible excision shapes.</p>
+<p>A variety of further parameters can be passed to post-process the generated shapes (e.g. smoothing, shape dilation, or optimization of cutting path) using the loader_config.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">loader_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;orientation_transform&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]),</span>
+    <span class="s2">&quot;shape_compression&quot;</span><span class="p">:</span><span class="mi">42</span>
+<span class="p">}</span>
+
+<span class="n">sl</span> <span class="o">=</span> <span class="n">SegmentationLoader</span><span class="p">(</span><span class="n">config</span> <span class="o">=</span> <span class="n">loader_config</span><span class="p">)</span>
+
+<span class="n">shape_collection</span> <span class="o">=</span> <span class="n">sl</span><span class="p">(</span><span class="n">segmentation_mask</span><span class="p">,</span>
+                        <span class="n">cell_sets</span><span class="p">,</span>
+                        <span class="n">calibration_points</span><span class="p">)</span>
+
+<span class="n">shape_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fig_size</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/sophia/Documents/GitHub/py-lmd/src/lmd/segmentation.py:34: NumbaTypeSafetyWarning: <span class="ansi-bold">unsafe cast from uint32 to int32. Precision may be lost.</span>
+  if i not in classes:
+100%|██████████| 503/503 [00:01&lt;00:00, 423.76it/s]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_9_1.png" src="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_9_1.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[21]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#print some statistics on the shapes included in the collection and visualize results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">shape_collection</span><span class="o">.</span><span class="n">stats</span><span class="p">())</span>
+<span class="n">shape_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">calibration</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+===== Collection Stats =====
+Number of shapes: 503
+Number of vertices: 30,080
+============================
+Mean vertices: 60
+Min vertices: 19
+5% percentile vertices: 37
+Median vertices: 59
+95% percentile vertices: 84
+Max vertices: 125
+None
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_10_1.png" src="../../_images/pages_notebooks_generate_xml_from_segmentation_mask_10_1.png" />
+</div>
+</div>
+</section>
+<section id="write-to-XML">
+<h2><span class="section-number">1.5. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Permalink to this headline"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape_collection</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;./test_data/cellculture_example/shapes_1.xml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0 0]
+[100000      0]
+[ 100000 -100000]
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../example_notebooks.html" class="btn btn-neutral float-left" title="Example Notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generate_xml_from_qupath_export.html" class="btn btn-neutral float-right" title="2. Generate cutting XML from exported results from QUPath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Georg Wallmann, Sophia Mädler and Niklas Schmacke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

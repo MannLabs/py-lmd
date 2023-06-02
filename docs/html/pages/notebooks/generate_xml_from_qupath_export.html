@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Generate cutting XML from exported results from QUPath &mdash; py-lmd 1.0.2 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3. py-lmd Modules" href="../modules.html" />
+    <link rel="prev" title="1. Generate a Cutting XML from segmentation mask using the Segmentation Loader." href="generate_xml_from_segmentation_mask.html" />
+    <link href="../../_static/style.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html">
+            <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">1. Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#installation-from-github">1.1. Installation from Github</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#generating-shapes">1.2. Generating Shapes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#using-the-py-lmd-tools">1.3. Using the py-lmd tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#numbers-and-letters">1.4. Numbers and Letters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../quickstart.html#text">1.5. Text</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../segmentation_loader.html">2. Using Segmented Images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#background">2.1. Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#different-coordinate-systems">2.2. Different Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#getting-started-with-the-segmentationloader">2.3. Getting started with the SegmentationLoader</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#overview-of-configuration">2.4. Overview of Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../example_notebooks.html">Example Notebooks</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calibration-points">2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Generate-shape-collection">2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-to-XML">2.6. write to XML</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">3. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">3.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">3.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">3.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">py-lmd</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../example_notebooks.html">Example Notebooks</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2. </span>Generate cutting XML from exported results from QUPath</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/pages/notebooks/generate_xml_from_qupath_export.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Generate-cutting-XML-from-exported-results-from-QUPath">
+<h1><span class="section-number">2. </span>Generate cutting XML from exported results from QUPath<a class="headerlink" href="#Generate-cutting-XML-from-exported-results-from-QUPath" title="Permalink to this headline"></a></h1>
+<p>The stitched images were loaded into Qupath and specific regions annotaed by hand. calibration points were also selected and labelled with <code class="docutils literal notranslate"><span class="pre">calib1</span></code>, <code class="docutils literal notranslate"><span class="pre">calib2</span></code> and <code class="docutils literal notranslate"><span class="pre">calib3</span></code>.</p>
+<img alt="QuPath manual shape annotation" src="../../_images/qupath_annotation.png" />
+<p>The annotated shapes were then exported to geojson file.</p>
+<p><img alt="Geojson export" src="../../_images/qupath_export_1.png" /> <img alt="image1" src="../../_images/geojson_export_2.png" /></p>
+<section id="Import-libraries-and-define-helper-functions">
+<h2><span class="section-number">2.1. </span>Import libraries and define helper functions<a class="headerlink" href="#Import-libraries-and-define-helper-functions" title="Permalink to this headline"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># import required libraries</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">geojson</span>
+<span class="kn">import</span> <span class="nn">geopandas</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#define helper functions</span>
+
+<span class="k">def</span> <span class="nf">get_calib_points</span><span class="p">(</span><span class="n">list_of_calibpoint_names</span><span class="p">,</span> <span class="n">df</span><span class="p">):</span>
+    <span class="c1">#create shape list</span>
+    <span class="n">pointlist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">point_name</span> <span class="ow">in</span> <span class="n">list_of_calibpoint_names</span><span class="p">:</span>
+        <span class="n">pointlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">point_name</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1">#create coordinate list</span>
+    <span class="n">listarray</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">point</span> <span class="ow">in</span> <span class="n">pointlist</span><span class="p">:</span>
+        <span class="n">listarray</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">])</span>
+    <span class="n">nparray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">listarray</span><span class="p">)</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">nparray</span><span class="p">)</span>
+
+<span class="c1">#returns dataframe with only polygon objects</span>
+<span class="k">def</span> <span class="nf">remove_non_polygons</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">shapely</span>
+
+    <span class="n">df_filtered</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="nb">type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="n">shapely</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">polygon</span><span class="o">.</span><span class="n">Polygon</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">geometry</span><span class="p">]]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">df_filtered</span><span class="p">)</span>
+
+<span class="c1">#creates new column for coordenates in a list of list format</span>
+<span class="c1">#assumes only polygons in dataframe</span>
+<span class="k">def</span> <span class="nf">replace_coords</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;coordinates_shape_exterior&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;coordinates_shape_exterior&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;coordinates_shape_exterior&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+        <span class="c1">#get geometry object for row i</span>
+        <span class="n">geom</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;geometry&#39;</span><span class="p">]</span>
+        <span class="c1">#list the coordinate points as tuples</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">geom</span><span class="o">.</span><span class="n">exterior</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+        <span class="c1">#transform list of tuples to list of lists and save to dataframe</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;coordinates_shape_exterior&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<br/></pre></div>
+</div>
+</div>
+</section>
+<section id="Import-GEOjson-regions">
+<h2><span class="section-number">2.2. </span>Import GEOjson regions<a class="headerlink" href="#Import-GEOjson-regions" title="Permalink to this headline"></a></h2>
+<p>The geojson dataset is loaded into a dataframe with the following structure:</p>
+<p>id objectType classification name geometry unique shape id type of shape (e.g. annotation) all annotation information from qupath shape name if given contains information relevant for shape</p>
+<p>The geojson should besides containing individual segemnted shapes contain 3 points annotated as calib1, calib2, calib3 that will be used as calibration points for generating the XML</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">geopandas</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;test_data/cellculture_example/annotated_regions_Qupath.geojson&quot;</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>objectType</th>
+      <th>name</th>
+      <th>geometry</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>9287277d-e46f-47e9-aa3f-c540b3318b5e</td>
+      <td>annotation</td>
+      <td>region2</td>
+      <td>POLYGON ((507.00000 1524.00000, 506.60000 1539...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ab63cfd3-17d0-4dd3-b8e6-95172dda64de</td>
+      <td>annotation</td>
+      <td>Region1</td>
+      <td>POLYGON ((1789.00000 990.00000, 1730.00000 115...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>b60d2cf7-963e-42ae-8a2a-69ff289d29db</td>
+      <td>annotation</td>
+      <td>calib1</td>
+      <td>POINT (343.24000 368.53000)</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>56bdd076-ac9a-4950-97f3-b8c2268ee090</td>
+      <td>annotation</td>
+      <td>calib3</td>
+      <td>POINT (361.78000 2301.51000)</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>03d9bb6e-16b1-4cd9-9181-86da90fb98bf</td>
+      <td>annotation</td>
+      <td>calib2</td>
+      <td>POINT (1353.77000 1165.83000)</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Calibration-points">
+<h2><span class="section-number">2.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Permalink to this headline"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#assumes user will always label their calibration points like this</span>
+<span class="n">caliblist</span> <span class="o">=</span> <span class="n">get_calib_points</span><span class="p">([</span><span class="s1">&#39;calib1&#39;</span><span class="p">,</span><span class="s1">&#39;calib2&#39;</span><span class="p">,</span><span class="s1">&#39;calib3&#39;</span><span class="p">],</span><span class="n">df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">caliblist</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[[ 343.24  368.53]
+ [1353.77 1165.83]
+ [ 361.78 2301.51]]
+</pre></div></div>
+</div>
+</section>
+<section id="Clean-up-Dataframe">
+<h2><span class="section-number">2.4. </span>Clean up Dataframe<a class="headerlink" href="#Clean-up-Dataframe" title="Permalink to this headline"></a></h2>
+<p>Remove non-polygon shapes, extract polygon coordinates, and parse annotation for easier use</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">df_poly</span> <span class="o">=</span> <span class="n">remove_non_polygons</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">df_poly</span> <span class="o">=</span> <span class="n">replace_coords</span><span class="p">(</span><span class="n">df_poly</span><span class="p">)</span>
+<span class="n">df_poly</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/sophia/mambaforge/envs/SPARCSpy/lib/python3.9/site-packages/geopandas/geodataframe.py:1538: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  super().__setitem__(key, value)
+/Users/sophia/mambaforge/envs/SPARCSpy/lib/python3.9/site-packages/geopandas/geodataframe.py:1538: SettingWithCopyWarning:
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+  super().__setitem__(key, value)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id</th>
+      <th>objectType</th>
+      <th>name</th>
+      <th>geometry</th>
+      <th>coordinates_shape_exterior</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>9287277d-e46f-47e9-aa3f-c540b3318b5e</td>
+      <td>annotation</td>
+      <td>region2</td>
+      <td>POLYGON ((507.00000 1524.00000, 506.60000 1539...</td>
+      <td>[[507.0, 1524.0], [506.6, 1539.01], [505.39, 1...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ab63cfd3-17d0-4dd3-b8e6-95172dda64de</td>
+      <td>annotation</td>
+      <td>Region1</td>
+      <td>POLYGON ((1789.00000 990.00000, 1730.00000 115...</td>
+      <td>[[1789.0, 990.0], [1730.0, 1153.0], [1744.0, 1...</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</section>
+<section id="Generate-shape-collection">
+<h2><span class="section-number">2.5. </span>Generate shape collection<a class="headerlink" href="#Generate-shape-collection" title="Permalink to this headline"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape_collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">caliblist</span><span class="p">)</span>
+<span class="n">shape_collection</span><span class="o">.</span><span class="n">orientation_transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span> <span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_poly</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+    <span class="n">shape_collection</span><span class="o">.</span><span class="n">new_shape</span><span class="p">(</span><span class="n">df_poly</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;coordinates_shape_exterior&#39;</span><span class="p">],</span> <span class="n">well</span> <span class="o">=</span> <span class="s2">&quot;well1&quot;</span><span class="p">)</span> <span class="c1"># can define a well if so wished otherwise leave out</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#print some statistics on the shapes included in the collection and visualize results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">shape_collection</span><span class="o">.</span><span class="n">stats</span><span class="p">())</span>
+<span class="n">shape_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">calibration</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+===== Collection Stats =====
+Number of shapes: 2
+Number of vertices: 117
+============================
+Mean vertices: 58
+Min vertices: 16
+5% percentile vertices: 20
+Median vertices: 58
+95% percentile vertices: 97
+Max vertices: 101
+None
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../../_images/pages_notebooks_generate_xml_from_qupath_export_13_1.png" src="../../_images/pages_notebooks_generate_xml_from_qupath_export_13_1.png" />
+</div>
+</div>
+</section>
+<section id="write-to-XML">
+<h2><span class="section-number">2.6. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Permalink to this headline"></a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape_collection</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;./test_data/cellculture_example/shapes_2.xml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[ 34324. -36853.]
+[ 135377. -116583.]
+[  36178. -230151.]
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generate_xml_from_segmentation_mask.html" class="btn btn-neutral float-left" title="1. Generate a Cutting XML from segmentation mask using the Segmentation Loader." accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules.html" class="btn btn-neutral float-right" title="3. py-lmd Modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023 Georg Wallmann, Sophia Mädler and Niklas Schmacke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
