@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>1. Generate a Cutting XML from segmentation mask using the Segmentation Loader. &mdash; py-lmd 1.0.2 documentation</title>
+  <title>3.1. Generate a Cutting XML from segmentation mask using the Segmentation Loader. &mdash; py-lmd 1.0.2 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
@@ -18,14 +19,16 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="2. Generate cutting XML from exported results from QUPath" href="generate_xml_from_qupath_export.html" />
-    <link rel="prev" title="Example Notebooks" href="../example_notebooks.html" />
+    <link rel="next" title="3.2. Generate cutting XML from exported results from QUPath" href="generate_xml_from_qupath_export.html" />
+    <link rel="prev" title="3. Example Notebooks" href="../example_notebooks.html" />
     <link href="../../_static/style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -64,34 +67,34 @@
 <li class="toctree-l2"><a class="reference internal" href="../segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="../example_notebooks.html">Example Notebooks</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Define-cell-sets">1.2. Define cell sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Calibration-points">1.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#XML-generation">1.4. XML generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#write-to-XML">1.5. write to XML</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../example_notebooks.html">3. Example Notebooks</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3.1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#Load-Segmentation-Mask">3.1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Define-cell-sets">3.1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#Calibration-points">3.1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#XML-generation">3.1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-to-XML">3.1.5. write to XML</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generate_xml_from_qupath_export.html">3.2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">3.2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Import-GEOjson-regions">3.2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Calibration-points">3.2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Clean-up-Dataframe">3.2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#Generate-shape-collection">3.2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generate_xml_from_qupath_export.html#write-to-XML">3.2.6. write to XML</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">3. py-lmd Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">3.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">3.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">3.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">4. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">4.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">4.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">4.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">4.1.3. SegmentationLoader</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">4.2. lmd.tools</a></li>
 </ul>
 </li>
 </ul>
@@ -110,8 +113,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a></li>
-          <li class="breadcrumb-item"><a href="../example_notebooks.html">Example Notebooks</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.</li>
+          <li class="breadcrumb-item"><a href="../example_notebooks.html"><span class="section-number">3. </span>Example Notebooks</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/pages/notebooks/generate_xml_from_segmentation_mask.ipynb.txt" rel="nofollow"> View page source</a>
       </li>
@@ -122,7 +125,7 @@
            <div itemprop="articleBody">
              
   <section id="Generate-a-Cutting-XML-from-segmentation-mask-using-the-Segmentation-Loader.">
-<h1><span class="section-number">1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.<a class="headerlink" href="#Generate-a-Cutting-XML-from-segmentation-mask-using-the-Segmentation-Loader." title="Permalink to this headline"></a></h1>
+<h1><span class="section-number">3.1. </span>Generate a Cutting XML from segmentation mask using the Segmentation Loader.<a class="headerlink" href="#Generate-a-Cutting-XML-from-segmentation-mask-using-the-Segmentation-Loader." title="Permalink to this headline"></a></h1>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
 </pre></div>
@@ -135,7 +138,7 @@
 </div>
 </div>
 <section id="Load-Segmentation-Mask">
-<h2><span class="section-number">1.1. </span>Load Segmentation Mask<a class="headerlink" href="#Load-Segmentation-Mask" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.1.1. </span>Load Segmentation Mask<a class="headerlink" href="#Load-Segmentation-Mask" title="Permalink to this headline"></a></h2>
 <p>The stitched images were segmented in cellpose and saved to file.</p>
 <img alt="Cellpose Segmentation" src="../../_images/cellpose_segmentation.png" />
 <p>The results can then easily be loaded into python and transformed into an XML for excision using the LMD.</p>
@@ -163,7 +166,7 @@
 </div>
 </section>
 <section id="Define-cell-sets">
-<h2><span class="section-number">1.2. </span>Define cell sets<a class="headerlink" href="#Define-cell-sets" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.1.2. </span>Define cell sets<a class="headerlink" href="#Define-cell-sets" title="Permalink to this headline"></a></h2>
 <p>Define cell sets and assign specific cell ids to the well into which they should be excised.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
@@ -176,7 +179,7 @@
 </div>
 </section>
 <section id="Calibration-points">
-<h2><span class="section-number">1.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.1.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Permalink to this headline"></a></h2>
 <p>Calibration points can be determined by reading out the coordinates of the chosen points (e.g. in FIJI). When working with cell culture models the built in calibration crosses within pylmd can be used to generate easily recognizable points to identify both in the imaging data and while loading the XML at the microscope.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
@@ -188,7 +191,7 @@
 </div>
 </section>
 <section id="XML-generation">
-<h2><span class="section-number">1.4. </span>XML generation<a class="headerlink" href="#XML-generation" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.1.4. </span>XML generation<a class="headerlink" href="#XML-generation" title="Permalink to this headline"></a></h2>
 <p>Finally the calibration points and segmentation_mask are passed to the SegmentationLoader and they can be transformed into LMD compatible excision shapes.</p>
 <p>A variety of further parameters can be passed to post-process the generated shapes (e.g. smoothing, shape dilation, or optimization of cutting path) using the loader_config.</p>
 <div class="nbinput docutils container">
@@ -264,7 +267,7 @@ None
 </div>
 </section>
 <section id="write-to-XML">
-<h2><span class="section-number">1.5. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.1.5. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Permalink to this headline"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[22]:
 </pre></div>
@@ -290,8 +293,8 @@ None
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../example_notebooks.html" class="btn btn-neutral float-left" title="Example Notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="generate_xml_from_qupath_export.html" class="btn btn-neutral float-right" title="2. Generate cutting XML from exported results from QUPath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../example_notebooks.html" class="btn btn-neutral float-left" title="3. Example Notebooks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generate_xml_from_qupath_export.html" class="btn btn-neutral float-right" title="3.2. Generate cutting XML from exported results from QUPath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -7,6 +7,7 @@
   <title>py-lmd &mdash; py-lmd 1.0.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/custom.css" type="text/css" />
       <link rel="stylesheet" href="_static/fonts.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -17,6 +18,8 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -60,34 +63,34 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">Example Notebooks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">3. Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">3.1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">3.1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">3.1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">3.1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">3.1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">3.1.5. write to XML</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">3.2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">3.2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">3.2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">3.2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">3.2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">3.2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">3.2.6. write to XML</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">3. py-lmd Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">3.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">3.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">3.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">4. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">4.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">4.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">4.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">4.1.3. SegmentationLoader</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">4.2. lmd.tools</a></li>
 </ul>
 </li>
 </ul>
@@ -145,8 +148,10 @@ proceeding with the installation of the py-lmd library.</p>
 <section id="citing-our-work">
 <h2>Citing our Work<a class="headerlink" href="#citing-our-work" title="Permalink to this headline"></a></h2>
 <p>py-lmd was developed by Georg Wallmann, Sophia Mädler and Niklas Schmacke in the labs of Veit Hornung and
-Matthias Mann. If you use our code please cite the following manuscript:</p>
-<p>CITATION HERE</p>
+Matthias Mann. If you use our code please cite the <a class="reference external" href="https://doi.org/10.1101/2023.06.01.542416">following manuscript</a>:</p>
+<p>SPARCS, a platform for genome-scale CRISPR screening for spatial cellular phenotypes
+Niklas Arndt Schmacke, Sophia Clara Maedler, Georg Wallmann, Andreas Metousis, Marleen Berouti, Hartmann Harz, Heinrich Leonhardt, Matthias Mann, Veit Hornung
+bioRxiv 2023.06.01.542416; doi: <a class="reference external" href="https://doi.org/10.1101/2023.06.01.542416">https://doi.org/10.1101/2023.06.01.542416</a></p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -166,34 +171,34 @@ Matthias Mann. If you use our code please cite the following manuscript:</p>
 <li class="toctree-l2"><a class="reference internal" href="pages/segmentation_loader.html#processing-order">2.5. Processing Order</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">Example Notebooks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/example_notebooks.html">3. Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html">3.1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">3.1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">3.1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">3.1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#XML-generation">3.1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">3.1.5. write to XML</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html">3.2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">3.2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">3.2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Calibration-points">3.2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">3.2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">3.2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/notebooks/generate_xml_from_qupath_export.html#write-to-XML">3.2.6. write to XML</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">3. py-lmd Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">3.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">3.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">3.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">4. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#lmd-lib">4.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#collection">4.1.1. Collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#shape">4.1.2. Shape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/modules.html#segmentationloader">4.1.3. SegmentationLoader</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/modules.html#module-lmd.tools">4.2. lmd.tools</a></li>
 </ul>
 </li>
 </ul>
