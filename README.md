@@ -2,7 +2,7 @@
 [![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/version-v1.0.0-blue)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml)
 [![website](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/html/index.html)](https://mannlabs.github.io/py-lmd/html/index.html)
 
-![py-lmd_border](https://github.com/MannLabs/py-lmd/assets/15019107/035dfa13-c1a3-4ed0-8bbe-ddd5df29c367)
+![logo](https://github.com/MannLabs/py-lmd/assets/15019107/e7c619a2-69c9-4cb6-8723-fab94c8d3558)
 
 Read, create and write cutting data for the Leica LMD6 & LMD7 microscope.
 Build reproducible workflows to calibrate, import SVG files and convert single-cell segmentation masks.
