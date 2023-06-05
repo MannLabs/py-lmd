@@ -11,4 +11,5 @@ Here you will find a collection of jupyter notebooks using py-lmd to highlight t
    
    notebooks/generate_xml_from_segmentation_mask
    notebooks/generate_xml_from_qupath_export
+   notebooks/generate_cutting_mask_svg
    
