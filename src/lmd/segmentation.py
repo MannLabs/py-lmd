@@ -7,9 +7,8 @@ import numpy as np
 from hilbertcurve.hilbertcurve import HilbertCurve
 
 @njit
-def _selected_coords_fast(mask, classes, debug=False, background=0):
-    
-    num_classes = np.max(mask)+1
+def _generate_coord_lookup(mask, background = 0, debug = False):
+    num_classes = np.max(mask) + 1
     
     coords = []
     
@@ -17,7 +16,6 @@ def _selected_coords_fast(mask, classes, debug=False, background=0):
         coords.append([np.array([0.,0.], dtype="uint32")])
     
     rows, cols = mask.shape
-    
     for row in range(rows):
         if row % 10000 == 0 and debug:
             print(row)
@@ -25,40 +23,72 @@ def _selected_coords_fast(mask, classes, debug=False, background=0):
             return_id = mask[row, col]
             if return_id != background:
                 coords[return_id].append(np.array([row, col], dtype="uint32")) # coords[translated_id].append(np.array([x,y]))
+
+    return coords 
+
+@njit
+def _selected_coords_fast(mask, classes, debug=False, background=0, coords_lookup = None):
     
-    
+    #only execute this code if not explicity already calculated
+    if coords_lookup is None:
+        num_classes = np.max(mask) + 1
+        
+        coords = []
+        
+        for i in prange(num_classes):
+            coords.append([np.array([0.,0.], dtype="uint32")])
+        
+        rows, cols = mask.shape
+        for row in range(rows):
+            if row % 10000 == 0 and debug:
+                print(row)
+            for col in range(cols):
+                return_id = mask[row, col]
+                if return_id != background:
+                    coords[return_id].append(np.array([row, col], dtype="uint32")) # coords[translated_id].append(np.array([x,y]))
+    else:
+        coords = coords_lookup
+
     # use arange explicitely to create uint32 array for comparison with uint32 classes
     all_classes = np.arange(0, len(coords), dtype=types.uint32)
 
     for i in all_classes:
         if i not in classes:
-            coords[i] = [np.array([0.,0.], dtype="uint32")]
+            coords[i] = [np.array([0.,0.], dtype="uint32")] #set coordinates of cells we are not interested into 0
                 
-        #return
+    #return
     return coords
              
 
-def get_coordinate_form(inarr, classes, debug=False):
+def get_coordinate_form(inarr, classes, debug=False, coords_lookup = None):
     # return with empty lists if no classes are provided
     if len(classes) == 0:
         return [],[],[]
     
     # calculate all coords in list
+    if coords_lookup is None:
+        coords_lookup = _generate_coord_lookup(inarr.astype("uint32"))
+    
     # due to typing issues in numba, every list and sublist contains np.array([0.,0.], dtype="int32") as first element
-    coords = _selected_coords_fast(inarr.astype("uint32"), nb.typed.List(classes), debug = debug)
+    coords = _selected_coords_fast(inarr.astype("uint32"), nb.typed.List(classes), debug = debug, coords_lookup = coords_lookup)
+    
     if debug:
         print("start removal of zero vectors")
+    
     # removal of np.array([0.,0.], dtype="int32")
     coords = [np.array(el[1:]) for el in coords[1:]]
     if debug:
         print("start removal of out of class cells")
+    
     # remove empty elements, not in class list
     coords_filtered = [np.array(el) for i, el in enumerate(coords) if i+1 in classes]
     if debug:
         print("start center calculation")
+    
     center = [np.mean(el, axis=0) for el in coords_filtered]
     if debug:
         print("start length calculation")
+    
     length = [len(el) for el in coords_filtered]
     
     return center, length, coords_filtered
@@ -72,23 +102,14 @@ def tsp_hilbert_solve(data , p=3):
     hilbert_points = hilbert_curve.points_from_distances(distances)
     hilbert_points = np.array(hilbert_points)
 
-
-
-
     data_min = np.min(data, axis=0)
     data_max = np.max(data, axis=0)
-
 
     hilbert_min = np.min(hilbert_points, axis=0)
     hilbert_max = np.max(hilbert_points, axis=0)
 
-
-
     data_scaled = data - data_min
     data_scaled = data_scaled / (data_max-data_min) * (hilbert_max - hilbert_min)
-
-
-
 
     data_rounded = np.round(data_scaled).astype(int)
 

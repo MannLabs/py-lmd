@@ -9,7 +9,7 @@ from matplotlib import image
 from skimage import data, color
 import matplotlib.ticker as ticker
 from svgelements import SVG
-from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len
+from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _generate_coord_lookup
 from tqdm import tqdm
 
 from skimage.morphology import dilation as binary_dilation
@@ -588,17 +588,23 @@ class SegmentationLoader():
             sets.append(cell_set)
             self.log(f"cell set {i} passed sanity check")
         
+        self.log("Calculating coordinate locations of all cells.")
+        coords_lookup = _generate_coord_lookup(self.input_segmentation)
+
         collections = []
         for i, cell_set in enumerate(cell_sets):
-            collections.append(self.generate_cutting_data(cell_set))
+            collections.append(self.generate_cutting_data(cell_set, coords_lookup = coords_lookup))
 
         return reduce(lambda a, b: a.join(b), collections)
 
-    def generate_cutting_data(self, cell_set):
+    def generate_cutting_data(self, cell_set, coords_lookup = None):
         
         self.log("Convert label format into coordinate format")
         
-        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"])
+        if coords_lookup is None:
+            coords_lookup = _generate_coord_lookup(self.input_segmentation)
+
+        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"], coords_lookup= coords_lookup)
         
         self.log("Conversion finished, sanity check")
         
@@ -626,7 +632,6 @@ class SegmentationLoader():
             self.log("Check passed")
         else:
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
-
 
         if self.config['join_intersecting']:
             center, length, coords = self.merge_dilated_shapes(center, length, coords, 
