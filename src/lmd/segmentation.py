@@ -6,86 +6,60 @@ import numpy as np
 
 from hilbertcurve.hilbertcurve import HilbertCurve
 
-@njit
-def _generate_coord_lookup(mask, background = 0, debug = False):
-    num_classes = np.max(mask) + 1
-    
-    coords = []
-    
-    for i in prange(num_classes):
-        coords.append([np.array([0.,0.], dtype="uint32")])
-    
-    rows, cols = mask.shape
-    for row in range(rows):
-        if row % 10000 == 0 and debug:
-            print(row)
-        for col in range(cols):
-            return_id = mask[row, col]
-            if return_id != background:
-                coords[return_id].append(np.array([row, col], dtype="uint32")) # coords[translated_id].append(np.array([x,y]))
-
-    return coords 
+import numba as nb
 
 @njit
-def _selected_coords_fast(mask, classes, debug=False, background=0, coords_lookup = None):
-    
-    #only execute this code if not explicity already calculated
-    if coords_lookup is None:
-        num_classes = np.max(mask) + 1
-        
-        coords = []
-        
-        for i in prange(num_classes):
-            coords.append([np.array([0.,0.], dtype="uint32")])
-        
-        rows, cols = mask.shape
-        for row in range(rows):
-            if row % 10000 == 0 and debug:
-                print(row)
-            for col in range(cols):
-                return_id = mask[row, col]
-                if return_id != background:
-                    coords[return_id].append(np.array([row, col], dtype="uint32")) # coords[translated_id].append(np.array([x,y]))
-    else:
-        coords = coords_lookup
+def _create_coord_index(mask, background=0):
 
-    # use arange explicitely to create uint32 array for comparison with uint32 classes
-    all_classes = np.arange(0, len(coords), dtype=types.uint32)
+    num_classes = np.max(mask)+1
 
-    for i in all_classes:
-        if i not in classes:
-            coords[i] = [np.array([0.,0.], dtype="uint32")] #set coordinates of cells we are not interested into 0
-                
-    #return
-    return coords
+    # each class will have a list of coordinates
+    # each coordinate is a 2D array with row and column
+    # initial size is 32, whenever it exceeds the size, it will be doubled
+    initial_size = 32
+
+    index_list = []
+    stop_list = np.zeros(num_classes, dtype=np.uint32)
+    for i in range(num_classes):
+        index_list.append(np.zeros((initial_size, 2), dtype=np.uint32))
+
+    # create index list
+    for col in range(mask.shape[1]):
+        for row in range(mask.shape[0]):
+            class_id = mask[row, col]
+            if class_id != background:
+                if stop_list[class_id] >= index_list[class_id].shape[0]:
+                    new_size = index_list[class_id].shape[0] * 2
+                    new_array = np.zeros((new_size, 2), dtype=np.uint32)
+                    new_array[:stop_list[class_id]] = index_list[class_id]
+                    index_list[class_id] = new_array
+                index_list[class_id][stop_list[class_id]][0] = row
+                index_list[class_id][stop_list[class_id]][1] = col
+                stop_list[class_id] += 1
+
+    # resize index list
+    for i in range(num_classes):
+        index_list[i] = index_list[i][:stop_list[i]]
+
+    return index_list
+
+@njit
+def _filter_coord_index(index_list, classes):
+
+    filtered_index_list = []
+    for idx, class_id in enumerate(classes):
+        filtered_index_list.append(index_list[class_id])
+    return filtered_index_list
              
-
-def get_coordinate_form(inarr, classes, debug=False, coords_lookup = None):
+def get_coordinate_form(inarr, classes, coords_lookup, debug=False):
     # return with empty lists if no classes are provided
     if len(classes) == 0:
         return [],[],[]
     
-    # calculate all coords in list
-    if coords_lookup is None:
-        coords_lookup = _generate_coord_lookup(inarr.astype("uint32"))
-    
-    # due to typing issues in numba, every list and sublist contains np.array([0.,0.], dtype="int32") as first element
-    coords = _selected_coords_fast(inarr.astype("uint32"), nb.typed.List(classes), debug = debug, coords_lookup = coords_lookup)
-    
-    if debug:
-        print("start removal of zero vectors")
-    
-    # removal of np.array([0.,0.], dtype="int32")
-    coords = [np.array(el[1:]) for el in coords[1:]]
-    if debug:
-        print("start removal of out of class cells")
-    
-    # remove empty elements, not in class list
-    coords_filtered = [np.array(el) for i, el in enumerate(coords) if i+1 in classes]
-    if debug:
-        print("start center calculation")
+    coords_filtered = _filter_coord_index(coords_lookup, nb.typed.List(classes))
     
     center = [np.mean(el, axis=0) for el in coords_filtered]
+    
     if debug:
         print("start length calculation")
     

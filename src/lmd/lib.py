@@ -9,7 +9,7 @@ from matplotlib import image
 from skimage import data, color
 import matplotlib.ticker as ticker
 from svgelements import SVG
-from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _generate_coord_lookup
+from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index, _filter_coord_index
 from tqdm import tqdm
 
 from skimage.morphology import dilation as binary_dilation
@@ -28,6 +28,39 @@ from scipy import ndimage
 from scipy.signal import convolve2d
 
 import gc
+import sys
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Callable
+from tqdm.auto import tqdm
+
+def execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10) -> list:
+    """parallelization of function call with indexed arguments using ThreadPoolExecutor. Returns a list of results in the order of the input arguments.
+
+    Args:
+        func (Callable): _description_
+        args (list): _description_
+        tqdm_args (dict, optional): _description_. Defaults to None.
+        n_threads (int, optional): _description_. Defaults to 10.
+
+    Returns:
+        list: containing the results of the function calls in the same order as the input arguments
+    """
+    if tqdm_args is None:
+        tqdm_args = {"total":len(args)}
+    elif "total" not in tqdm_args:
+        tqdm_args["total"] = len(args)
+
+    results = [None for _ in range(len(args))]
+    with ThreadPoolExecutor(n_threads) as executor:
+        with tqdm(**tqdm_args) as pbar:
+            futures = {executor.submit(func, *arg): i for i, arg in enumerate(args)}
+            for future in as_completed(futures):
+                index = futures[future]
+                results[index] = future.result()
+                pbar.update(1)
+
+    return results
 
 class Collection:
     """Class which is used for creating shape collections for the Leica LMD6 & 7. Contains a coordinate system defined by calibration points and a collection of various shapes.
@@ -465,7 +498,6 @@ class Shape:
         return shape
 
     
-
 class SegmentationLoader():
     """Select single cells from a segmentation and generate cutting data
         
@@ -573,11 +605,11 @@ class SegmentationLoader():
         self.register_parameter('join_intersecting', True)
         self.register_parameter('orientation_transform', np.eye(2))
 
-    def __call__(self, input_segmentation, cell_sets, calibration_points):
+        self.coords_lookup = None
 
-        self.input_segmentation = input_segmentation
+    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
+        
         self.calibration_points = calibration_points
-
         sets = []
 
         # iterate over all defined sets, perform sanity checks and load external data
@@ -588,25 +620,43 @@ class SegmentationLoader():
             sets.append(cell_set)
             self.log(f"cell set {i} passed sanity check")
         
-        self.log("Calculating coordinate locations of all cells.")
-        coords_lookup = _generate_coord_lookup(self.input_segmentation)
+        self.input_segmentation = input_segmentation
+        
+        if coords_lookup is None:
+            self.log("Calculating coordinate locations of all cells.")
+            self.coords_lookup = _create_coord_index(self.input_segmentation)
+        else:
+            self.log("Loading coordinates from external source")
+            self.coords_lookup = coords_lookup
+
+        # #try multithreading
+        # args = []
+        # for i, cell_set in enumerate(cell_sets):
+        #     args.append((i, cell_set))
+
+        # collections = execute_indexed_parallel(
+        #     self.generate_cutting_data,
+        #     args=args,
+        #     tqdm_args=dict(
+        #         file=sys.stdout,
+        #         disable=not self.verbose,
+        #         desc="                  collecting cell sets",
+        #     ),
+        #     n_threads = 5
+        # )
 
         collections = []
         for i, cell_set in enumerate(cell_sets):
-            collections.append(self.generate_cutting_data(cell_set, coords_lookup = coords_lookup))
+            collections.append(self.generate_cutting_data(i, cell_set))
 
         return reduce(lambda a, b: a.join(b), collections)
 
-    def generate_cutting_data(self, cell_set, coords_lookup = None):
-        
-        self.log("Convert label format into coordinate format")
-        
-        if coords_lookup is None:
-            coords_lookup = _generate_coord_lookup(self.input_segmentation)
+    def generate_cutting_data(self, i, cell_set):
 
-        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"], coords_lookup= coords_lookup)
-        
-        self.log("Conversion finished, sanity check")
+        self.log("Convert label format into coordinate format")
+        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"], self.coords_lookup)
+    
+        self.log("Conversion finished, performing sanity check.")
         
         # Sanity check 1
         if len(center) == len(cell_set["classes_loaded"]):
@@ -635,8 +685,8 @@ class SegmentationLoader():
 
         if self.config['join_intersecting']:
             center, length, coords = self.merge_dilated_shapes(center, length, coords, 
-                                                                dilation = self.config['shape_dilation'],
-                                                                erosion = self.config['shape_erosion'])
+                                                               dilation = self.config['shape_dilation'],
+                                                               erosion = self.config['shape_erosion'])
 
         # Calculate dilation and erosion based on if merging was activated
         dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
@@ -648,7 +698,7 @@ class SegmentationLoader():
                                                  erosion = erosion,
                                                  dilation = dilation,
                                                  coord_format = False),
-                                                 coords), total=len(center), disable = not self.verbose))
+                                                 coords), total=len(center), disable = not self.verbose, desc = "creating shapes"))
             
             
         self.log("Calculating polygons")
@@ -657,11 +707,10 @@ class SegmentationLoader():
                                                  smoothing_filter_size = self.config['convolution_smoothing'],
                                                  poly_compression_factor = self.config['poly_compression_factor']
                                                 ),
-                                                 shapes), total=len(center), disable = not self.verbose))
+                                                 shapes), total=len(center), disable = not self.verbose, desc = "calculating polygons" ))
          
         
         self.log("Polygon calculation finished")
-
         
         center = np.array(center)
         unoptimized_length = calc_len(center)
@@ -669,8 +718,7 @@ class SegmentationLoader():
 
         # check if optimizer key has been set
         if 'path_optimization' in self.config:
-            
-
+        
             optimization_method = self.config['path_optimization']
             self.log(f"Path optimizer defined in config: {optimization_method}")
 
@@ -706,8 +754,6 @@ class SegmentationLoader():
         
         # order list of shapes by the optimized index array
         shapes = [x for _, x in sorted(zip(optimized_idx, shapes))]
-
-        
 
         # Plot coordinates if in debug mode
         if self.verbose:
