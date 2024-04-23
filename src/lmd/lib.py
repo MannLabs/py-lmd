@@ -587,7 +587,7 @@ class SegmentationLoader():
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
     
     
-    def __init__(self, config = {}, verbose = False):
+    def __init__(self, config = {}, verbose = False, threads = None):
         self.config = config
         self.verbose = verbose
 
@@ -606,6 +606,7 @@ class SegmentationLoader():
         self.register_parameter('orientation_transform', np.eye(2))
 
         self.coords_lookup = None
+        self.threads = threads
 
     def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
         
@@ -629,25 +630,28 @@ class SegmentationLoader():
             self.log("Loading coordinates from external source")
             self.coords_lookup = coords_lookup
 
-        # #try multithreading
-        # args = []
-        # for i, cell_set in enumerate(cell_sets):
-        #     args.append((i, cell_set))
+        #try multithreading
 
-        # collections = execute_indexed_parallel(
-        #     self.generate_cutting_data,
-        #     args=args,
-        #     tqdm_args=dict(
-        #         file=sys.stdout,
-        #         disable=not self.verbose,
-        #         desc="                  collecting cell sets",
-        #     ),
-        #     n_threads = 5
-        # )
+        if self.threads is not None:
+            self.log("Multithreading the processing of cell sets")
+            args = []
+            for i, cell_set in enumerate(cell_sets):
+                args.append((i, cell_set))
 
-        collections = []
-        for i, cell_set in enumerate(cell_sets):
-            collections.append(self.generate_cutting_data(i, cell_set))
+            collections = execute_indexed_parallel(
+                self.generate_cutting_data,
+                args=args,
+                tqdm_args=dict(
+                    file=sys.stdout,
+                    disable=not self.verbose,
+                    desc="                  collecting cell sets",
+                ),
+                n_threads = self.threads
+            )
+        else:
+            collections = []
+            for i, cell_set in enumerate(cell_sets):
+                collections.append(self.generate_cutting_data(i, cell_set))
 
         return reduce(lambda a, b: a.join(b), collections)
 
