@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from functools import partial, reduce
-import multiprocessing
+import multiprocessing as mp
 import numpy as np
 import matplotlib.pyplot as plt
 from lxml import etree as ET
@@ -29,6 +29,7 @@ from scipy.signal import convolve2d
 
 import gc
 import sys
+import platform
 
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable
@@ -79,7 +80,7 @@ class Collection:
     def __init__(self, calibration_points: Optional[np.ndarray] = None):
         
         
-        self.shapes: List[Shape] = []
+        self.shapes: list[Shape] = []
         
         self.calibration_points: Optional[np.ndarray] = calibration_points
             
@@ -590,6 +591,7 @@ class SegmentationLoader():
     def __init__(self, config = {}, verbose = False, threads = None):
         self.config = config
         self.verbose = verbose
+        self._get_context() #setup context for multiprocessing function calls to work with different operating systems
 
         self.register_parameter('shape_dilation', 0)
         self.register_parameter('shape_erosion', 0)
@@ -608,6 +610,12 @@ class SegmentationLoader():
         self.coords_lookup = None
         self.threads = threads
 
+    def _get_context(self):
+        if platform.system() == 'Windows':
+            self.context = "spawn"
+        else:
+            self.context = "fork"
+    
     def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
         
         self.calibration_points = calibration_points
@@ -697,7 +705,7 @@ class SegmentationLoader():
         erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
 
         self.log("Create shapes for merged cells")
-        with multiprocessing.Pool(processes=self.config['processes']) as pool:           
+        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
             shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
                                                  erosion = erosion,
                                                  dilation = dilation,
@@ -706,7 +714,7 @@ class SegmentationLoader():
             
             
         self.log("Calculating polygons")
-        with multiprocessing.Pool(processes=self.config['processes']) as pool:      
+        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:      
             shapes = list(tqdm(pool.imap(partial(create_poly, 
                                                  smoothing_filter_size = self.config['convolution_smoothing'],
                                                  poly_compression_factor = self.config['poly_compression_factor']
@@ -806,7 +814,7 @@ class SegmentationLoader():
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
         
-        with multiprocessing.Pool(processes=self.config['processes']) as pool:           
+        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
             dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
                                                  dilation = dilation),
                                                  input_coords), total=len(input_center)))
@@ -949,7 +957,7 @@ class SegmentationLoader():
             else:
                 raise TypeError('Key musst be of string or a list of strings')
             
-            if not key in config_handle:
+            if key not in config_handle:
                 self.log(f'No configuration for {key} found, parameter will be set to {value}')
                 config_handle[key] = value
             
