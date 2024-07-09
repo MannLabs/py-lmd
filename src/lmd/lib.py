@@ -613,7 +613,9 @@ class SegmentationLoader():
     def _get_context(self):
         if platform.system() == 'Windows':
             self.context = "spawn"
-        else:
+        elif platform.system() == 'Darwin':
+            self.context = "spawn"
+        elif platform.system() == 'Linux':
             self.context = "fork"
     
     def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
