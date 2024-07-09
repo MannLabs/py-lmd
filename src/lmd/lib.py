@@ -707,22 +707,35 @@ class SegmentationLoader():
         erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
 
         self.log("Create shapes for merged cells")
-        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
-            shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
-                                                 erosion = erosion,
-                                                 dilation = dilation,
-                                                 coord_format = False),
-                                                 coords), total=len(center), disable = not self.verbose, desc = "creating shapes"))
-            
+        
+        if self.config["processes"] == 1:  
+            shapes = []
+            for coord in tqdm(coords, desc = "creating shapes"):
+                shapes.append(tranform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
+        else:
+            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
+                shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
+                                                    erosion = erosion,
+                                                    dilation = dilation,
+                                                    coord_format = False),
+                                                    coords), total=len(center), disable = not self.verbose, desc = "creating shapes"))
+                
             
         self.log("Calculating polygons")
-        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:      
-            shapes = list(tqdm(pool.imap(partial(create_poly, 
-                                                 smoothing_filter_size = self.config['convolution_smoothing'],
-                                                 poly_compression_factor = self.config['poly_compression_factor']
-                                                ),
-                                                 shapes), total=len(center), disable = not self.verbose, desc = "calculating polygons" ))
-         
+        if self.config["processes"] == 1:  
+            shapes = []
+            for shape in tqdm(shapes, desc = "calculating polygons"):
+                shapes.append(create_poly(shape, 
+                                          smoothing_filter_size = self.config['convolution_smoothing'],
+                                          poly_compression_factor = self.config['poly_compression_factor']))
+        else:
+            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:      
+                shapes = list(tqdm(pool.imap(partial(create_poly, 
+                                                    smoothing_filter_size = self.config['convolution_smoothing'],
+                                                    poly_compression_factor = self.config['poly_compression_factor']
+                                                    ),
+                                                    shapes), total=len(center), disable = not self.verbose, desc = "calculating polygons" ))
+            
         
         self.log("Polygon calculation finished")
         
@@ -816,10 +829,15 @@ class SegmentationLoader():
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
         
-        with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
-            dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
-                                                 dilation = dilation),
-                                                 input_coords), total=len(input_center)))
+        if self.config["processes"] == 1:
+            for coord in tqdm(input_coords, desc = "dilating shapes"):
+                dilated_coords.append(tranform_to_map(coord, dilation = dilation))
+        
+        else:
+            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
+                dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
+                                                    dilation = dilation),
+                                                    input_coords), total=len(input_center)))
             
         dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
 
