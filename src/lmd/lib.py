@@ -31,7 +31,7 @@ import gc
 import sys
 import platform
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from typing import Callable
 from tqdm.auto import tqdm
 
@@ -53,7 +53,7 @@ def execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = No
         tqdm_args["total"] = len(args)
 
     results = [None for _ in range(len(args))]
-    with ThreadPoolExecutor(n_threads) as executor:
+    with ProcessPoolExecutor(n_threads) as executor:
         with tqdm(**tqdm_args) as pbar:
             futures = {executor.submit(func, *arg): i for i, arg in enumerate(args)}
             for future in as_completed(futures):
@@ -588,7 +588,7 @@ class SegmentationLoader():
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
     
     
-    def __init__(self, config = {}, verbose = False, threads = None):
+    def __init__(self, config = {}, verbose = False, processes = 1):
         self.config = config
         self.verbose = verbose
         self._get_context() #setup context for multiprocessing function calls to work with different operating systems
@@ -608,7 +608,7 @@ class SegmentationLoader():
         self.register_parameter('orientation_transform', np.eye(2))
 
         self.coords_lookup = None
-        self.threads = threads
+        self.processes = processes
 
     def _get_context(self):
         if platform.system() == 'Windows':
@@ -642,8 +642,8 @@ class SegmentationLoader():
 
         #try multithreading
 
-        if self.threads is not None:
-            self.log("Multithreading the processing of cell sets")
+        if self.processes > 1:
+            self.log("Processing cell sets in parallel")
             args = []
             for i, cell_set in enumerate(cell_sets):
                 args.append((i, cell_set))
@@ -708,12 +708,12 @@ class SegmentationLoader():
 
         self.log("Create shapes for merged cells")
         
-        if self.config["processes"] == 1:  
+        if self.config["threads"] == 1:  
             shapes = []
             for coord in tqdm(coords, desc = "creating shapes"):
                 shapes.append(tranform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
                 shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
                                                     erosion = erosion,
                                                     dilation = dilation,
@@ -722,14 +722,14 @@ class SegmentationLoader():
                 
             
         self.log("Calculating polygons")
-        if self.config["processes"] == 1:  
+        if self.config["threads"] == 1:  
             shapes = []
             for shape in tqdm(shapes, desc = "calculating polygons"):
                 shapes.append(create_poly(shape, 
                                           smoothing_filter_size = self.config['convolution_smoothing'],
                                           poly_compression_factor = self.config['poly_compression_factor']))
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:      
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:      
                 shapes = list(tqdm(pool.imap(partial(create_poly, 
                                                     smoothing_filter_size = self.config['convolution_smoothing'],
                                                     poly_compression_factor = self.config['poly_compression_factor']
@@ -829,7 +829,7 @@ class SegmentationLoader():
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
         
-        if self.config["processes"] == 1:
+        if self.config["threads"] == 1:
             for coord in tqdm(input_coords, desc = "dilating shapes"):
                 dilated_coords.append(tranform_to_map(coord, dilation = dilation))
         
