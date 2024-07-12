@@ -656,7 +656,7 @@ class SegmentationLoader():
                     disable=not self.verbose,
                     desc="                  collecting cell sets",
                 ),
-                n_threads = self.threads
+                n_threads = self.processes
             )
         else:
             collections = []
