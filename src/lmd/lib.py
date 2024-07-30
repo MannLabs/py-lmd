@@ -606,6 +606,7 @@ class SegmentationLoader():
         self.register_parameter('processes', 10)
         self.register_parameter('join_intersecting', True)
         self.register_parameter('orientation_transform', np.eye(2))
+        self.register_parameter('threads', 1)
 
         self.coords_lookup = None
         self.processes = processes
@@ -641,7 +642,6 @@ class SegmentationLoader():
             self.coords_lookup = coords_lookup
 
         #try multithreading
-
         if self.processes > 1:
             self.log("Processing cell sets in parallel")
             args = []
@@ -659,6 +659,8 @@ class SegmentationLoader():
                 n_threads = self.processes
             )
         else:
+            print("Processing cell sets in serial")
+            print(cell_set)
             collections = []
             for i, cell_set in enumerate(cell_sets):
                 collections.append(self.generate_cutting_data(i, cell_set))
@@ -698,6 +700,10 @@ class SegmentationLoader():
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
 
         if self.config['join_intersecting']:
+            print("Merging intersecting shapes")
+            print('center', center)
+            print('length', length)
+            print('coords', coords)
             center, length, coords = self.merge_dilated_shapes(center, length, coords, 
                                                                dilation = self.config['shape_dilation'],
                                                                erosion = self.config['shape_erosion'])
