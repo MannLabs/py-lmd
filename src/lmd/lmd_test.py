@@ -82,11 +82,11 @@ def test_text():
     my_first_collection.join(identifier_3)                 
 
 def test_segmentation_loader():
-    
-    _dir = pathlib.Path(__file__).parent.resolve().absolute()
-    _dir = str(_dir).replace("src/lmd/", "docs_source/pages/notebooks")
-    
-    im = Image.open(os.path.join(_dir, 'Image_Segmentation', 'segmentation_cytosol.tiff'))
+
+    package_base_path = pathlib.Path(__file__).parent.parent.parent.resolve().absolute()
+    test_segmentation_path = os.path.join(package_base_path, 'docs_source/pages/notebooks/Image_Segmentation/segmentation_cytosol.tiff')
+
+    im = Image.open(test_segmentation_path)
     segmentation = np.array(im).astype(np.uint32)
 
     all_classes = np.unique(segmentation)

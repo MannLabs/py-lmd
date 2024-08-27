@@ -11,6 +11,8 @@ import matplotlib.ticker as ticker
 from svgelements import SVG
 from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index, _filter_coord_index
 from tqdm import tqdm
+# import warnings
+import warnings
 
 from skimage.morphology import dilation as binary_dilation
 from skimage.morphology import binary_erosion, disk
@@ -606,6 +608,7 @@ class SegmentationLoader():
         self.register_parameter('processes', 10)
         self.register_parameter('join_intersecting', True)
         self.register_parameter('orientation_transform', np.eye(2))
+        self.register_parameter('threads', 1)
 
         self.coords_lookup = None
         self.processes = processes
@@ -641,7 +644,6 @@ class SegmentationLoader():
             self.coords_lookup = coords_lookup
 
         #try multithreading
-
         if self.processes > 1:
             self.log("Processing cell sets in parallel")
             args = []
@@ -659,6 +661,8 @@ class SegmentationLoader():
                 n_threads = self.processes
             )
         else:
+            print("Processing cell sets in serial")
+            print(cell_set)
             collections = []
             for i, cell_set in enumerate(cell_sets):
                 collections.append(self.generate_cutting_data(i, cell_set))
@@ -666,6 +670,10 @@ class SegmentationLoader():
         return reduce(lambda a, b: a.join(b), collections)
 
     def generate_cutting_data(self, i, cell_set):
+
+        if 0 in cell_set["classes_loaded"]:
+            cell_set["classes_loaded"] = cell_set["classes_loaded"][cell_set["classes_loaded"] != 0]
+            warnings.warn("Class 0 is not a valid class and was removed from the cell set")
 
         self.log("Convert label format into coordinate format")
         center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"], self.coords_lookup)
@@ -698,6 +706,7 @@ class SegmentationLoader():
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
 
         if self.config['join_intersecting']:
+            print("Merging intersecting shapes")
             center, length, coords = self.merge_dilated_shapes(center, length, coords, 
                                                                dilation = self.config['shape_dilation'],
                                                                erosion = self.config['shape_erosion'])
@@ -723,14 +732,14 @@ class SegmentationLoader():
             
         self.log("Calculating polygons")
         if self.config["threads"] == 1:  
-            shapes = []
+            polygons = []
             for shape in tqdm(shapes, desc = "calculating polygons"):
-                shapes.append(create_poly(shape, 
+                polygons.append(create_poly(shape, 
                                           smoothing_filter_size = self.config['convolution_smoothing'],
                                           poly_compression_factor = self.config['poly_compression_factor']))
         else:
             with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:      
-                shapes = list(tqdm(pool.imap(partial(create_poly, 
+                polygons = list(tqdm(pool.imap(partial(create_poly, 
                                                     smoothing_filter_size = self.config['convolution_smoothing'],
                                                     poly_compression_factor = self.config['poly_compression_factor']
                                                     ),
@@ -780,7 +789,7 @@ class SegmentationLoader():
         self.log(f"Optimization factor: {optimization_factor:,.1f}x")
         
         # order list of shapes by the optimized index array
-        shapes = [x for _, x in sorted(zip(optimized_idx, shapes))]
+        polygons = [x for _, x in sorted(zip(optimized_idx, polygons))]
 
         # Plot coordinates if in debug mode
         if self.verbose:
@@ -795,7 +804,7 @@ class SegmentationLoader():
 
             ax.scatter(center[:,1],center[:,0], s=1)
 
-            for shape in shapes:
+            for shape in polygons:
                 ax.plot(shape[:,1],shape[:,0], color="red",linewidth=1)
     
 
@@ -810,7 +819,7 @@ class SegmentationLoader():
         ds = Collection(calibration_points = self.calibration_points)
         ds.orientation_transform = self.config['orientation_transform']
 
-        for shape in shapes:
+        for shape in polygons:
             # Check if well key is set in cell set definition
             if "well" in cell_set:
                 ds.new_shape(shape, well=cell_set["well"])
