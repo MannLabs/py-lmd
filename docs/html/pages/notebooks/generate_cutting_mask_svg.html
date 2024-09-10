@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.3. Convert SVG graphic into LMD excision instructions &mdash; py-lmd 1.0.2 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5c2dde8a" />
+      <link rel="stylesheet" type="text/css" href="../../_static/fonts.css?v=5583d106" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -38,12 +41,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -94,12 +101,51 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">4. py-lmd Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">4.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">4.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">4.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">4.1.3. SegmentationLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">4.1.1. Collection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.Collection"><code class="docutils literal notranslate"><span class="pre">Collection</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.shapes"><code class="docutils literal notranslate"><span class="pre">Collection.shapes</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.calibration_points"><code class="docutils literal notranslate"><span class="pre">Collection.calibration_points</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.orientation_transform"><code class="docutils literal notranslate"><span class="pre">Collection.orientation_transform</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.add_shape"><code class="docutils literal notranslate"><span class="pre">Collection.add_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.join"><code class="docutils literal notranslate"><span class="pre">Collection.join()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.load"><code class="docutils literal notranslate"><span class="pre">Collection.load()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.new_shape"><code class="docutils literal notranslate"><span class="pre">Collection.new_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.plot"><code class="docutils literal notranslate"><span class="pre">Collection.plot()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.save"><code class="docutils literal notranslate"><span class="pre">Collection.save()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.stats"><code class="docutils literal notranslate"><span class="pre">Collection.stats()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.svg_to_lmd"><code class="docutils literal notranslate"><span class="pre">Collection.svg_to_lmd()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">4.2. lmd.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">4.1.2. Shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.Shape"><code class="docutils literal notranslate"><span class="pre">Shape</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Shape.from_xml"><code class="docutils literal notranslate"><span class="pre">Shape.from_xml()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Shape.to_xml"><code class="docutils literal notranslate"><span class="pre">Shape.to_xml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">4.1.3. SegmentationLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader.check_cell_set_sanity"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.check_cell_set_sanity()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader.load_classes"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.load_classes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">4.2. lmd.tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.ellipse"><code class="docutils literal notranslate"><span class="pre">ellipse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.glyph"><code class="docutils literal notranslate"><span class="pre">glyph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.glyph_path"><code class="docutils literal notranslate"><span class="pre">glyph_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.makeCross"><code class="docutils literal notranslate"><span class="pre">makeCross()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.rectangle"><code class="docutils literal notranslate"><span class="pre">rectangle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.text"><code class="docutils literal notranslate"><span class="pre">text()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,10 +160,14 @@
       </nav>
 
       <div class="wy-nav-content">
+<div class="git-ribbon">
+  <a href="http://github.com/SwissDataScienceCenter" rel="me">Join us on GitHub</a>
+</div>
+
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../example_notebooks.html"><span class="section-number">3. </span>Example Notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">3.3. </span>Convert SVG graphic into LMD excision instructions</li>
       <li class="wy-breadcrumbs-aside">
@@ -130,20 +180,28 @@
            <div itemprop="articleBody">
              
   <section id="Convert-SVG-graphic-into-LMD-excision-instructions">
-<h1><span class="section-number">3.3. </span>Convert SVG graphic into LMD excision instructions<a class="headerlink" href="#Convert-SVG-graphic-into-LMD-excision-instructions" title="Permalink to this headline"></a></h1>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<h1><span class="section-number">3.3. </span>Convert SVG graphic into LMD excision instructions<a class="headerlink" href="#Convert-SVG-graphic-into-LMD-excision-instructions" title="Link to this heading"></a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Shape</span>
-<span class="kn">from</span> <span class="nn">sparcscore.processing.utils</span> <span class="kn">import</span> <span class="n">flatten</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/sophia/mambaforge/envs/pylmd_docs/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div></div>
+</div>
 <p>With a couple of lines of code we can easily convert a SVG file into cutting instructions for the LMD microscope.</p>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[25]:
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#define file path to simple SVG we want to excise</span>
@@ -158,18 +216,10 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-[[Path(Move(end=Point(139.39,124.75)), CubicBezier(start=Point(139.39,124.75), control1=Point(139.39,141.5), control2=Point(151.39,150.25), end=Point(167.64,150)), CubicBezier(start=Point(167.64,150), control1=Point(177.39,149.75), control2=Point(188.39,144.25), end=Point(194.39,140.25)), Line(start=Point(194.39,140.25), end=Point(194.39,51)), Line(start=Point(194.39,51), end=Point(212.64,51)), Line(start=Point(212.64,51), end=Point(212.64,150.25)), CubicBezier(start=Point(212.64,150.25), control1=Point(212.64,163), control2=Point(211.89,182.25), end=Point(206.64,192.25)), CubicBezier(start=Point(206.64,192.25), control1=Point(197.39,209.75), control2=Point(171.39,216.75), end=Point(152.89,217.25)), Line(start=Point(152.89,217.25), end=Point(149.89,205.75)), CubicBezier(start=Point(149.89,205.75), control1=Point(163.89,203.75), control2=Point(183.89,201.75), end=Point(191.39,187.5)), CubicBezier(start=Point(191.39,187.5), control1=Point(195.14,180.5), control2=Point(195.39,166.75), end=Point(195.39,158.75)), CubicBezier(start=Point(195.39,158.75), control1=Point(195.39,156), control2=Point(195.64,156.75), end=Point(195.39,154)), CubicBezier(start=Point(195.39,154), control1=Point(189.89,156.5), control2=Point(177.64,162.5), end=Point(156.14,162.5)), CubicBezier(start=Point(156.14,162.5), control1=Point(139.64,162.5), control2=Point(120.89,150.75), end=Point(120.89,130.5)), Line(start=Point(120.89,130.5), end=Point(120.89,54.5)), Line(start=Point(120.89,54.5), end=Point(139.39,48.25)), Line(start=Point(139.39,48.25), end=Point(139.39,125)), Line(start=Point(139.39,125), end=Point(139.39,124.75)), Close(start=Point(139.39,124.75), end=Point(139.39,124.75)), fill=&#39;#231f20&#39;), Path(Move(end=Point(319.64,160.5)), Line(start=Point(319.64,160.5), end=Point(243.14,160.5)), Line(start=Point(243.14,160.5), end=Point(243.14,6)), Line(start=Point(243.14,6), end=Point(261.39,0)), Line(start=Point(261.39,0), end=Point(261.39,147.5)), Line(start=Point(261.39,147.5), end=Point(312.89,147.5)), Line(start=Point(312.89,147.5), end=Point(319.64,160.5)), Close(start=Point(319.64,160.5), end=Point(319.64,160.5)), fill=&#39;#231f20&#39;), Path(Move(end=Point(477.39,160.5)), Line(start=Point(477.39,160.5), end=Point(477.39,30.5)), Line(start=Point(477.39,30.5), end=Point(427.64,157.25)), Line(start=Point(427.64,157.25), end=Point(412.14,162.75)), Line(start=Point(412.14,162.75), end=Point(360.64,35)), Line(start=Point(360.64,35), end=Point(360.64,160.5)), Line(start=Point(360.64,160.5), end=Point(347.89,160.5)), Line(start=Point(347.89,160.5), end=Point(347.89,6)), Line(start=Point(347.89,6), end=Point(366.14,0)), Line(start=Point(366.14,0), end=Point(422.64,134.5)), Line(start=Point(422.64,134.5), end=Point(474.39,3)), Line(start=Point(474.39,3), end=Point(495.64,3)), Line(start=Point(495.64,3), end=Point(495.64,160.5)), Line(start=Point(495.64,160.5), end=Point(477.39,160.5)), Close(start=Point(477.39,160.5), end=Point(477.39,160.5)), fill=&#39;#231f20&#39;), Path(Move(end=Point(44.18,149.62)), CubicBezier(start=Point(44.18,149.62), control1=Point(33.79,149.27), control2=Point(23.25,143.53), end=Point(17.75,140.09)), Line(start=Point(17.75,140.09), end=Point(17.75,68.84)), CubicBezier(start=Point(17.75,68.84), control1=Point(20.03,66.56), control2=Point(30.6,60.35), end=Point(44.18,60.01)), Line(start=Point(44.18,60.01), end=Point(44.18,48.17)), CubicBezier(start=Point(44.18,48.17), control1=Point(12.43,50.75), control2=Point(0.02,67.09), end=Point(0.25,67.09)), Line(start=Point(0.25,67.09), end=Point(0,210.84)), Line(start=Point(0,210.84), end=Point(18,217.34)), Line(start=Point(18,217.34), end=Point(18,152.59)), CubicBezier(start=Point(18,152.59), control1=Point(26.3,157.65), control2=Point(34.76,161.07), end=Point(44.18,162.19)), Line(start=Point(44.18,162.19), end=Point(44.18,149.62)), Close(start=Point(44.18,149.62), end=Point(44.18,149.62)), fill=&#39;#231f20&#39;), Path(Move(end=Point(51.5,48.09)), Line(start=Point(51.5,48.09), end=Point(51.25,47.84)), CubicBezier(start=Point(51.25,47.84), control1=Point(50.1,47.86), control2=Point(48.98,47.89), end=Point(47.88,47.94)), Line(start=Point(47.88,47.94), end=Point(47.88,60.07)), CubicBezier(start=Point(47.88,60.07), control1=Point(83,59.13), control2=Point(84.45,149.82), end=Point(47.88,149.51)), Line(start=Point(47.88,149.51), end=Point(47.88,162.5)), CubicBezier(start=Point(47.88,162.5), control1=Point(110.98,166.83), control2=Point(109.55,46.33), end=Point(51.5,48.09)), Close(start=Point(51.5,48.09), end=Point(51.5,48.09)), fill=&#39;#231f20&#39;), Path(Move(end=Point(576.18,149.3)), CubicBezier(start=Point(576.18,149.3), control1=Point(574.94,149.42), control2=Point(573.68,149.5), end=Point(572.39,149.5)), CubicBezier(start=Point(572.39,149.5), control1=Point(561.89,149.5), control2=Point(550.89,144), end=Point(544.89,138.5)), Line(start=Point(544.89,138.5), end=Point(544.89,15.5)), Line(start=Point(544.89,15.5), end=Point(564.64,15.5)), CubicBezier(start=Point(564.64,15.5), control1=Point(568.79,15.59), control2=Point(572.63,16), end=Point(576.18,16.67)), Line(start=Point(576.18,16.67), end=Point(576.18,3)), Line(start=Point(576.18,3), end=Point(526.39,2.75)), Line(start=Point(526.39,2.75), end=Point(526.39,142.75)), CubicBezier(start=Point(526.39,142.75), control1=Point(537.14,151.5), control2=Point(556.14,162.25), end=Point(576.14,162.25)), CubicBezier(start=Point(576.14,162.25), control1=Point(576.15,162.25), control2=Point(576.17,162.25), end=Point(576.18,162.25)), Line(start=Point(576.18,162.25), end=Point(576.18,149.3)), Close(start=Point(576.18,149.3), end=Point(576.18,149.3)), fill=&#39;#231f20&#39;), Path(Move(end=Point(579.37,3.05)), Line(start=Point(579.37,3.05), end=Point(579.37,17.38)), CubicBezier(start=Point(579.37,17.38), control1=Point(610.83,25.23), control2=Point(618.14,56.22), end=Point(618.14,86.25)), CubicBezier(start=Point(618.14,86.25), control1=Point(618.14,112.75), control2=Point(605.6,144.1), end=Point(579.37,148.86)), Line(start=Point(579.37,148.86), end=Point(579.37,162.15)), CubicBezier(start=Point(579.37,162.15), control1=Point(615.76,160.01), control2=Point(638.89,121.9), end=Point(638.89,84.25)), CubicBezier(start=Point(638.89,84.25), control1=Point(638.89,46.6), control2=Point(620.86,4.64), end=Point(579.37,3.05)), Close(start=Point(579.37,3.05), end=Point(579.37,3.05)), fill=&#39;#231f20&#39;)], Path(Move(end=Point(139.39,124.75)), CubicBezier(start=Point(139.39,124.75), control1=Point(139.39,141.5), control2=Point(151.39,150.25), end=Point(167.64,150)), CubicBezier(start=Point(167.64,150), control1=Point(177.39,149.75), control2=Point(188.39,144.25), end=Point(194.39,140.25)), Line(start=Point(194.39,140.25), end=Point(194.39,51)), Line(start=Point(194.39,51), end=Point(212.64,51)), Line(start=Point(212.64,51), end=Point(212.64,150.25)), CubicBezier(start=Point(212.64,150.25), control1=Point(212.64,163), control2=Point(211.89,182.25), end=Point(206.64,192.25)), CubicBezier(start=Point(206.64,192.25), control1=Point(197.39,209.75), control2=Point(171.39,216.75), end=Point(152.89,217.25)), Line(start=Point(152.89,217.25), end=Point(149.89,205.75)), CubicBezier(start=Point(149.89,205.75), control1=Point(163.89,203.75), control2=Point(183.89,201.75), end=Point(191.39,187.5)), CubicBezier(start=Point(191.39,187.5), control1=Point(195.14,180.5), control2=Point(195.39,166.75), end=Point(195.39,158.75)), CubicBezier(start=Point(195.39,158.75), control1=Point(195.39,156), control2=Point(195.64,156.75), end=Point(195.39,154)), CubicBezier(start=Point(195.39,154), control1=Point(189.89,156.5), control2=Point(177.64,162.5), end=Point(156.14,162.5)), CubicBezier(start=Point(156.14,162.5), control1=Point(139.64,162.5), control2=Point(120.89,150.75), end=Point(120.89,130.5)), Line(start=Point(120.89,130.5), end=Point(120.89,54.5)), Line(start=Point(120.89,54.5), end=Point(139.39,48.25)), Line(start=Point(139.39,48.25), end=Point(139.39,125)), Line(start=Point(139.39,125), end=Point(139.39,124.75)), Close(start=Point(139.39,124.75), end=Point(139.39,124.75)), fill=&#39;#231f20&#39;), Path(Move(end=Point(319.64,160.5)), Line(start=Point(319.64,160.5), end=Point(243.14,160.5)), Line(start=Point(243.14,160.5), end=Point(243.14,6)), Line(start=Point(243.14,6), end=Point(261.39,0)), Line(start=Point(261.39,0), end=Point(261.39,147.5)), Line(start=Point(261.39,147.5), end=Point(312.89,147.5)), Line(start=Point(312.89,147.5), end=Point(319.64,160.5)), Close(start=Point(319.64,160.5), end=Point(319.64,160.5)), fill=&#39;#231f20&#39;), Path(Move(end=Point(477.39,160.5)), Line(start=Point(477.39,160.5), end=Point(477.39,30.5)), Line(start=Point(477.39,30.5), end=Point(427.64,157.25)), Line(start=Point(427.64,157.25), end=Point(412.14,162.75)), Line(start=Point(412.14,162.75), end=Point(360.64,35)), Line(start=Point(360.64,35), end=Point(360.64,160.5)), Line(start=Point(360.64,160.5), end=Point(347.89,160.5)), Line(start=Point(347.89,160.5), end=Point(347.89,6)), Line(start=Point(347.89,6), end=Point(366.14,0)), Line(start=Point(366.14,0), end=Point(422.64,134.5)), Line(start=Point(422.64,134.5), end=Point(474.39,3)), Line(start=Point(474.39,3), end=Point(495.64,3)), Line(start=Point(495.64,3), end=Point(495.64,160.5)), Line(start=Point(495.64,160.5), end=Point(477.39,160.5)), Close(start=Point(477.39,160.5), end=Point(477.39,160.5)), fill=&#39;#231f20&#39;), Path(Move(end=Point(44.18,149.62)), CubicBezier(start=Point(44.18,149.62), control1=Point(33.79,149.27), control2=Point(23.25,143.53), end=Point(17.75,140.09)), Line(start=Point(17.75,140.09), end=Point(17.75,68.84)), CubicBezier(start=Point(17.75,68.84), control1=Point(20.03,66.56), control2=Point(30.6,60.35), end=Point(44.18,60.01)), Line(start=Point(44.18,60.01), end=Point(44.18,48.17)), CubicBezier(start=Point(44.18,48.17), control1=Point(12.43,50.75), control2=Point(0.02,67.09), end=Point(0.25,67.09)), Line(start=Point(0.25,67.09), end=Point(0,210.84)), Line(start=Point(0,210.84), end=Point(18,217.34)), Line(start=Point(18,217.34), end=Point(18,152.59)), CubicBezier(start=Point(18,152.59), control1=Point(26.3,157.65), control2=Point(34.76,161.07), end=Point(44.18,162.19)), Line(start=Point(44.18,162.19), end=Point(44.18,149.62)), Close(start=Point(44.18,149.62), end=Point(44.18,149.62)), fill=&#39;#231f20&#39;), Path(Move(end=Point(51.5,48.09)), Line(start=Point(51.5,48.09), end=Point(51.25,47.84)), CubicBezier(start=Point(51.25,47.84), control1=Point(50.1,47.86), control2=Point(48.98,47.89), end=Point(47.88,47.94)), Line(start=Point(47.88,47.94), end=Point(47.88,60.07)), CubicBezier(start=Point(47.88,60.07), control1=Point(83,59.13), control2=Point(84.45,149.82), end=Point(47.88,149.51)), Line(start=Point(47.88,149.51), end=Point(47.88,162.5)), CubicBezier(start=Point(47.88,162.5), control1=Point(110.98,166.83), control2=Point(109.55,46.33), end=Point(51.5,48.09)), Close(start=Point(51.5,48.09), end=Point(51.5,48.09)), fill=&#39;#231f20&#39;), Path(Move(end=Point(576.18,149.3)), CubicBezier(start=Point(576.18,149.3), control1=Point(574.94,149.42), control2=Point(573.68,149.5), end=Point(572.39,149.5)), CubicBezier(start=Point(572.39,149.5), control1=Point(561.89,149.5), control2=Point(550.89,144), end=Point(544.89,138.5)), Line(start=Point(544.89,138.5), end=Point(544.89,15.5)), Line(start=Point(544.89,15.5), end=Point(564.64,15.5)), CubicBezier(start=Point(564.64,15.5), control1=Point(568.79,15.59), control2=Point(572.63,16), end=Point(576.18,16.67)), Line(start=Point(576.18,16.67), end=Point(576.18,3)), Line(start=Point(576.18,3), end=Point(526.39,2.75)), Line(start=Point(526.39,2.75), end=Point(526.39,142.75)), CubicBezier(start=Point(526.39,142.75), control1=Point(537.14,151.5), control2=Point(556.14,162.25), end=Point(576.14,162.25)), CubicBezier(start=Point(576.14,162.25), control1=Point(576.15,162.25), control2=Point(576.17,162.25), end=Point(576.18,162.25)), Line(start=Point(576.18,162.25), end=Point(576.18,149.3)), Close(start=Point(576.18,149.3), end=Point(576.18,149.3)), fill=&#39;#231f20&#39;), Path(Move(end=Point(579.37,3.05)), Line(start=Point(579.37,3.05), end=Point(579.37,17.38)), CubicBezier(start=Point(579.37,17.38), control1=Point(610.83,25.23), control2=Point(618.14,56.22), end=Point(618.14,86.25)), CubicBezier(start=Point(618.14,86.25), control1=Point(618.14,112.75), control2=Point(605.6,144.1), end=Point(579.37,148.86)), Line(start=Point(579.37,148.86), end=Point(579.37,162.15)), CubicBezier(start=Point(579.37,162.15), control1=Point(615.76,160.01), control2=Point(638.89,121.9), end=Point(638.89,84.25)), CubicBezier(start=Point(638.89,84.25), control1=Point(638.89,46.6), control2=Point(620.86,4.64), end=Point(579.37,3.05)), Close(start=Point(579.37,3.05), end=Point(579.37,3.05)), fill=&#39;#231f20&#39;)]
-</pre></div></div>
-</div>
 <section id="Visualize-Results">
-<h2><span class="section-number">3.3.1. </span>Visualize Results<a class="headerlink" href="#Visualize-Results" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.3.1. </span>Visualize Results<a class="headerlink" href="#Visualize-Results" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[26]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_collection</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -185,9 +235,9 @@
 </div>
 </section>
 <section id="Export-to-XML">
-<h2><span class="section-number">3.3.2. </span>Export to XML<a class="headerlink" href="#Export-to-XML" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.3.2. </span>Export to XML<a class="headerlink" href="#Export-to-XML" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[27]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#save results to XML</span>

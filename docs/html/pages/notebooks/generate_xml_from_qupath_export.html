@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.2. Generate cutting XML from exported results from QUPath &mdash; py-lmd 1.0.2 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/fonts.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/nbsphinx-code-cells.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=5c2dde8a" />
+      <link rel="stylesheet" type="text/css" href="../../_static/fonts.css?v=5583d106" />
+      <link rel="stylesheet" type="text/css" href="../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=1ed6394b"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../../_static/copybutton.js?v=f281be69"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
         <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -38,12 +41,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -94,12 +101,51 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">4. py-lmd Modules</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../modules.html#lmd-lib">4.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">4.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">4.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">4.1.3. SegmentationLoader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#collection">4.1.1. Collection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.Collection"><code class="docutils literal notranslate"><span class="pre">Collection</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.shapes"><code class="docutils literal notranslate"><span class="pre">Collection.shapes</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.calibration_points"><code class="docutils literal notranslate"><span class="pre">Collection.calibration_points</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.orientation_transform"><code class="docutils literal notranslate"><span class="pre">Collection.orientation_transform</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.add_shape"><code class="docutils literal notranslate"><span class="pre">Collection.add_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.join"><code class="docutils literal notranslate"><span class="pre">Collection.join()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.load"><code class="docutils literal notranslate"><span class="pre">Collection.load()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.new_shape"><code class="docutils literal notranslate"><span class="pre">Collection.new_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.plot"><code class="docutils literal notranslate"><span class="pre">Collection.plot()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.save"><code class="docutils literal notranslate"><span class="pre">Collection.save()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.stats"><code class="docutils literal notranslate"><span class="pre">Collection.stats()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Collection.svg_to_lmd"><code class="docutils literal notranslate"><span class="pre">Collection.svg_to_lmd()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">4.2. lmd.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#shape">4.1.2. Shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.Shape"><code class="docutils literal notranslate"><span class="pre">Shape</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Shape.from_xml"><code class="docutils literal notranslate"><span class="pre">Shape.from_xml()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.Shape.to_xml"><code class="docutils literal notranslate"><span class="pre">Shape.to_xml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#segmentationloader">4.1.3. SegmentationLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader.check_cell_set_sanity"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.check_cell_set_sanity()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="../modules.html#lmd.lib.SegmentationLoader.load_classes"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.load_classes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../modules.html#module-lmd.tools">4.2. lmd.tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.ellipse"><code class="docutils literal notranslate"><span class="pre">ellipse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.glyph"><code class="docutils literal notranslate"><span class="pre">glyph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.glyph_path"><code class="docutils literal notranslate"><span class="pre">glyph_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.makeCross"><code class="docutils literal notranslate"><span class="pre">makeCross()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.rectangle"><code class="docutils literal notranslate"><span class="pre">rectangle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modules.html#lmd.tools.text"><code class="docutils literal notranslate"><span class="pre">text()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,10 +160,14 @@
       </nav>
 
       <div class="wy-nav-content">
+<div class="git-ribbon">
+  <a href="http://github.com/SwissDataScienceCenter" rel="me">Join us on GitHub</a>
+</div>
+
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../example_notebooks.html"><span class="section-number">3. </span>Example Notebooks</a></li>
       <li class="breadcrumb-item active"><span class="section-number">3.2. </span>Generate cutting XML from exported results from QUPath</li>
       <li class="wy-breadcrumbs-aside">
@@ -130,14 +180,14 @@
            <div itemprop="articleBody">
              
   <section id="Generate-cutting-XML-from-exported-results-from-QUPath">
-<h1><span class="section-number">3.2. </span>Generate cutting XML from exported results from QUPath<a class="headerlink" href="#Generate-cutting-XML-from-exported-results-from-QUPath" title="Permalink to this headline"></a></h1>
+<h1><span class="section-number">3.2. </span>Generate cutting XML from exported results from QUPath<a class="headerlink" href="#Generate-cutting-XML-from-exported-results-from-QUPath" title="Link to this heading"></a></h1>
 <p>The stitched images were loaded into Qupath and specific regions annotaed by hand. calibration points were also selected and labelled with <code class="docutils literal notranslate"><span class="pre">calib1</span></code>, <code class="docutils literal notranslate"><span class="pre">calib2</span></code> and <code class="docutils literal notranslate"><span class="pre">calib3</span></code>.</p>
-<img alt="QuPath manual shape annotation" src="../../_images/qupath_annotation.png" />
+<p><img alt="QuPath manual shape annotation" src="../../_images/qupath_annotation.png" /></p>
 <p>The annotated shapes were then exported to geojson file.</p>
 <p><img alt="Geojson export" src="../../_images/qupath_export_1.png" /> <img alt="image1" src="../../_images/geojson_export_2.png" /></p>
 <section id="Import-libraries-and-define-helper-functions">
-<h2><span class="section-number">3.2.1. </span>Import libraries and define helper functions<a class="headerlink" href="#Import-libraries-and-define-helper-functions" title="Permalink to this headline"></a></h2>
-<div class="nbinput nblast docutils container">
+<h2><span class="section-number">3.2.1. </span>Import libraries and define helper functions<a class="headerlink" href="#Import-libraries-and-define-helper-functions" title="Link to this heading"></a></h2>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -151,6 +201,15 @@
 <span class="kn">from</span> <span class="nn">lmd.lib</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Shape</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/Users/sophia/mambaforge/envs/pylmd_docs/lib/python3.10/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
@@ -199,7 +258,7 @@
 </div>
 </section>
 <section id="Import-GEOjson-regions">
-<h2><span class="section-number">3.2.2. </span>Import GEOjson regions<a class="headerlink" href="#Import-GEOjson-regions" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.2.2. </span>Import GEOjson regions<a class="headerlink" href="#Import-GEOjson-regions" title="Link to this heading"></a></h2>
 <p>The geojson dataset is loaded into a dataframe with the following structure:</p>
 <p>id objectType classification name geometry unique shape id type of shape (e.g. annotation) all annotation information from qupath shape name if given contains information relevant for shape</p>
 <p>The geojson should besides containing individual segemnted shapes contain 3 points annotated as calib1, calib2, calib3 that will be used as calibration points for generating the XML</p>
@@ -211,6 +270,14 @@
 <span class="n">df</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+Skipping field color: unsupported OGR type: 1
+</pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
@@ -247,35 +314,35 @@
       <td>9287277d-e46f-47e9-aa3f-c540b3318b5e</td>
       <td>annotation</td>
       <td>region2</td>
-      <td>POLYGON ((507.00000 1524.00000, 506.60000 1539...</td>
+      <td>POLYGON ((507 1524, 506.6 1539.01, 505.39 1553...</td>
     </tr>
     <tr>
       <th>1</th>
       <td>ab63cfd3-17d0-4dd3-b8e6-95172dda64de</td>
       <td>annotation</td>
       <td>Region1</td>
-      <td>POLYGON ((1789.00000 990.00000, 1730.00000 115...</td>
+      <td>POLYGON ((1789 990, 1730 1153, 1744 1467, 1944...</td>
     </tr>
     <tr>
       <th>2</th>
       <td>b60d2cf7-963e-42ae-8a2a-69ff289d29db</td>
       <td>annotation</td>
       <td>calib1</td>
-      <td>POINT (343.24000 368.53000)</td>
+      <td>POINT (343.24 368.53)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>56bdd076-ac9a-4950-97f3-b8c2268ee090</td>
       <td>annotation</td>
       <td>calib3</td>
-      <td>POINT (361.78000 2301.51000)</td>
+      <td>POINT (361.78 2301.51)</td>
     </tr>
     <tr>
       <th>4</th>
       <td>03d9bb6e-16b1-4cd9-9181-86da90fb98bf</td>
       <td>annotation</td>
       <td>calib2</td>
-      <td>POINT (1353.77000 1165.83000)</td>
+      <td>POINT (1353.77 1165.83)</td>
     </tr>
   </tbody>
 </table>
@@ -283,7 +350,7 @@
 </div>
 </section>
 <section id="Calibration-points">
-<h2><span class="section-number">3.2.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.2.3. </span>Calibration points<a class="headerlink" href="#Calibration-points" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
@@ -306,7 +373,7 @@
 </div>
 </section>
 <section id="Clean-up-Dataframe">
-<h2><span class="section-number">3.2.4. </span>Clean up Dataframe<a class="headerlink" href="#Clean-up-Dataframe" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.2.4. </span>Clean up Dataframe<a class="headerlink" href="#Clean-up-Dataframe" title="Link to this heading"></a></h2>
 <p>Remove non-polygon shapes, extract polygon coordinates, and parse annotation for easier use</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -323,13 +390,13 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/Users/sophia/mambaforge/envs/SPARCSpy/lib/python3.9/site-packages/geopandas/geodataframe.py:1538: SettingWithCopyWarning:
+/Users/sophia/mambaforge/envs/pylmd_docs/lib/python3.10/site-packages/geopandas/geodataframe.py:1819: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 
 See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
   super().__setitem__(key, value)
-/Users/sophia/mambaforge/envs/SPARCSpy/lib/python3.9/site-packages/geopandas/geodataframe.py:1538: SettingWithCopyWarning:
+/Users/sophia/mambaforge/envs/pylmd_docs/lib/python3.10/site-packages/geopandas/geodataframe.py:1819: SettingWithCopyWarning:
 A value is trying to be set on a copy of a slice from a DataFrame.
 Try using .loc[row_indexer,col_indexer] = value instead
 
@@ -373,7 +440,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
       <td>9287277d-e46f-47e9-aa3f-c540b3318b5e</td>
       <td>annotation</td>
       <td>region2</td>
-      <td>POLYGON ((507.00000 1524.00000, 506.60000 1539...</td>
+      <td>POLYGON ((507 1524, 506.6 1539.01, 505.39 1553...</td>
       <td>[[507.0, 1524.0], [506.6, 1539.01], [505.39, 1...</td>
     </tr>
     <tr>
@@ -381,7 +448,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
       <td>ab63cfd3-17d0-4dd3-b8e6-95172dda64de</td>
       <td>annotation</td>
       <td>Region1</td>
-      <td>POLYGON ((1789.00000 990.00000, 1730.00000 115...</td>
+      <td>POLYGON ((1789 990, 1730 1153, 1744 1467, 1944...</td>
       <td>[[1789.0, 990.0], [1730.0, 1153.0], [1744.0, 1...</td>
     </tr>
   </tbody>
@@ -390,9 +457,9 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </div>
 </section>
 <section id="Generate-shape-collection">
-<h2><span class="section-number">3.2.5. </span>Generate shape collection<a class="headerlink" href="#Generate-shape-collection" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.2.5. </span>Generate shape collection<a class="headerlink" href="#Generate-shape-collection" title="Link to this heading"></a></h2>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape_collection</span> <span class="o">=</span> <span class="n">Collection</span><span class="p">(</span><span class="n">calibration_points</span> <span class="o">=</span> <span class="n">caliblist</span><span class="p">)</span>
@@ -401,7 +468,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df_poly</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
@@ -410,7 +477,7 @@ See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stab
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#print some statistics on the shapes included in the collection and visualize results</span>
@@ -446,9 +513,9 @@ None
 </div>
 </section>
 <section id="write-to-XML">
-<h2><span class="section-number">3.2.6. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">3.2.6. </span>write to XML<a class="headerlink" href="#write-to-XML" title="Link to this heading"></a></h2>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">shape_collection</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;./test_data/cellculture_example/shapes_2.xml&quot;</span><span class="p">)</span>

@@ -6,15 +6,11 @@ Quick Start
 Installation from Github
 ========================
 
-To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. It is recommended to use the library with a Conda environment. 
-Please make sure that the package is installed editable like described. Otherwise static glyph files might not be available.
-We recommend installing the non-python dependencies with conda before installing py-lmd.
+To install the py-lmd library you can use pip.
 
 ::
 
-  git clone https://github.com/MannLabs/py-lmd
-  conda install python=3.9 scipy scikit-image>=0.19 numpy numba -c conda-forge
-  pip install -e .
+  pip install py-lmd
   
 Once installed the modules can be loaded as following:
 
