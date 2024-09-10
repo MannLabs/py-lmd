@@ -1,3 +1,42 @@
 [build-system]
-requires = ["setuptools >= 44", "wheel"]
+requires = ["setuptools >= 61.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "py-lmd"
+version = "1.1.0"
+description = "Read, Modify and Create new shape files for the Leica LMD6 & LMD7"
+readme = "README.md"
+requires-python = ">=3.8, !=3.12.*"
+license = {file = "LICENSE"}
+keywords = ["LMD"]
+dynamic = ["dependencies", "optional-dependencies"]
+authors = [
+  {name = "Georg Wallmann"},
+  {name = "Sophia Maedler"},
+  {name = "Niklas Schmacke"}, 
+]
+maintainers = [
+  {name = "Georg Wallmann", email = "wallmann@biochem.mpg.de"},
+  {name = "Sophia Maedler", email = "maedler@biochem.mpg.de"},
+]
+
+classifiers = [
+ "License :: OSI Approved :: Apache Software License",
+ "Programming Language :: Python",
+ "Intended Audience :: Science/Research",
+ "Natural Language :: English",
+ "Operating System :: OS Independent",
+ "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = {file = ["requirements_dev.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/MannLabs/py-lmd"
+Documentation = "https://mannlabs.github.io/py-lmd/html/index.html"
+Source = "https://github.com/MannLabs/py-lmd"

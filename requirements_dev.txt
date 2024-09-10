@@ -1,0 +1,25 @@
+numpy<2.0.0
+matplotlib
+lxml
+networkx >= 3.1
+scikit-image>=0.19
+svgelements
+setuptools
+numba
+tqdm
+hilbertcurve
+
+#packages for building docs
+sphinx
+sphinx-argparse
+sphinx-rtd-theme==2.0.0
+nbsphinx
+renku-sphinx-theme
+sphinx-copybutton
+
+#for running example notebooks
+geopandas
+geojson
+
+#packages for testing
+pytest

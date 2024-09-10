@@ -1,30 +1,33 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>2. Using Segmented Images &mdash; py-lmd 1.0.2 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/fonts.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=5c2dde8a" />
+      <link rel="stylesheet" type="text/css" href="../_static/fonts.css?v=5583d106" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/clipboard.min.js"></script>
-        <script src="../_static/copybutton.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=1ed6394b"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+        <script src="../_static/copybutton.js?v=f281be69"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example Notebooks" href="example_notebooks.html" />
+    <link rel="next" title="3. Example Notebooks" href="example_notebooks.html" />
     <link rel="prev" title="1. Quick Start" href="quickstart.html" />
     <link href="../_static/style.css" rel="stylesheet" type="text/css">
 
@@ -35,12 +38,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/py-lmd_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -64,34 +71,78 @@
 <li class="toctree-l2"><a class="reference internal" href="#processing-order">2.5. Processing Order</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example_notebooks.html">Example Notebooks</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html">1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">1.1. Load Segmentation Mask</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">1.2. Define cell sets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">1.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#XML-generation">1.4. XML generation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">1.5. write to XML</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_notebooks.html">3. Example Notebooks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html">3.1. Generate a Cutting XML from segmentation mask using the Segmentation Loader.</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Load-Segmentation-Mask">3.1.1. Load Segmentation Mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Define-cell-sets">3.1.2. Define cell sets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#Calibration-points">3.1.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#XML-generation">3.1.4. XML generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_segmentation_mask.html#write-to-XML">3.1.5. write to XML</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html">2. Generate cutting XML from exported results from QUPath</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">2.1. Import libraries and define helper functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">2.2. Import GEOjson regions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Calibration-points">2.3. Calibration points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">2.4. Clean up Dataframe</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">2.5. Generate shape collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#write-to-XML">2.6. write to XML</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html">3.2. Generate cutting XML from exported results from QUPath</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Import-libraries-and-define-helper-functions">3.2.1. Import libraries and define helper functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Import-GEOjson-regions">3.2.2. Import GEOjson regions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Calibration-points">3.2.3. Calibration points</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Clean-up-Dataframe">3.2.4. Clean up Dataframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#Generate-shape-collection">3.2.5. Generate shape collection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_xml_from_qupath_export.html#write-to-XML">3.2.6. write to XML</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/generate_cutting_mask_svg.html">3.3. Convert SVG graphic into LMD excision instructions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_cutting_mask_svg.html#Visualize-Results">3.3.1. Visualize Results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="notebooks/generate_cutting_mask_svg.html#Export-to-XML">3.3.2. Export to XML</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">3. py-lmd Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#lmd-lib">3.1. lmd.lib</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#collection">3.1.1. Collection</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#shape">3.1.2. Shape</a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules.html#segmentationloader">3.1.3. SegmentationLoader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">4. py-lmd Modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#lmd-lib">4.1. lmd.lib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#collection">4.1.1. Collection</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules.html#lmd.lib.Collection"><code class="docutils literal notranslate"><span class="pre">Collection</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.shapes"><code class="docutils literal notranslate"><span class="pre">Collection.shapes</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.calibration_points"><code class="docutils literal notranslate"><span class="pre">Collection.calibration_points</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.orientation_transform"><code class="docutils literal notranslate"><span class="pre">Collection.orientation_transform</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.add_shape"><code class="docutils literal notranslate"><span class="pre">Collection.add_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.join"><code class="docutils literal notranslate"><span class="pre">Collection.join()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.load"><code class="docutils literal notranslate"><span class="pre">Collection.load()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.new_shape"><code class="docutils literal notranslate"><span class="pre">Collection.new_shape()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.plot"><code class="docutils literal notranslate"><span class="pre">Collection.plot()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.save"><code class="docutils literal notranslate"><span class="pre">Collection.save()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.stats"><code class="docutils literal notranslate"><span class="pre">Collection.stats()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Collection.svg_to_lmd"><code class="docutils literal notranslate"><span class="pre">Collection.svg_to_lmd()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules.html#module-lmd.tools">3.2. lmd.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#shape">4.1.2. Shape</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules.html#lmd.lib.Shape"><code class="docutils literal notranslate"><span class="pre">Shape</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Shape.from_xml"><code class="docutils literal notranslate"><span class="pre">Shape.from_xml()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.Shape.to_xml"><code class="docutils literal notranslate"><span class="pre">Shape.to_xml()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#segmentationloader">4.1.3. SegmentationLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader.check_cell_set_sanity"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.check_cell_set_sanity()</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader.load_classes"><code class="docutils literal notranslate"><span class="pre">SegmentationLoader.load_classes()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html#module-lmd.tools">4.2. lmd.tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.ellipse"><code class="docutils literal notranslate"><span class="pre">ellipse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.glyph"><code class="docutils literal notranslate"><span class="pre">glyph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.glyph_path"><code class="docutils literal notranslate"><span class="pre">glyph_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.makeCross"><code class="docutils literal notranslate"><span class="pre">makeCross()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.rectangle"><code class="docutils literal notranslate"><span class="pre">rectangle()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules.html#lmd.tools.text"><code class="docutils literal notranslate"><span class="pre">text()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -106,10 +157,14 @@
       </nav>
 
       <div class="wy-nav-content">
+<div class="git-ribbon">
+  <a href="http://github.com/SwissDataScienceCenter" rel="me">Join us on GitHub</a>
+</div>
+
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a></li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active"><span class="section-number">2. </span>Using Segmented Images</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/pages/segmentation_loader.rst.txt" rel="nofollow"> View page source</a>
@@ -121,9 +176,9 @@
            <div itemprop="articleBody">
              
   <section id="using-segmented-images">
-<h1><span class="section-number">2. </span>Using Segmented Images<a class="headerlink" href="#using-segmented-images" title="Permalink to this headline"></a></h1>
+<h1><span class="section-number">2. </span>Using Segmented Images<a class="headerlink" href="#using-segmented-images" title="Link to this heading"></a></h1>
 <section id="background">
-<h2><span class="section-number">2.1. </span>Background<a class="headerlink" href="#background" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">2.1. </span>Background<a class="headerlink" href="#background" title="Link to this heading"></a></h2>
 <a class="reference internal image-reference" href="../_images/watershed.png"><img alt="../_images/watershed.png" class="align-right" src="../_images/watershed.png" style="width: 400.0px; height: 400.0px;" /></a>
 <p>Although the py-lmd package is meant to serve as framework for creating your own workflows, generating cutting data based on segmentations is the central application of this package.
 When biological images are segmented, every pixel receives a class or label. Labels can be used to identify single cells and distinguish them from the background or can categorize</p>
@@ -139,7 +194,7 @@ Therefore, different processing steps are included which optimize single cell sh
 </dl>
 </section>
 <section id="different-coordinate-systems">
-<h2><span class="section-number">2.2. </span>Different Coordinate Systems<a class="headerlink" href="#different-coordinate-systems" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">2.2. </span>Different Coordinate Systems<a class="headerlink" href="#different-coordinate-systems" title="Link to this heading"></a></h2>
 <p>Using images to generate cutting data with the py-lmd package makes it necessary to transform the image coordinate system to the Leica LMD coordinate system. Although this functionality is part of the package, it is important to highlight the differences in the coordinate systems and to keep in mind what coordinate system is used when calibration points are determined from image data.</p>
 <p>The coordinates for the Leica LMD are defined as <cite>(x, y)</cite> coordinates with the x-axis extending to the right and the y-axis extending to the top. All cutting data should exist in this coordinate system and should be calibrated accordingly. When cutting data is generated based on whole slide images we have to keep in mind that images are often indexed differently. Images in Fiji or Numpy are indexed as <cite>(row, column)</cite> with the rows extending downwards and the columns extending to the right. If we want to identify positions in image data - like calibration crosses or single cells - we have to translate their position in the <cite>(row, column)</cite> format to the <cite>(x, y)</cite> format.</p>
 <img alt="../_images/py-lmd-figures-01.png" src="../_images/py-lmd-figures-01.png" />
@@ -153,7 +208,7 @@ Therefore, different processing steps are included which optimize single cell sh
 <p>In this case  all coordinates for calibration points and shapes can be set in form of <cite>(row, column)</cite> coordinates. The orientation transform is only applied when the Collection is saved or, if desired, when the Collection is plotted.</p>
 </section>
 <section id="getting-started-with-the-segmentationloader">
-<h2><span class="section-number">2.3. </span>Getting started with the SegmentationLoader<a class="headerlink" href="#getting-started-with-the-segmentationloader" title="Permalink to this headline"></a></h2>
+<h2><span class="section-number">2.3. </span>Getting started with the SegmentationLoader<a class="headerlink" href="#getting-started-with-the-segmentationloader" title="Link to this heading"></a></h2>
 <p>Before we can start with the <a class="reference internal" href="modules.html#lmd.lib.SegmentationLoader" title="lmd.lib.SegmentationLoader"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationLoader</span></code></a>, we have to load our image which contains the labels for our cells. The segmentation loader expects a numpy array of integers where the background is assigned to label 0. There are no further restrictions to the shape or number of labels other than being continuos. All pixel with a certain label need to be in contact with each other. Functional labels which assign cells based on the cell type must be converted.</p>
 <p>As example we will use the cytosol segmentation seen above which can be found under <cite>notebooks/Image_Segmentation/segmentation_cytosol.tiff</cite>. First, we will load this image and convert it to a numpy array.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -189,13 +244,13 @@ Therefore, different processing steps are included which optimize single cell sh
 <img alt="../_images/segmentation1.png" src="../_images/segmentation1.png" />
 </section>
 <section id="overview-of-configuration">
-<h2><span class="section-number">2.4. </span>Overview of Configuration<a class="headerlink" href="#overview-of-configuration" title="Permalink to this headline"></a></h2>
-<table class="colwidths-given docutils align-default" id="id1">
-<caption><span class="caption-text">Overview of Configuration Parameters.</span><a class="headerlink" href="#id1" title="Permalink to this table"></a></caption>
+<h2><span class="section-number">2.4. </span>Overview of Configuration<a class="headerlink" href="#overview-of-configuration" title="Link to this heading"></a></h2>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Overview of Configuration Parameters.</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 13%" />
-<col style="width: 63%" />
+<col style="width: 25.0%" />
+<col style="width: 12.5%" />
+<col style="width: 62.5%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head stub"><p>Parameter</p></th>
@@ -244,11 +299,11 @@ Therefore, different processing steps are included which optimize single cell sh
 </table>
 </section>
 <section id="processing-order">
-<h2><span class="section-number">2.5. </span>Processing Order<a class="headerlink" href="#processing-order" title="Permalink to this headline"></a></h2>
-<table class="colwidths-given docutils align-default" id="id2">
-<caption><span class="caption-text">Processing Order</span><a class="headerlink" href="#id2" title="Permalink to this table"></a></caption>
+<h2><span class="section-number">2.5. </span>Processing Order<a class="headerlink" href="#processing-order" title="Link to this heading"></a></h2>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Processing Order</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
 <colgroup>
-<col style="width: 100%" />
+<col style="width: 100.0%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p>Binary dilation of cell masks</p></td>
@@ -270,11 +325,6 @@ Therefore, different processing steps are included which optimize single cell sh
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 34%" />
-<col style="width: 34%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head" colspan="3"><p><strong>binary_smoothing</strong></p></th>
 </tr>
@@ -299,11 +349,6 @@ of vertices in the polygon of a shape. Please see <code class="docutils literal 
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 34%" />
-<col style="width: 34%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head" colspan="3"><p><strong>convolution_smoothing</strong></p></th>
 </tr>
@@ -332,11 +377,6 @@ of vertices in the polygon of a shape. Please see <code class="docutils literal 
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 34%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head" colspan="3"><p><strong>poly_compression_factor</strong></p></th>
 </tr>
@@ -412,7 +452,7 @@ of vertices in the polygon of a shape. Please see <code class="docutils literal 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="quickstart.html" class="btn btn-neutral float-left" title="1. Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="example_notebooks.html" class="btn btn-neutral float-right" title="Example Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="example_notebooks.html" class="btn btn-neutral float-right" title="3. Example Notebooks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
