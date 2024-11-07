@@ -621,7 +621,7 @@ class SegmentationLoader():
         elif platform.system() == 'Linux':
             self.context = "fork"
     
-    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
+    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.int64)):
         
         self.calibration_points = calibration_points
         sets = []
@@ -638,7 +638,8 @@ class SegmentationLoader():
         
         if coords_lookup is None:
             self.log("Calculating coordinate locations of all cells.")
-            self.coords_lookup = _create_coord_index(self.input_segmentation)
+            self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
+            self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
         else:
             self.log("Loading coordinates from external source")
             self.coords_lookup = coords_lookup
