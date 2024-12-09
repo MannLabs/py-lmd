@@ -506,6 +506,8 @@ class SegmentationLoader():
         
         Args:
             config (dict): Dict containing configuration parameters. See Note for further explanation.
+            processes (int): Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
+            threads (int): Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
             
             cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
             
@@ -605,13 +607,13 @@ class SegmentationLoader():
         self.register_parameter('hilbert_p', 7)
         self.register_parameter('xml_decimal_transform', 100)
         self.register_parameter('distance_heuristic', 300)
-        self.register_parameter('processes', 10)
         self.register_parameter('join_intersecting', True)
         self.register_parameter('orientation_transform', np.eye(2))
-        self.register_parameter('threads', 1)
+        self.register_parameter('threads', 10)
 
         self.coords_lookup = None
         self.processes = processes
+
 
     def _get_context(self):
         if platform.system() == 'Windows':
@@ -843,7 +845,7 @@ class SegmentationLoader():
                 dilated_coords.append(tranform_to_map(coord, dilation = dilation))
         
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['processes']) as pool:           
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
                 dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
                                                     dilation = dilation),
                                                     input_coords), total=len(input_center)))
