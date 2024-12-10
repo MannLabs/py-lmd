@@ -9,24 +9,28 @@ from hilbertcurve.hilbertcurve import HilbertCurve
 import numba as nb
 
 @njit
-def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint32)):
+def _create_coord_index(mask, 
+                        background=0, 
+                        classes = np.array([], dtype=np.uint64),
+                        dtype = np.uint64):
+    
     if len(classes) == 0:
         num_classes = np.max(mask) + 1
-        classes = np.arange(num_classes, dtype=np.uint32)
+        classes = np.arange(num_classes, dtype=dtype)
     else:
         num_classes = len(classes)
 
     # each class will have a list of coordinates
     # each coordinate is a 2D array with row and column
     # initial size is 32, whenever it exceeds the size, it will be doubled
-    initial_size = np.uint32(32)
+    initial_size = 32
 
     # Use dictionaries for faster access and creation, as only requested class_ids are generated
     index_list = {}
     stop_list = {i: 0 for i in classes}
 
     for i in classes:
-        index_list[i] = np.zeros((initial_size, 2), dtype=np.uint32)
+        index_list[i] = np.zeros((initial_size, 2), dtype=dtype)
 
     # Create index list
     for col in range(mask.shape[1]):
@@ -35,7 +39,7 @@ def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint32
             if class_id in classes:
                 if stop_list[class_id] >= index_list[class_id].shape[0]:
                     new_size = index_list[class_id].shape[0] * 2
-                    new_array = np.zeros((new_size, 2), dtype=np.uint32)
+                    new_array = np.zeros((new_size, 2), dtype=dtype)
                     new_array[:stop_list[class_id]] = index_list[class_id]
                     index_list[class_id] = new_array
                 index_list[class_id][stop_list[class_id]][0] = row

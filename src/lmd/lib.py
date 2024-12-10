@@ -627,7 +627,7 @@ class SegmentationLoader():
         elif platform.system() == 'Linux':
             self.context = "fork"
     
-    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.int64)):
+    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.uint64)):
         
         self.calibration_points = calibration_points
         sets = []
