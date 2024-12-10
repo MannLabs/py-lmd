@@ -619,6 +619,24 @@ class SegmentationLoader():
         self.coords_lookup = None
         self.processes = processes
 
+        self._configure_path_optimizer()
+
+    def _configure_path_optimizer(self):
+        #configure path optimizer
+        if 'path_optimization' in self.config:
+            optimization_method = self.config['path_optimization']
+        else:
+            optimization_method = "none"
+
+            # check if the optimizer is a valid option
+        if optimization_method in self.VALID_PATH_OPTIMIZERS:
+            pathoptimizer = optimization_method
+        else:
+            self.log("Path optimizer is no valid option, no optimization will be used.")
+            pathoptimizer = "none"
+        
+        self.log(f"Path optimizer used for XML generation: {optimization_method}")
+        self.optimization_method = pathoptimizer
 
     def _get_context(self):
         if platform.system() == 'Windows':
@@ -638,7 +656,6 @@ class SegmentationLoader():
 
         # iterate over all defined sets, perform sanity checks and load external data
         for i, cell_set in enumerate(cell_sets):
-            self.log(f"sanity check for cell set {i}")
             self.check_cell_set_sanity(cell_set)
             cell_set["classes_loaded"] = self.load_classes(cell_set)
             sets.append(cell_set)
@@ -726,8 +743,6 @@ class SegmentationLoader():
         # Calculate dilation and erosion based on if merging was activated
         dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
         erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
-
-        self.log("Create shapes for merged cells")
         
         if self.config["threads"] == 1:  
             shapes = []
@@ -739,10 +754,11 @@ class SegmentationLoader():
                                                     erosion = erosion,
                                                     dilation = dilation,
                                                     coord_format = False),
-                                                    coords), total=len(center), disable = not self.verbose, desc = "creating shapes"))
+                                                    coords), total=len(center), 
+                                                    disable = not self.verbose, 
+                                                    desc = "creating shapes"))
                 
             
-        self.log("Calculating polygons")
         if self.config["threads"] == 1:  
             polygons = []
             for shape in tqdm(shapes, desc = "calculating polygons"):
@@ -755,58 +771,43 @@ class SegmentationLoader():
                                                     smoothing_filter_size = self.config['convolution_smoothing'],
                                                     poly_compression_factor = self.config['poly_compression_factor']
                                                     ),
-                                                    shapes), total=len(center), disable = not self.verbose, desc = "calculating polygons" ))
-            
+                                                    shapes), total=len(center), 
+                                                    disable = not self.verbose, 
+                                                    desc = "calculating polygons" ))
         
-        self.log("Polygon calculation finished")
-        
+        #perform path optimization to minimize the total distance that the LMD travels during cutting (this improves cutting speed and focus)
         center = np.array(center)
         unoptimized_length = calc_len(center)
         self.log(f"Current path length: {unoptimized_length:,.2f} units")
 
-        # check if optimizer key has been set
-        if 'path_optimization' in self.config:
+        if self.optimization_method != "none":
+            if self.optimization_method  == "greedy":
+                optimized_idx = tsp_greedy_solve(center, k=self.config['greedy_k'])
         
-            optimization_method = self.config['path_optimization']
-            self.log(f"Path optimizer defined in config: {optimization_method}")
-
-            # check if the optimizer is a valid option
-            if optimization_method in self.VALID_PATH_OPTIMIZERS:
-                pathoptimizer = optimization_method
-
-            else:
-                self.log("Path optimizer is no valid option, no optimization will be used.")
-                pathoptimizer = "none"
-                
-        else:
-            self.log("No path optimizer has been defined")
-            pathoptimizer = "none"
+            elif self.optimization_method  == "hilbert":
+                optimized_idx = tsp_hilbert_solve(center, p=self.config['hilbert_p'])
             
-        if pathoptimizer == "greedy":
-            optimized_idx = tsp_greedy_solve(center, k=self.config['greedy_k'])
-    
-        elif pathoptimizer == "hilbert":
-            optimized_idx = tsp_hilbert_solve(center, p=self.config['hilbert_p'])
-        
+            #update order of centers
+            center = center[optimized_idx]
+            self.indexes = optimized_idx
+
+            # calculate optimized path length and optimization factor
+            optimized_length = calc_len(center)
+            self.log(f"Optimized path length: {optimized_length:,.2f} units")
+
+            optimization_factor = unoptimized_length / optimized_length
+            self.log(f"Optimization factor: {optimization_factor:,.1f}x")
         else:
+            self.log("No path optimization used")
+            optimization_factor = 1
             optimized_idx = list(range(len(center)))
-            
-        self.center = center[optimized_idx]
 
-        # calculate optimized path length and optimization factor
-        optimized_length = calc_len(center)
-        self.log(f"Optimized path length: {optimized_length:,.2f} units")
-
-        optimization_factor = unoptimized_length / optimized_length
-        self.log(f"Optimization factor: {optimization_factor:,.1f}x")
-        
         # order list of shapes by the optimized index array
         polygons = [x for _, x in sorted(zip(optimized_idx, polygons))]
 
         # Plot coordinates if in debug mode
         if self.verbose:
             
-            center = np.array(center)
             plt.figure(figsize=(10, 10))
             ax = plt.gca()
 
@@ -821,7 +822,7 @@ class SegmentationLoader():
     
 
             ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
-            ax.plot(self.center[:,1],self.center[:,0], color="grey")
+            ax.plot(center[:,1],center[:,0], color="grey")
             ax.invert_yaxis()
             plt.axis('equal')
             
@@ -858,7 +859,8 @@ class SegmentationLoader():
             with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
                 dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
                                                     dilation = dilation),
-                                                    input_coords), total=len(input_center)))
+                                                    input_coords), total=len(input_center), 
+                                                    desc = "dilating shapes"))
             
         dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
 
