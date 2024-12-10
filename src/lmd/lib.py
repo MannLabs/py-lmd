@@ -511,7 +511,11 @@ class SegmentationLoader():
             
             cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
             
-            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.                    
+            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.    
+
+            coords_lookup (None, dict): precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
+            
+            classes (np.array): Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
                     
         Example:
                     
@@ -623,7 +627,7 @@ class SegmentationLoader():
         elif platform.system() == 'Linux':
             self.context = "fork"
     
-    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None):
+    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.int64)):
         
         self.calibration_points = calibration_points
         sets = []
@@ -640,7 +644,8 @@ class SegmentationLoader():
         
         if coords_lookup is None:
             self.log("Calculating coordinate locations of all cells.")
-            self.coords_lookup = _create_coord_index(self.input_segmentation)
+            self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
+            self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
         else:
             self.log("Loading coordinates from external source")
             self.coords_lookup = coords_lookup

@@ -9,25 +9,30 @@ from hilbertcurve.hilbertcurve import HilbertCurve
 import numba as nb
 
 @njit
-def _create_coord_index(mask, background=0):
-
-    num_classes = np.max(mask)+1
+def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint32)):
+    if len(classes) == 0:
+        num_classes = np.max(mask) + 1
+        classes = np.arange(num_classes, dtype=np.uint32)
+    else:
+        num_classes = len(classes)
 
     # each class will have a list of coordinates
     # each coordinate is a 2D array with row and column
     # initial size is 32, whenever it exceeds the size, it will be doubled
-    initial_size = 32
+    initial_size = np.uint32(32)
 
-    index_list = []
-    stop_list = np.zeros(num_classes, dtype=np.uint32)
-    for i in range(num_classes):
-        index_list.append(np.zeros((initial_size, 2), dtype=np.uint32))
+    # Use dictionaries for faster access and creation, as only requested class_ids are generated
+    index_list = {}
+    stop_list = {i: 0 for i in classes}
 
-    # create index list
+    for i in classes:
+        index_list[i] = np.zeros((initial_size, 2), dtype=np.uint32)
+
+    # Create index list
     for col in range(mask.shape[1]):
         for row in range(mask.shape[0]):
             class_id = mask[row, col]
-            if class_id != background:
+            if class_id in classes:
                 if stop_list[class_id] >= index_list[class_id].shape[0]:
                     new_size = index_list[class_id].shape[0] * 2
                     new_array = np.zeros((new_size, 2), dtype=np.uint32)
@@ -37,13 +42,12 @@ def _create_coord_index(mask, background=0):
                 index_list[class_id][stop_list[class_id]][1] = col
                 stop_list[class_id] += 1
 
-    # resize index list
-    for i in range(num_classes):
-        index_list[i] = index_list[i][:stop_list[i]]
+    # Resize index list to remove empty elements
+    for class_id in classes:
+        index_list[class_id] = index_list[class_id][:stop_list[class_id]]
 
     return index_list
 
-@njit
 def _filter_coord_index(index_list, classes, background=0):
 
     filtered_index_list = []
@@ -53,11 +57,12 @@ def _filter_coord_index(index_list, classes, background=0):
     return filtered_index_list
              
 def get_coordinate_form(inarr, classes, coords_lookup, debug=False):
+    
     # return with empty lists if no classes are provided
     if len(classes) == 0:
         return [],[],[]
     
-    coords_filtered = _filter_coord_index(coords_lookup, nb.typed.List(classes))
+    coords_filtered = _filter_coord_index(coords_lookup, classes)
     
     center = [np.mean(el, axis=0) for el in coords_filtered]
     
