@@ -9,7 +9,7 @@ from matplotlib import image
 from skimage import data, color
 import matplotlib.ticker as ticker
 from svgelements import SVG
-from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index, _filter_coord_index
+from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index,_create_coord_index_sparse, _filter_coord_index
 from tqdm import tqdm
 # import warnings
 import warnings
@@ -594,6 +594,7 @@ class SegmentationLoader():
 
     # define all valid path optimization methods used with the "path_optimization" argument in the configuration
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
+    DEFAULT_SEGMENTATION_DTYPE = np.uint64
     
     
     def __init__(self, config = {}, verbose = False, processes = 1):
@@ -627,8 +628,11 @@ class SegmentationLoader():
         elif platform.system() == 'Linux':
             self.context = "fork"
     
-    def __call__(self, input_segmentation, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.uint64)):
+    def __call__(self, input_segmentation: np.ndarray | None, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.uint64)):
         
+        if input_segmentation is None:
+            assert coords_lookup is not None, "If no input segmentation is provided, a coords_lookup must be provided."
+
         self.calibration_points = calibration_points
         sets = []
 
@@ -644,8 +648,10 @@ class SegmentationLoader():
         
         if coords_lookup is None:
             self.log("Calculating coordinate locations of all cells.")
-            self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
-            self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
+            #deprecated infavour of more computationally efficient solution
+            #self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
+            #self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
+            self.coords_lookup = _create_coord_index_sparse(self.input_segmentation)
         else:
             self.log("Loading coordinates from external source")
             self.coords_lookup = coords_lookup
@@ -683,7 +689,7 @@ class SegmentationLoader():
             warnings.warn("Class 0 is not a valid class and was removed from the cell set")
 
         self.log("Convert label format into coordinate format")
-        center, length, coords = get_coordinate_form(self.input_segmentation, cell_set["classes_loaded"], self.coords_lookup)
+        center, length, coords = get_coordinate_form(cell_set["classes_loaded"], self.coords_lookup)
     
         self.log("Conversion finished, performing sanity check.")
         

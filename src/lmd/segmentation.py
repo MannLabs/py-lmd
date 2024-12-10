@@ -7,6 +7,25 @@ import numpy as np
 from hilbertcurve.hilbertcurve import HilbertCurve
 
 import numba as nb
+from scipy.sparse import coo_array
+
+def _create_coord_index_sparse(mask):
+
+    sparse_mask = coo_array(mask)
+    
+    _ids, inverse_indices = np.unique(sparse_mask.data, return_inverse=True)
+
+    #initialize dictionary for saving coordinates of each class
+    #final structure will be a dictionary with class_id as key and a list of coordinates as value
+    coords = {key: [] for key in _ids}
+
+    # Iterate over sparse data once
+    for idx, _ix in enumerate(inverse_indices):
+        coords[_ids[_ix]].append((sparse_mask.coords[0][idx], sparse_mask.coords[1][idx]))
+
+    # Convert lists to numpy arrays
+    coords = {key: np.array(value) for key, value in coords.items()}
+    return(coords)
 
 @njit
 def _create_coord_index(mask, 
@@ -60,7 +79,7 @@ def _filter_coord_index(index_list, classes, background=0):
             filtered_index_list.append(index_list[class_id])
     return filtered_index_list
              
-def get_coordinate_form(inarr, classes, coords_lookup, debug=False):
+def get_coordinate_form(classes, coords_lookup, debug=False):
     
     # return with empty lists if no classes are provided
     if len(classes) == 0:
