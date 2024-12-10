@@ -675,7 +675,6 @@ class SegmentationLoader():
             )
         else:
             print("Processing cell sets in serial")
-            print(cell_set)
             collections = []
             for i, cell_set in enumerate(cell_sets):
                 collections.append(self.generate_cutting_data(i, cell_set))
@@ -695,7 +694,7 @@ class SegmentationLoader():
         
         # Sanity check 1
         if len(center) == len(cell_set["classes_loaded"]):
-            self.log("Check passed")
+            pass
         else:
             self.log("Check failed, returned lengths do not match cell set.\n Some classes were not found in the segmentation and were therefore removed.\n Please make sure all classes specified are present in your segmentation.")
             elements_removed =  len(cell_set["classes_loaded"]) - len(center)
@@ -703,7 +702,7 @@ class SegmentationLoader():
         
         # Sanity check 2: for the returned coordinates
         if len(center) == len(length) == len(length):
-            self.log("Check passed")
+            pass
         else:
             self.log("Check failed, returned lengths do not match. Please check if all classes specified are present in your segmentation")
         
@@ -714,7 +713,7 @@ class SegmentationLoader():
                 zero_elements += 1
                 
         if zero_elements == 0:
-            self.log("Check passed")
+            pass
         else:
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
 
