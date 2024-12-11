@@ -8,24 +8,71 @@ from hilbertcurve.hilbertcurve import HilbertCurve
 
 import numba as nb
 from scipy.sparse import coo_array
+import gc
 
-def _create_coord_index_sparse(mask):
-
-    sparse_mask = coo_array(mask)
+@njit
+def _numba_accelerator_coord_calculation(_ids: np.ndarray, 
+                                         inverse_indices:np.ndarray, 
+                                         sparse_coords_0:np.ndarray, 
+                                         sparse_coords_1:np.ndarray) -> dict:
+    """Accelerate the transformation of a sparse array to a coordinate list using numba"""
     
-    _ids, inverse_indices = np.unique(sparse_mask.data, return_inverse=True)
-
-    #initialize dictionary for saving coordinates of each class
-    #final structure will be a dictionary with class_id as key and a list of coordinates as value
-    coords = {key: [] for key in _ids}
-
-    # Iterate over sparse data once
+    #initialize datastructure for storing results: dict[cell_id] = np.array([0, 0, 0, ...])
+    #final structure will be a dictionary with class_id as key and an array of coordinates as value
+    #the array for the coordinates is initialized with zero values and its size dynamically increased during processing
+    # in a second array the next unfilled coordinate position is stored
+    index_list = {}
+    stop_list = {}
+    initial_size = 32 # type: int # initial size of the place holder array for storing coordinate information
+    
+    for i in _ids:
+        index_list[i] = np.zeros((initial_size, 2), dtype=np.uint64)
+        stop_list[i] = 0    
+    
     for idx, _ix in enumerate(inverse_indices):
-        coords[_ids[_ix]].append((sparse_mask.coords[0][idx], sparse_mask.coords[1][idx]))
+        _id = _ids[_ix] #get current cell id
+        current_size = index_list[_id].shape[0]
+        #ensure array for storing coords is large enough to store the new coordinates
+        if stop_list[_id] >= current_size: 
+            new_size = current_size * 2
+            new_array = np.zeros((new_size, 2), dtype=np.uint64)
+            new_array[:stop_list[_id]] = index_list[_id]
+            index_list[_id] = new_array
+                
+        index_list[_id][stop_list[_id]][0] = sparse_coords_0[idx]
+        index_list[_id][stop_list[_id]][1] = sparse_coords_1[idx]
+        stop_list[_id] += 1
+        
+    # resize index list
+    for _id in _ids:
+        index_list[_id] = index_list[_id][:stop_list[_id]]
 
-    # Convert lists to numpy arrays
-    coords = {key: np.array(value) for key, value in coords.items()}
-    return(coords)
+    return(index_list)
+    
+def _create_coord_index_sparse(mask: np.ndarray) -> dict:
+    """Create a coordinate index from a segmentation mask. 
+    In the coordinate index each key is a unique class id and the value is a list of coordinates for this class.
+    
+    Args:
+        mask (np.ndarray): A 2D segmentation mask
+    
+    Returns:
+        dict: A dictionary containing the class ids as keys
+              and a list of coordinates as values
+    """
+    #convert to a sparse array (this will be faster than iterating over the dense array because segmentation masks are usually sparse)
+    sparse_mask = coo_array(mask)
+
+    cell_ids = sparse_mask.data
+    sparse_coords_0 = sparse_mask.coords[0]
+    sparse_coords_1 = sparse_mask.coords[1]
+
+    del sparse_mask #this is no longer needed for calculations and should free up memory when explicitly deleted
+    gc.collect()
+
+    _ids, inverse_indices = np.unique(cell_ids, return_inverse=True)
+
+    return(_numba_accelerator_coord_calculation(_ids, inverse_indices, sparse_coords_0, sparse_coords_1))
 
 @njit
 def _create_coord_index(mask, 
