@@ -826,9 +826,10 @@ class SegmentationLoader():
             axs.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
             axs.plot(center[:,1],center[:,0], color="grey")
             axs.invert_yaxis()
-            axs.axis('equal')
+            axs.set_aspect('equal', adjustable='box')
             axs.axis("off")
             axs.set_title("Final cutting path")
+            fig.tight_layout()
 
             if self.multi_threading:
                 self.log("Plotting shapes in debug mode is not supported in multi-threading mode.")
