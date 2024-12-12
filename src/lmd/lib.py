@@ -163,8 +163,8 @@ class Collection:
             
         if not mode in modes:
             raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
-        # check for calibration points
         
+        # check for calibration points
         cal = np.array(self.calibration_points).T
 
 
@@ -675,6 +675,7 @@ class SegmentationLoader():
 
         #try multithreading
         if self.processes > 1:
+            self.multi_threading = True
             self.log("Processing cell sets in parallel")
             args = []
             for i, cell_set in enumerate(cell_sets):
@@ -692,6 +693,7 @@ class SegmentationLoader():
             )
         else:
             print("Processing cell sets in serial")
+            self.multi_threading = False
             collections = []
             for i, cell_set in enumerate(cell_sets):
                 collections.append(self.generate_cutting_data(i, cell_set))
@@ -807,25 +809,31 @@ class SegmentationLoader():
         # Plot coordinates if in debug mode
         if self.verbose:
             
-            plt.figure(figsize=(10, 10))
-            ax = plt.gca()
+            fig, axs = plt.subplots(1, 1, figsize=(10, 10))
 
             if 'background_image' in self.config:
+                axs.imshow(self.config['background_image'])
 
-                ax.imshow(self.config['background_image'])
-
-            ax.scatter(center[:,1],center[:,0], s=1)
+            axs.scatter(center[:,1], center[:,0], s=1)
 
             for shape in polygons:
-                ax.plot(shape[:,1],shape[:,0], color="red",linewidth=1)
+                axs.plot(shape[:,1], shape[:,0], color="red",linewidth=1)
     
 
-            ax.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
-            ax.plot(center[:,1],center[:,0], color="grey")
-            ax.invert_yaxis()
-            plt.axis('equal')
-            
-            plt.show()
+            axs.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
+            axs.plot(center[:,1],center[:,0], color="grey")
+            axs.invert_yaxis()
+            axs.axis('equal')
+            axs.axis("off")
+            axs.set_title("Final cutting path")
+
+            if self.multi_threading:
+                self.log("Plotting shapes in debug mode is not supported in multi-threading mode.")
+                self.log("Saving plots to disk instead.")
+                fig.savefig(f"debug_plot_{i}.png")
+                plt.close(fig)
+            else:
+                plt.show(fig)
     
         # Generate array of marker cross positions
         ds = Collection(calibration_points = self.calibration_points)
