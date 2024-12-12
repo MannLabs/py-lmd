@@ -686,7 +686,7 @@ class SegmentationLoader():
                 tqdm_args=dict(
                     file=sys.stdout,
                     disable=not self.verbose,
-                    desc="                  collecting cell sets",
+                    desc="collecting cell sets",
                 ),
                 n_threads = self.processes
             )
@@ -735,7 +735,6 @@ class SegmentationLoader():
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
 
         if self.config['join_intersecting']:
-            print("Merging intersecting shapes")
             center, length, coords = self.merge_dilated_shapes(center, length, coords, 
                                                                dilation = self.config['shape_dilation'],
                                                                erosion = self.config['shape_erosion'])
@@ -846,7 +845,8 @@ class SegmentationLoader():
                         input_coords, 
                         dilation = 0,
                         erosion = 0):
-    
+        print("Intersecting Shapes will be merged into a single shape.")
+        
         # initialize all shapes and create dilated coordinates
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
@@ -863,9 +863,6 @@ class SegmentationLoader():
                                                     desc = "dilating shapes"))
             
         dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
-
-        # number of shapes to merge
-        num_shapes = len(input_center)
 
         # A sparse distance matrix is calculated for all cells which are closer than distance_heuristic
         center_arr = np.array(input_center)
@@ -925,6 +922,7 @@ class SegmentationLoader():
             output_length.append(new_len)
             output_coords.append(coords_2d)
 
+        print(len(to_merge) - len(output_center), "shapes that were intersecting were found and merged.")
         return output_center, output_length, output_coords
 
     def check_cell_set_sanity(self, cell_set):
