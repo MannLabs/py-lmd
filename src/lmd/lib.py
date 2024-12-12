@@ -718,7 +718,7 @@ class SegmentationLoader():
             self.log(f"{elements_removed} classes were not found and therefore removed.")
         
         # Sanity check 2: for the returned coordinates
-        if len(center) == len(length) == len(length):
+        if len(center) == len(length):
             pass
         else:
             self.log("Check failed, returned lengths do not match. Please check if all classes specified are present in your segmentation")
@@ -729,7 +729,7 @@ class SegmentationLoader():
             if len(el) == 0:
                 zero_elements += 1
                 
-        if zero_elements == 0:
+        if zero_elements <= 2: #allow at most for 2 zero elements (x = 0 and y = 0)
             pass
         else:
             self.log("Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation")
