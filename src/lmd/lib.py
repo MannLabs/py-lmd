@@ -706,7 +706,7 @@ class SegmentationLoader():
 
         self.log("Convert label format into coordinate format")
         center, length, coords = get_coordinate_form(cell_set["classes_loaded"], self.coords_lookup)
-    
+
         self.log("Conversion finished, performing sanity check.")
         
         # Sanity check 1
@@ -747,10 +747,10 @@ class SegmentationLoader():
         if self.config["threads"] == 1:  
             shapes = []
             for coord in tqdm(coords, desc = "creating shapes"):
-                shapes.append(tranform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
+                shapes.append(transform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
         else:
             with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
-                shapes = list(tqdm(pool.imap(partial(tranform_to_map, 
+                shapes = list(tqdm(pool.imap(partial(transform_to_map, 
                                                     erosion = erosion,
                                                     dilation = dilation,
                                                     coord_format = False),
@@ -853,11 +853,11 @@ class SegmentationLoader():
         
         if self.config["threads"] == 1:
             for coord in tqdm(input_coords, desc = "dilating shapes"):
-                dilated_coords.append(tranform_to_map(coord, dilation = dilation))
+                dilated_coords.append(transform_to_map(coord, dilation = dilation))
         
         else:
             with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
-                dilated_coords = list(tqdm(pool.imap(partial(tranform_to_map, 
+                dilated_coords = list(tqdm(pool.imap(partial(transform_to_map, 
                                                     dilation = dilation),
                                                     input_coords), total=len(input_center), 
                                                     desc = "dilating shapes"))
@@ -873,7 +873,6 @@ class SegmentationLoader():
 
         sparse_distance = center_tree.sparse_distance_matrix(center_tree, self.config['distance_heuristic'])
         sparse_distance = scipy.sparse.tril(sparse_distance)
-
 
         # sparse intersection matrix is calculated based on the sparse distance matrix
         intersect_data = []
@@ -1005,7 +1004,7 @@ class SegmentationLoader():
                 config_handle[key] = value
             
             
-def tranform_to_map(coords, 
+def transform_to_map(coords, 
                     dilation = 0, 
                     erosion = 0, 
                     coord_format = True,
@@ -1018,6 +1017,8 @@ def tranform_to_map(coords,
 
 
     # top left offset used for creating the offset map
+    if coords.size == 0:
+        raise ValueError("coords array is empty; cannot compute minimum.")
     offset = np.min(coords, axis=0) - safety_offset - dilation_offset
     mat = np.array([offset, [0,0]])
     offset = np.max(mat, axis=0)
