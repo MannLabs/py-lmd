@@ -123,7 +123,11 @@ def _filter_coord_index(index_list, classes, background=0):
     filtered_index_list = []
     for idx, class_id in enumerate(classes):
         if class_id != background:
-            filtered_index_list.append(index_list[class_id])
+            _coords = index_list[class_id]
+            if len(_coords) > 0:
+                filtered_index_list.append(index_list[class_id])
+            else:
+                Warning(f"Coordinate list for {class_id} is empty and was dropped.")
     return filtered_index_list
              
 def get_coordinate_form(classes, coords_lookup, debug=False):
