@@ -660,6 +660,9 @@ class SegmentationLoader():
             cell_set["classes_loaded"] = self.load_classes(cell_set)
             sets.append(cell_set)
             self.log(f"cell set {i} passed sanity check")
+
+        if len(sets) < self.processes:
+            self.processes = len(sets) #reduce number of processes if there are less cell sets than processes
         
         self.input_segmentation = input_segmentation
         
