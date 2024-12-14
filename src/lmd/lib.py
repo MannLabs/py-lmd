@@ -139,6 +139,9 @@ class Collection:
              apply_orientation_transform: bool = True,
              apply_scale: bool = False, 
              save_name: Optional[str] = None, **kwargs):
+             save_name: Optional[str] = None, 
+             return_fig: bool = False,
+             **kwargs):
         
         """This function can be used to plot all shapes of the corresponding shape collection.
         
@@ -209,12 +212,18 @@ class Collection:
 
         ax.grid(True)
         ax.ticklabel_format(useOffset=False)
-        plt.xlabel('x-axis')
-        plt.ylabel('y-axis')
-        plt.axis('equal')
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
+        ax.set_aspect('equal', adjustable='box')
+        
+        fig.tight_layout()
         
         if save_name is not None:
             plt.savefig(save_name)
+        
+        if return_fig:
+            return fig
+    
         plt.show()
         
     def add_shape(self, shape: Shape):
