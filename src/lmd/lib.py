@@ -13,6 +13,7 @@ from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_
 from tqdm import tqdm
 # import warnings
 import warnings
+from rdp import rdp
 
 from skimage.morphology import dilation as binary_dilation
 from skimage.morphology import binary_erosion, disk
@@ -138,7 +139,6 @@ class Collection:
              fig_size: tuple = (5,5),
              apply_orientation_transform: bool = True,
              apply_scale: bool = False, 
-             save_name: Optional[str] = None, **kwargs):
              save_name: Optional[str] = None, 
              return_fig: bool = False,
              **kwargs):
@@ -575,8 +575,8 @@ class SegmentationLoader():
                 # the resoltion of datapoints is twice as high as the resolution of pixel
                 convolution_smoothing: 15
 
-                # fold reduction of datapoints for compression
-                poly_compression_factor: 30
+                # strength of coordinate reduction through the Ramer-Douglas-Peucker algorithm 0 is small 1 is very high
+                rdp_epsilon: 0.1
 
                 # Optimization of the cutting path inbetween shapes
                 # optimized paths improve the cutting time and the microscopes focus
@@ -615,7 +615,7 @@ class SegmentationLoader():
         self.register_parameter('shape_erosion', 0)
         self.register_parameter('binary_smoothing', 3)
         self.register_parameter('convolution_smoothing', 15)
-        self.register_parameter('poly_compression_factor', 10)
+        self.register_parameter('rdp_epsilon', 10)
         self.register_parameter('path_optimization', 'hilbert')
         self.register_parameter('greedy_k', 0)
         self.register_parameter('hilbert_p', 7)
@@ -777,12 +777,12 @@ class SegmentationLoader():
             for shape in tqdm(shapes, desc = "calculating polygons"):
                 polygons.append(create_poly(shape, 
                                           smoothing_filter_size = self.config['convolution_smoothing'],
-                                          poly_compression_factor = self.config['poly_compression_factor']))
+                                          rdp_epsilon = self.config['rdp_epsilon']))
         else:
             with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:      
                 polygons = list(tqdm(pool.imap(partial(create_poly, 
                                                     smoothing_filter_size = self.config['convolution_smoothing'],
-                                                    poly_compression_factor = self.config['poly_compression_factor']
+                                                    rdp_epsilon = self.config['rdp_epsilon']
                                                     ),
                                                     shapes), total=len(center), 
                                                     disable = not self.verbose, 
@@ -1078,15 +1078,15 @@ def transform_to_map(coords,
         return (offset_map, offset)
 
 def create_poly(in_tuple, 
-                smoothing_filter_size = 12,
-                poly_compression_factor = 8,
-                debug = False):
+                smoothing_filter_size: int = 12,
+                rdp_epsilon: float = 0, 
+                debug: bool = False):
 
     """ Converts a list of pixels into a polygon.
     Args
         smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
         
-        poly_compression_factor (int, default = 8 ): When compression is wanted, only every n-th element is kept for n = poly_compression_factor.
+        rdp_epsilon (float, default = 0 ): When compression is wanted, this specifies the epsilon value for the Ramer-Douglas-Peucker algorithm. Higher values will result in more compression.
 
         dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
     """
@@ -1094,8 +1094,6 @@ def create_poly(in_tuple,
     
     # find polygon bounds from mask
     bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
-    
-    
     
     edges = np.array(np.where(bounds == 1))/2
     edges = edges.T
@@ -1105,17 +1103,9 @@ def create_poly(in_tuple,
     smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
     edges = convolve2d(edges, smk,mode="full",boundary="wrap")
     
-    
-    # compression of the resulting polygon      
-    newlen = np.round(len(edges)/poly_compression_factor).astype(int)
-    
-    mine = 0
-    maxe= len(edges)-1
-    
-    indices = np.linspace(mine,maxe,newlen).astype(int)
+    # compression of the resulting polygon   
+    poly = rdp(edges, epsilon = rdp_epsilon) # Ramer-Douglas-Peucker algorithm for polygon simplification
 
-    poly = edges[indices]
-    
     # debuging
     """
     print(self.poly.shape)
