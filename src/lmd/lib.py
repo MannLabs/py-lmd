@@ -615,7 +615,7 @@ class SegmentationLoader():
         self.register_parameter('shape_erosion', 0)
         self.register_parameter('binary_smoothing', 3)
         self.register_parameter('convolution_smoothing', 15)
-        self.register_parameter('rdp_epsilon', 10)
+        self.register_parameter('rdp_epsilon', 0.1)
         self.register_parameter('path_optimization', 'hilbert')
         self.register_parameter('greedy_k', 0)
         self.register_parameter('hilbert_p', 7)
