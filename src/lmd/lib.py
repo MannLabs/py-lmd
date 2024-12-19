@@ -247,20 +247,23 @@ class Collection:
         to_add = Shape(points, well=well, name=name, orientation_transform = self.orientation_transform)
         self.add_shape(to_add)
     
-    def join(self,  collection: Collection):
+    def join(self,  collection: Collection, update_orientation_transform: bool = True):
         """Join the collection with the shapes of a different collection. The calibration markers of the current collection are kept. Please keep in mind that coordinate systems and calibration points must be compatible for correct joining of collections.
         
         Args:
             collection: Collection which should be joined with the current collection object.
+            orientation_transform: If set to True, the orientation transform of the joined collection will be updated to the current collection. If set to False, the orientation transform of the joined collection will not be updated.
             
         Returns:
             returns self
         """
-        if self.orientation_transform != collection.orientation_transform:
-            collection.orientation_transform = self.orientation_transform
-            
-            for shape in collection.shapes:
-                shape.orientation_transform = self.orientation_transform
+        if not np.all(self.orientation_transform == collection.orientation_transform):
+            if update_orientation_transform:
+                shapes = collection.shapes
+                for shape in shapes:
+                    shape.orientation_transform = self.orientation_transform
+                else:
+                    Warning("Orientation transform of the joined collection is not equal to the current collection, but update_orientation_transform is set to False. Shapes will be merged without updating the orientation transform.")
         self.shapes += collection.shapes
 
         return self
