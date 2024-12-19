@@ -70,24 +70,29 @@ class Collection:
         
         Args:
             calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
+            orientation_transform: defines transformations performed on the provided coordinate system prior to export as XML. Defaults to the identity matrix.
             
         Attributes:
             shapes (List[Shape]): Contains all shapes which are part of the collection.
             
             calibration_points (Optional[np.ndarray]): Calibration coordinates in the form of :math:`(3, 2)`.
             
-            orientation_transform (np.ndarray): defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orienation_transform provided.
+            orientation_transform (np.ndarray): defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orientation_transform provided.
         """
     
-    def __init__(self, calibration_points: Optional[np.ndarray] = None):
+    def __init__(self, 
+                 calibration_points: Optional[np.ndarray] = None,
+                 orientation_transform: Optional[np.ndarray] = None):
         
         
         self.shapes: list[Shape] = []
         
         self.calibration_points: Optional[np.ndarray] = calibration_points
-            
         
-        self.orientation_transform: np.ndarray = np.eye(2)
+        if orientation_transform is None:
+            orientation_transform = np.eye(2) #assign default value
+
+        self.orientation_transform: np.ndarray = orientation_transform
             
         self.scale = 100
         
