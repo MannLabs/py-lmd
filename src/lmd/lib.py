@@ -256,6 +256,11 @@ class Collection:
         Returns:
             returns self
         """
+        if self.orientation_transform != collection.orientation_transform:
+            collection.orientation_transform = self.orientation_transform
+            
+            for shape in collection.shapes:
+                shape.orientation_transform = self.orientation_transform
         self.shapes += collection.shapes
 
         return self
