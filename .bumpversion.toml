@@ -21,7 +21,7 @@ setup_hooks = [
     "git --version",
     "git config --list",
 ]
-pre_commit_hooks = ["cat CHANGELOG.md"]
+pre_commit_hooks = []
 post_commit_hooks = ["echo Done"]
 
 [[tool.bumpversion.files]]
