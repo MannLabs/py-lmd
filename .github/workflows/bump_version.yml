@@ -36,8 +36,8 @@ jobs:
           git checkout -b "$NEW_BRANCH"
           git add .
           git commit -m "Bump version to ${{ steps.bump.outputs.current-version }}"
-          git push origin "$NEW_BRANCH"
-
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} "$NEW_BRANCH"
+      
       - name: Create a pull request
         if: steps.bump.outputs.bumped == 'true'
         uses: peter-evans/create-pull-request@v5
@@ -59,4 +59,3 @@ jobs:
         if: steps.bump.outputs.bumped == 'true'
         run: |
           echo "Version was bumped from ${{ steps.bump.outputs.previous-version }} to ${{ steps.bump.outputs.current-version }}!"
-      
