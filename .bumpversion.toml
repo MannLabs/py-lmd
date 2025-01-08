@@ -15,9 +15,14 @@ allow_dirty = false
 commit = false
 message = "Bump version: {current_version} → {new_version}"
 commit_args = ""
-setup_hooks = []
-pre_commit_hooks = []
-post_commit_hooks = []
+setup_hooks = [
+    "git config --global user.email \"bump-my-version@github.actions\"",
+    "git config --global user.name \"Github Action\"",
+    "git --version",
+    "git config --list",
+]
+pre_commit_hooks = ["cat CHANGELOG.md"]
+post_commit_hooks = ["echo Done"]
 
 [[tool.bumpversion.files]]
 filename = "src/__init__.py"
