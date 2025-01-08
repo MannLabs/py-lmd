@@ -34,11 +34,10 @@ jobs:
         run: |
           NEW_BRANCH="bump-version-${{ steps.bump.outputs.current-version }}"
           git checkout -b "$NEW_BRANCH"
-          git branch --set-upstream-to=origin/"$NEW_BRANCH" "$NEW_BRANCH"
-          git pull
+          git pull origin main
           git add .
           git commit -m "Bump version to ${{ steps.bump.outputs.current-version }}"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} "$NEW_BRANCH"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} --set-upstream origin "$NEW_BRANCH"
       
       - name: Create a pull request
         if: steps.bump.outputs.bumped == 'true'
