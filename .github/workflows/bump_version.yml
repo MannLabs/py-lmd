@@ -28,17 +28,35 @@ jobs:
         with:
           args: ${{ inputs.bump-type }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Commit files
+
+      - name: Create a new branch
+        if: steps.bump.outputs.bumped == 'true'
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit -a -m "Add changes"
-      - name: Push changes
-        uses: ad-m/github-push-action@master
+          NEW_BRANCH="bump-version-${{ steps.bump.outputs.current-version }}"
+          git checkout -b "$NEW_BRANCH"
+          git add .
+          git commit -m "Bump version to ${{ steps.bump.outputs.current-version }}"
+          git push origin "$NEW_BRANCH"
+
+      - name: Create a pull request
+        if: steps.bump.outputs.bumped == 'true'
+        uses: peter-evans/create-pull-request@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          token: ${{ inputs.github-token }}
+          branch: "bump-version-${{ steps.bump.outputs.current-version }}"
+          title: "Bump version to ${{ steps.bump.outputs.current-version }}"
+          body: "This PR bumps the project version to ${{ steps.bump.outputs.current-version }}."
+          base: main
+      
+      - name: Enable auto-merge for the pull request
+        if: steps.bump.outputs.bumped == 'true'
+        uses: peter-evans/enable-pull-request-automerge@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.create-pull-request.outputs.pull-request-number }}
+      
       - name: Check
         if: steps.bump.outputs.bumped == 'true'
         run: |
           echo "Version was bumped from ${{ steps.bump.outputs.previous-version }} to ${{ steps.bump.outputs.current-version }}!"
+      
