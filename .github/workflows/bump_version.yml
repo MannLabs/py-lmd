@@ -29,6 +29,34 @@ jobs:
           args: ${{ inputs.bump-type }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create a new branch
+        if: steps.bump.outputs.bumped == 'true'
+        run: |
+          NEW_BRANCH="bump-version-${{ steps.bump.outputs.current-version }}"
+          git checkout -b "$NEW_BRANCH"
+          git add .
+          git commit -m "Bump version to ${{ steps.bump.outputs.current-version }}"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} "$NEW_BRANCH"
+          git checkout main
+          git pull
+
+      - name: Checkout the code
+        uses: actions/checkout@v4
+
+      - name: Create a pull request
+        if: steps.bump.outputs.bumped == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: "origin/bump-version-${{ steps.bump.outputs.current-version }}"
+          title: "[VERSION] Bump version to ${{ steps.bump.outputs.current-version }}"
+          body: "This PR bumps the project version to ${{ steps.bump.outputs.current-version }}."
+          labels:
+            automated pr
+          assignees: sophia-maedler
+          delete-branch: true
+          
       - name: Check
         if: steps.bump.outputs.bumped == 'true'
         run: |
