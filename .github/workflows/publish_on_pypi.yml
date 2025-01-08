@@ -1,51 +1,22 @@
-on:
-  workflow_dispatch:
-
+# Publish and test releases on Test-PyPI and PyPI.
 name: Publish on PyPi
 
-env:
-  PYTHON_VERSION: "3.9"
+on:
+  workflow_dispatch:
+    inputs:
+      tag_to_release:
+        description: 'Enter tag to release (example: v1.5.5). A tag with the same name must exist in the repository.'
+        type: string
+        required: true
 
 jobs:
-  Create_PyPi_Release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          miniconda-version: "latest"
-          auto-update-conda: true
-          python-version: ${{ env.PYTHON_VERSION }}
-      - name: Conda info
-        shell: bash -le {0}
-        run: conda info
-      - name: Prepare distribution
-        shell: bash -le {0}
-        run: |
-          conda create -n pylmd_build python=${{ env.PYTHON_VERSION }} -y
-          conda activate pylmd_build
-          python -m pip install --upgrade pip
-          pip install build twine
-          rm -rf dist
-          rm -rf build
-          python -m build
-          twine check dist/*
-          conda deactivate
-          conda env remove --name pylmd_build -y
-          conda clean --all -y
-      - name: Publish distribution to Test-PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          user: __token__
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      - name: Test Test-PyPI loose installation
-        shell: bash -le {0}
-        run: |
-          conda create -n pip_loose_test python=${{ env.PYTHON_VERSION }} -y
-          conda activate pip_loose_test
-          pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "py-lmd"
-          alphadia -v
-          conda deactivate
-          conda env remove --name pip_stable_test -y
-          conda clean --all -y
+  publish_on_pypi:
+    uses: MannLabs/alphashared/.github/workflows/publish_on_pypi.yml@v1
+    with:
+      # see the documentation of the workflow for more information on the parameters
+      package_name: py-lmd
+      tag_to_release: ${{ inputs.tag_to_release }}
+      only_testpypi_release: true
+    secrets:
+      test_pypi_api_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
+      pypi_api_token: ${{ secrets.PYPI_API_TOKEN }}
