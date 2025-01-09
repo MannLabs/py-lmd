@@ -89,10 +89,7 @@ def _download(
 
         temp_file_name = f"{download_to_path}.part"
 
-        with (
-            open(temp_file_name, "wb") as file,
-            tqdm(total=total, unit="B", unit_scale=True, desc="Downloading...") as progress_bar,
-        ):
+        with open(temp_file_name, "wb") as file, tqdm(total=total, unit="B", unit_scale=True, desc="Downloading...") as progress_bar:
             for data in response.iter_content(block_size):
                 file.write(data)
                 progress_bar.update(len(data))
@@ -113,10 +110,12 @@ def _download_glyphs() -> Path:
     """
     data_dir = Path(_get_data_dir())
     save_path = data_dir / "glyphs"
+
     if not save_path.exists():
         _download(
             url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
             output_path=str(save_path),
             archive_format="zip",
         )
+
     return save_path
