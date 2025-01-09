@@ -24,7 +24,7 @@ jobs:
         id: bump
         uses: callowayproject/bump-my-version@master
         env:
-          BUMPVERSION_TAG: "true"
+          BUMPVERSION_TAG: "false"
         with:
           args: ${{ inputs.bump-type }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,6 +42,18 @@ jobs:
             automated pr
           assignees: sophia-maedler
           delete-branch: true
+      
+      - name: Create tag
+        if: steps.bump.outputs.bumped == 'true'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/v${{ steps.bump.outputs.current-version }}',
+              sha: context.sha
+            }) 
           
       - name: Check
         if: steps.bump.outputs.bumped == 'true'
