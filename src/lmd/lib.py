@@ -517,8 +517,9 @@ class Shape:
                 value = int(child.text)
 
                 self.points[point_id, axes_id] = value
+                
             elif child.tag == "CapID":
-                self.well == str(child.text)
+                self.well = str(child.text)
 
         self.points = np.array(self.points)
 
