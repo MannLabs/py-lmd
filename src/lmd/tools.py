@@ -1,8 +1,6 @@
 from lmd.lib import Collection, Shape
-from pathlib import Path
 import numpy as np
 import os
-import pkgutil
 
 def get_rotation_matrix(angle: float):
     """Returns a rotation matrix for clockwise rotation.
