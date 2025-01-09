@@ -20,7 +20,6 @@ renku-sphinx-theme
 sphinx-copybutton
 
 #for running example notebooks
-geopandas
 geojson
 
 #packages for testing
