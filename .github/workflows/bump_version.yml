@@ -30,6 +30,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a pull request
+        id: create-pull-request
         if: steps.bump.outputs.bumped == 'true'
         uses: peter-evans/create-pull-request@v7
         with:
@@ -52,7 +53,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: 'refs/tags/v${{ steps.bump.outputs.current-version }}',
-              sha: context.sha
+              sha: ${{steps.create-pull-request.outputs.pull-request-head-sha}}
             }) 
           
       - name: Check
