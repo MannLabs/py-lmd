@@ -268,6 +268,11 @@ class Collection:
 
         return self
 
+    def to_geopandas(self):
+        return geopandas.GeoDataFrame(
+            geometry=[shape.to_shapely() for shape in self.shapes]
+        )
+
     # load xml from file
     def load(self, file_location: str):
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
