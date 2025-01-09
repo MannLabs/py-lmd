@@ -14,11 +14,13 @@ from functools import partial, reduce
 from pathlib import Path
 from typing import Callable, Optional
 
+import geopandas
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import networkx as nx
 import numpy as np
 import scipy
+import shapely
 from lmd.segmentation import (
     _create_coord_index,
     _filter_coord_index,
