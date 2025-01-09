@@ -31,6 +31,7 @@ from scipy.signal import convolve2d
 
 import gc
 import sys
+import re
 import platform
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
@@ -435,23 +436,28 @@ class Shape:
 
         # get number of points
         point_count = int(root.find("PointCount").text)   
-        self.points = np.ones((point_count,2),dtype=int)
+        points = np.empty((point_count, 2), dtype=int)
+
+        # compile regex 
+        xpattern = re.compile("X_(\d+)")
+        ypattern = re.compile("Y_(\d+)")
         
         # parse all points
         for child in root:
-            if "_" in child.tag: 
-                
-                tokens = child.tag.split("_")
-                
-                axes = tokens[0]
-                axes_id = 0 if axes == "X" else 1
-                
-                point_id = int(tokens[-1])-1
-                value = int(child.text)
 
-                self.points[point_id,axes_id] = value
-                
-        self.points = np.array(self.points)
+            xmatch = re.findall(xpattern, child.tag)
+            ymatch = re.findall(ypattern, child.tag)
+            
+            if xmatch:
+                point_id = int(xmatch[0]) - 1
+                points[point_id, 0] = int(child.text)            
+            elif ymatch:
+                point_id = int(ymatch[0]) - 1
+                points[point_id, 1] = int(child.text)  
+            elif child.tag == "CapID":
+                self.well = str(child.text)
+
+        self.points = np.array(points)
     
     def to_xml(self, 
                id: int,
