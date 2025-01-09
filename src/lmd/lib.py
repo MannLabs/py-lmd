@@ -14,11 +14,12 @@ from functools import partial, reduce
 from pathlib import Path
 from typing import Callable, Optional
 
-import geopandas
+import geopandas as gpd
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import networkx as nx
 import numpy as np
+import pandas as pd
 import scipy
 import shapely
 from lmd.segmentation import (
@@ -268,10 +269,45 @@ class Collection:
 
         return self
 
-    def to_geopandas(self):
-        return geopandas.GeoDataFrame(
-            geometry=[shape.to_shapely() for shape in self.shapes]
+    def to_geopandas(self, *attrs: str) -> gpd.GeoDataFrame:
+        """Return geopandas dataframe of collection
+
+        Args:
+            *attrs (str): Optional attributes of the shapes in the collection to be added as metadata columns
+
+        Returns:
+            geopandas.GeoDataFrame: Representation of all shapes and optional metadata
+
+        Example:
+        .. code-block:: python
+            # Generate collection
+            collection = pylmd.Collection()
+            shape = pylmd.Shape(np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), well="A1", name="Shape_1", orientation_transform=None)
+            collection.add_shape(shape)
+
+            # Get geopandas object
+            collection.to_geopandas()
+            >       geometry
+                0   POLYGON ((0 0, 0 -1, 1 0, 0 0))
+
+            collection.to_geopandas("well", "name")
+            >   well     name                         geometry
+                0   A1  Shape_1  POLYGON ((0 0, 0 -1, 1 0, 0 0))
+        """
+        metadata = (
+            pd.DataFrame(
+                [
+                    [shape.__getattribute__(att) for att in attrs]
+                    for shape in self.shapes
+                ],
+                columns=attrs,
+            )
+            if (attrs is not None)
+            else None
         )
+        geometry = [shape.to_shapely() for shape in self.shapes]
+
+        return gpd.GeoDataFrame(data=metadata, geometry=geometry)
 
     # load xml from file
     def load(self, file_location: str):
