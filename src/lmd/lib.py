@@ -503,6 +503,9 @@ class Shape:
 
         return shape
 
+    def to_shapely(self):
+        return shapely.Polygon(self.points)
+
 
 class SegmentationLoader:
     """Select single cells from a segmentation and generate cutting data
