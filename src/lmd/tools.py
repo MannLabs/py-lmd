@@ -1,8 +1,7 @@
 from lmd.lib import Collection, Shape
-from pathlib import Path
 import numpy as np
 import os
-import pkgutil
+from lmd._utils import _download_glyphs
 
 def get_rotation_matrix(angle: float):
     """Returns a rotation matrix for clockwise rotation.
@@ -24,11 +23,9 @@ def glyph_path(glyph):
         Returns:
             str: Path for the glyph.
     """
+    file_path = _download_glyphs()
     
-    file_path = Path(os.path.realpath(__file__))
-    file_path = file_path.parents[1]
-    
-    svg_path = os.path.join(file_path, f"glyphs/{glyph}.svg")
+    svg_path = file_path/f'{glyph}.svg'
     
     # Check if glyph exists, raise NotImplementedError if not
     if os.path.isfile(svg_path):

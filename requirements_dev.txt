@@ -8,6 +8,8 @@ setuptools
 numba
 tqdm
 hilbertcurve
+requests
+filelock
 
 #packages for building docs
 sphinx

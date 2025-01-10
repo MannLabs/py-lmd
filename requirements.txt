@@ -8,5 +8,7 @@ setuptools
 numba
 tqdm
 hilbertcurve
+requests
+filelock
 geopandas 
 shapely
