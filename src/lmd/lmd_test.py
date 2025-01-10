@@ -5,6 +5,8 @@ from PIL import Image
 from lmd.lib import SegmentationLoader
 import pathlib
 import os
+import geopandas as gpd 
+import shapely 
 
 def test_collection():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
@@ -31,7 +33,23 @@ def test_plotting():
     my_first_collection.new_shape(triangle_coordinates)
 
     my_first_collection.plot(calibration = True)
+
+def test_collection_load_geopandas():
+    gdf = gpd.GeoDataFrame(
+        data={"well": ["A1"]},
+        geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
+    )
+
+    c = Collection()
     
+    # Export well metadata
+    c.load_geopandas(gdf, well_column="well")
+    assert c.to_geopandas("well").equals(gdf)
+
+    # Do not export well metadata
+    c.load_geopandas(gdf)
+    assert c.to_geopandas().equals(gdf.drop(columns="well"))
+
 def test_collection_save():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
