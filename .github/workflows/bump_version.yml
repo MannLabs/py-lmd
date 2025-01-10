@@ -12,6 +12,11 @@ on:
         - major
         - minor
         - patch
+      create_tag:
+        description: "if a tag should be created for the new version"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
