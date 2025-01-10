@@ -15,6 +15,7 @@ jobs:
     with:
       # see the documentation of the workflow for more information on the parameters
       package_name: py-lmd
+      src_folder: src/lmd
       tag_to_release: ${{ inputs.tag_to_release }}
       only_testpypi_release: true
     secrets:
