@@ -5,6 +5,8 @@ from PIL import Image
 from lmd.lib import SegmentationLoader
 import pathlib
 import os
+import geopandas as gpd 
+import shapely 
 
 def test_collection():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
@@ -31,7 +33,33 @@ def test_plotting():
     my_first_collection.new_shape(triangle_coordinates)
 
     my_first_collection.plot(calibration = True)
-    
+
+def test_collection_load_geopandas():
+    gdf = gpd.GeoDataFrame(
+        data={"well": ["A1"], "name": "my_shape"},
+        geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
+    )
+
+
+    # Export well metadata
+    c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
+    calibration_points_old = c.calibration_points
+    c.load_geopandas(gdf, well_column="well", name_column="name")
+    assert c.to_geopandas("well", "name").equals(gdf)
+    assert (c.calibration_points == calibration_points_old).all()
+
+    # Overwrite calibration points 
+    c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
+    calibration_points_new = np.array([[0, 0], [100, 0], [0, 100]])
+    c.load_geopandas(gdf, well_column="well", name_column="name", calibration_points=calibration_points_new)
+    assert c.to_geopandas("well", "name").equals(gdf)
+    assert (c.calibration_points == calibration_points_new).all()
+
+    # Do not export well metadata
+    c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
+    c.load_geopandas(gdf)
+    assert c.to_geopandas().equals(gdf.drop(columns=["well", "name"]))
+
 def test_collection_save():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
