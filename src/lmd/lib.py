@@ -12,7 +12,7 @@ import warnings
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial, reduce
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable, Optional, Union, Iterable
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -326,7 +326,7 @@ class Collection:
         geometry = [shape.to_shapely() for shape in self.shapes]
 
         return gpd.GeoDataFrame(data=metadata, geometry=geometry)
-
+    
     # load xml from file
     def load(self, file_location: str):
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
@@ -365,6 +365,61 @@ class Collection:
                 new_shape = Shape()
                 new_shape.from_xml(child)
                 self.shapes.append(new_shape)
+    
+    def load_geopandas(
+            self, 
+            gdf: gpd.GeoDataFrame, 
+            geometry_column: str = "geometry",
+            well_column: Optional[str] = None,
+            calibration_points: Optional[np.ndarray] = None, 
+            global_coordinates: Optional[int] = None,
+        ) -> None:
+        """Create collection from a geopandas dataframe
+        
+        Args:
+            gdf (geopandas.GeoDataFrame): Collection of shapes and optional metadata
+            geometry_column (str, default: geometry): Name of column storing Shapes as `shapely.Polygon`, defaults to geometry
+            well_column (str, optional): Column storing of well id as additional metadata
+            calibration_points (np.ndarray, optional): Calibration points of collection 
+            global_coordinates (int, optional): Number of global coordinates
+
+        Example:
+
+        ..  code-block:: python
+
+            from lmd.lib import Collection
+            import geopandas as gpd
+            import shapely
+
+            gdf = gpd.GeoDataFrame(
+                data={"well": ["A1"]},
+                geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
+            )
+
+            # Create collection
+            c = Collection()
+
+            # Export well metadata
+            c.load_geopandas(gdf, well_column="well")
+            assert c.to_geopandas("well").equals(gdf)
+
+            # Do not export well metadata
+            c.load_geopandas(gdf)
+            assert c.to_geopandas().equals(gdf.drop(columns="well"))
+        """
+        # Update attributes
+        if self.calibration_points is not None:
+            self.calibration_points = calibration_points
+        if self.global_coordinates is not None:
+            self.global_coordinates = global_coordinates
+
+        self.shapes = [
+            Shape(
+                points=np.array(row[geometry_column].exterior.coords), 
+                well=row[well_column] if well_column is not None else None,
+            )
+            for _, row in gdf.iterrows()
+        ]
 
     # save xml to file
     def save(self, file_location: str, encoding: str = "utf-8"):
