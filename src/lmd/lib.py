@@ -370,6 +370,7 @@ class Collection:
             self, 
             gdf: gpd.GeoDataFrame, 
             geometry_column: str = "geometry",
+            name_column: Optional[str] = None,
             well_column: Optional[str] = None,
             calibration_points: Optional[np.ndarray] = None, 
             global_coordinates: Optional[int] = None,
@@ -392,7 +393,7 @@ class Collection:
             import shapely
 
             gdf = gpd.GeoDataFrame(
-                data={"well": ["A1"]},
+                data={"well": ["A1"], "name": ["test"]},
                 geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
             )
 
@@ -416,6 +417,7 @@ class Collection:
         self.shapes = [
             Shape(
                 points=np.array(row[geometry_column].exterior.coords), 
+                name=row[name_column] if name_column is not None else None,
                 well=row[well_column] if well_column is not None else None,
             )
             for _, row in gdf.iterrows()

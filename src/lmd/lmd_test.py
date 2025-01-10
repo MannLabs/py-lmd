@@ -36,19 +36,19 @@ def test_plotting():
 
 def test_collection_load_geopandas():
     gdf = gpd.GeoDataFrame(
-        data={"well": ["A1"]},
+        data={"well": ["A1"], "name": "my_shape"},
         geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
     )
 
     c = Collection()
-    
+
     # Export well metadata
-    c.load_geopandas(gdf, well_column="well")
-    assert c.to_geopandas("well").equals(gdf)
+    c.load_geopandas(gdf, well_column="well", name_column="name")
+    assert c.to_geopandas("well", "name").equals(gdf)
 
     # Do not export well metadata
     c.load_geopandas(gdf)
-    assert c.to_geopandas().equals(gdf.drop(columns="well"))
+    assert c.to_geopandas().equals(gdf.drop(columns=["well", "name"]))
 
 def test_collection_save():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
