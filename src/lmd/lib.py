@@ -409,9 +409,9 @@ class Collection:
             assert c.to_geopandas().equals(gdf.drop(columns="well"))
         """
         # Update attributes
-        if self.calibration_points is not None:
+        if calibration_points is not None:
             self.calibration_points = calibration_points
-        if self.global_coordinates is not None:
+        if global_coordinates is not None:
             self.global_coordinates = global_coordinates
 
         self.shapes = [
