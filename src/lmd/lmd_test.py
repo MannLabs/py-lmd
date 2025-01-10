@@ -7,6 +7,7 @@ import pathlib
 import os
 import geopandas as gpd 
 import shapely 
+from lxml import etree as ET
 
 def test_collection():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
@@ -15,7 +16,32 @@ def test_collection():
 def test_shape():
     rectangle_coordinates = np.array([[10,10], [40,10], [40,40], [10,40], [10,10]])
     rectangle = Shape(rectangle_coordinates)
-    
+
+def test_shape_from_xml():
+    # Define shape in xml
+    shape_xml = """
+    <Shape_1>
+        <PointCount>3</PointCount>
+        <CapID>A1</CapID>
+        <TEST>this is a test</TEST>
+        <X_1>0</X_1>
+        <Y_1>-0</Y_1>
+        <X_2>0</X_2>
+        <Y_2>-1</Y_2>
+        <X_3>1</X_3>
+        <Y_3>-0</Y_3>
+    </Shape_1>
+    """.strip()
+
+    # Parse xml
+    shape_xml = ET.fromstring(bytes(shape_xml, encoding="utf-8"))
+
+    # Load xml with Shape
+    shape = Shape()
+    shape.from_xml(shape_xml)
+    assert (shape.points == np.array([[ 0,  0], [ 0, -1], [ 1,  0]])).all()
+    assert shape.well == "A1"
+
 def test_plotting():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
