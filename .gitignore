@@ -1,3 +1,6 @@
+#do not track files that should be downloaded here
+pylmd_data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
