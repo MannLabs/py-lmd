@@ -16,7 +16,7 @@ jobs:
     permissions:
       contents: write
     with:
-      package_name: lmd
+      package_name: py-lmd
       commitish_to_release: ${{ inputs.commitish_to_release }}
       test_app: false
-      src_folder: src
+      src_folder: src/lmd
