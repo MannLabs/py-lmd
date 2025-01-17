@@ -11,13 +11,14 @@ on:
 
 jobs:
   publish_on_pypi:
-    uses: MannLabs/alphashared/.github/workflows/publish_on_pypi.yml@v1.0.0
+    uses: MannLabs/alphashared/.github/workflows/publish_on_pypi.yml@dev0
     with:
       # see the documentation of the workflow for more information on the parameters
       package_name: py-lmd
       src_folder: src/lmd
       tag_to_release: ${{ inputs.tag_to_release }}
       only_testpypi_release: true
+      import_name: "lmd"
     secrets:
       test_pypi_api_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
       pypi_api_token: ${{ secrets.PYPI_API_TOKEN }}
