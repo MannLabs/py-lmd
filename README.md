@@ -1,5 +1,5 @@
 
-[![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=release)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) 
+[![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) 
 ![PyPI - Version](https://img.shields.io/pypi/v/py-lmd)
 [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml)
 [![website](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/html/index.html)](https://mannlabs.github.io/py-lmd/html/index.html)
