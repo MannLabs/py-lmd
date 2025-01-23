@@ -17,7 +17,7 @@ jobs:
       package_name: py-lmd
       src_folder: src/lmd
       tag_to_release: ${{ inputs.tag_to_release }}
-      only_testpypi_release: "false"
+      only_testpypi_release: false
       import_name: "lmd"
     secrets:
       test_pypi_api_token: ${{ secrets.TEST_PYPI_API_TOKEN }}
