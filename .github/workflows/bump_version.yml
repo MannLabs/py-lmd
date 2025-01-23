@@ -50,7 +50,7 @@ jobs:
           delete-branch: true
       
       - name: Create tag
-        if: steps.bump.outputs.bumped == 'true'
+        if: inputs.create_tag == 'true' && steps.bump.outputs.bumped == 'true'
         uses: actions/github-script@v5
         with:
           script: |
