@@ -17,7 +17,7 @@ sphinx
 sphinx-argparse
 sphinx-rtd-theme==2.0.0
 nbsphinx
-renku-sphinx-theme
+sphinx_book_theme
 sphinx-copybutton
 
 #for running example notebooks
