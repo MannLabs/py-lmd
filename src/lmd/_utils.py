@@ -111,11 +111,20 @@ def _download_glyphs() -> Path:
     data_dir = Path(_get_data_dir())
     save_path = data_dir / "glyphs"
 
+
     if not save_path.exists():
         _download(
             url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
             output_path=str(save_path),
             archive_format="zip",
         )
+    else:
+        #check that directory is not empty
+        if not any(save_path.iterdir()):
+            _download(
+                url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
+                output_path=str(save_path),
+                archive_format="zip",
+            )
 
     return save_path
