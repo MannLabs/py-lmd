@@ -47,7 +47,7 @@ Niklas Arndt Schmacke, Sophia Clara Maedler, Georg Wallmann, Andreas Metousis, M
 bioRxiv 2023.06.01.542416; doi: https://doi.org/10.1101/2023.06.01.542416
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :caption: Documentation
    :numbered:
    
