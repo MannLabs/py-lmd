@@ -45,7 +45,7 @@ from tqdm import tqdm
 from tqdm.auto import tqdm
 
 
-def execute_indexed_parallel(
+def _execute_indexed_parallel(
     func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10
 ) -> list:
     """parallelization of function call with indexed arguments using ThreadPoolExecutor. Returns a list of results in the order of the input arguments.
@@ -779,7 +779,7 @@ class SegmentationLoader:
             for i, cell_set in enumerate(cell_sets):
                 args.append((i, cell_set))
 
-            collections = execute_indexed_parallel(
+            collections = _execute_indexed_parallel(
                 self.generate_cutting_data,
                 args=args,
                 tqdm_args=dict(
@@ -905,7 +905,7 @@ class SegmentationLoader:
             polygons = []
             for shape in tqdm(shapes, desc="calculating polygons"):
                 polygons.append(
-                    create_poly(
+                    _create_poly(
                         shape,
                         smoothing_filter_size=self.config["convolution_smoothing"],
                         poly_compression_factor=self.config["poly_compression_factor"],
@@ -919,7 +919,7 @@ class SegmentationLoader:
                     tqdm(
                         pool.imap(
                             partial(
-                                create_poly,
+                                _create_poly,
                                 smoothing_filter_size=self.config[
                                     "convolution_smoothing"
                                 ],
@@ -1250,7 +1250,7 @@ def tranform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fals
         return (offset_map, offset)
 
 
-def create_poly(
+def _create_poly(
     in_tuple, smoothing_filter_size=12, poly_compression_factor=8, debug=False
 ):
     """Converts a list of pixels into a polygon.
@@ -1268,7 +1268,7 @@ def create_poly(
 
     edges = np.array(np.where(bounds == 1)) / 2
     edges = edges.T
-    edges = sort_edges(edges)
+    edges = _sort_edges(edges)
 
     # smoothing resulting shape
     smk = np.ones((smoothing_filter_size, 1)) / smoothing_filter_size
@@ -1300,7 +1300,7 @@ def create_poly(
     return poly + offset
 
 
-def sort_edges(edges):
+def _sort_edges(edges):
     """Sorts the vertices of the polygon.
     Greedy sorting is performed, might have difficulties with complex shapes.
 

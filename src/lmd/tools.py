@@ -3,7 +3,7 @@ import numpy as np
 import os
 from lmd._utils import _download_glyphs
 
-def get_rotation_matrix(angle: float):
+def _get_rotation_matrix(angle: float):
     """Returns a rotation matrix for clockwise rotation.
     
         Args: 
@@ -62,7 +62,7 @@ def glyph(glyph,
     shapefile = Collection()
     shapefile.svg_to_lmd(svg_path, 
                          offset=offset, 
-                         rotation_matrix = get_rotation_matrix(rotation), 
+                         rotation_matrix = _get_rotation_matrix(rotation), 
                          multiplier=multiplier, 
                          **kwargs)
     
@@ -112,7 +112,7 @@ def text(text,
     
     
     # delta offset for every digit
-    delta = np.array([10, 0]) @ get_rotation_matrix(rotation) * multiplier
+    delta = np.array([10, 0]) @ _get_rotation_matrix(rotation) * multiplier
     
     heap = Collection()
     
@@ -152,7 +152,7 @@ def rectangle(width, height,
     
     offset = np.array(offset)
     rotation_offset = np.array(rotation_offset)
-    rotation_mat = get_rotation_matrix(rotation)
+    rotation_mat = _get_rotation_matrix(rotation)
     
     points = np.array([[-width/2,-height/2],
                      [-width/2,height/2],
@@ -227,7 +227,7 @@ def ellipse(major_axis,
 
     # Scaling the unit circle gives the ellipse
     ellipse_scale = np.array([major_axis, minor_axis])
-    ellipse = unit_circle * ellipse_scale @ get_rotation_matrix(rotation) + offset
+    ellipse = unit_circle * ellipse_scale @ _get_rotation_matrix(rotation) + offset
     
     return Shape(ellipse)
 
