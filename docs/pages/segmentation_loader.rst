@@ -14,14 +14,14 @@ Background
 
 Although the py-lmd package is meant to serve as framework for creating your own workflows, generating cutting data based on segmentations is the central application of this package.
 When biological images are segmented, every pixel receives a class or label. Labels can be used to identify single cells and distinguish them from the background or can categorize
- cells or areas based on phenotypes, functions or location. 
+cells or areas based on phenotypes, functions or location. 
 
 In the following example we will assume that a segmentation was performed to assign labels to individual cells and distinguish their cytosol from the background. 
 The procedures are though applicable to all types of labels.
 
 As this process is so central to the usage of the Leica LMD, the :py:class:`~lmd.lib.SegmentationLoader` can be used to create cutting data based on segmentation data.
- The workflow was specifically designed to work with whole slide images, as large as the LMD membrane slides, and large numbers of single cells. 
- Therefore, different processing steps are included which optimize single cell shapes and decrease overall cutting time.  
+The workflow was specifically designed to work with whole slide images, as large as the LMD membrane slides, and large numbers of single cells. 
+Therefore, different processing steps are included which optimize single cell shapes and decrease overall cutting time.  
 
 Different Coordinate Systems
 =============================

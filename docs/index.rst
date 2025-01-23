@@ -14,24 +14,20 @@ py-lmd interfaces directly with your existing python workflows to make your samp
 
 In addition, you can build reproducible workflows to calibrate slides, import SVG files and convert them to cutting masks, and can convert existing segmentation masks to cutting XMLs.
 
+.. _installation:
+
 Installation
 ============
 
-py-lmd has been tested with Python 3.8 and 3.9. To install the py-lmd library clone the Github repository and use pip to install the library in your current environment. 
-It is recommended to use the library with a conda environment. 
-Please make sure that the package is installed editable like described. 
-Otherwise static glyph files might not be available.
-
-We recommend installing the non-python dependencies with conda before installing py-lmd:
+py-lmd has been tested with Python 3.9, 3.10 and 3.11. It is recommended to use the library with a conda environment. 
+You can install py-lmd from PyPI using pip.
 
 .. code::
 
-   git clone https://github.com/MannLabs/py-lmd
-
    conda create -n "py-lmd-env"
    conda activate py-lmd-env
-   conda install python=3.9 scipy scikit-image>=0.19 numpy numba -c conda-forge
-   pip install -e .
+   conda install python=3.9 -c conda-forge
+   pip install py-lmd
 
 If you are installing on an M1 apple silicon Mac you will need to install numba via conda instead of pip before 
 proceeding with the installation of the py-lmd library.
@@ -52,10 +48,11 @@ bioRxiv 2023.06.01.542416; doi: https://doi.org/10.1101/2023.06.01.542416
 
 .. toctree::
    :maxdepth: 5
-   :caption: Contents:
+   :caption: Documentation
    :numbered:
    
    pages/quickstart
    pages/segmentation_loader
    pages/example_notebooks
-   pages/modules
+   pages/api
+

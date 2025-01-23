@@ -2,26 +2,17 @@
 Quick Start
 *******************
 
+Please follow the install instructions in the :ref:`installation guide <installation>` before proceeding with the quick start guide.
 
-Installation from Github
-========================
-
-To install the py-lmd library you can use pip.
-
-::
-
-  pip install py-lmd
-  
-Once installed the modules can be loaded as following:
+Once installed the modules can be loaded by calling
 
 .. code-block:: python
 
     from lmd.lib import Collection, Shape
 
-
 Generating Shapes
 =================
-As first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as Numpy array and should have the shape `(3, 2)`. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the `(x, y)` coordinate system. More on the usage of different coordinate systems can be found under XXX.
+As a first example we will create a cutting data for a rectangle and visualize it. First we need to think of a calibration points for our coordinate system.  The calibration points are specified as Numpy array and should have the shape `(3, 2)`. When calibrating the file on the Leica LMD after loading the file, the order of selecting the calibration points is the same as the order of points set here. If no other orientation transform has been specified,  the calibration points are defined in the `(x, y)` coordinate system. More on the usage of different coordinate systems can be found under XXX.
 
 .. code-block:: python
 

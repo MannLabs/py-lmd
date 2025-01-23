@@ -12,10 +12,8 @@
 #
 import os
 import sys
-import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath('../src'))
-
 
 # -- Project information -----------------------------------------------------
 
@@ -52,26 +50,24 @@ exclude_patterns = ['_build',
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# html_theme = "sphinx_rtd_theme"
-html_theme = "renku"
+
+html_theme = "sphinx_book_theme"
 
 html_theme_options = {
-    # Toc options
-    'collapse_navigation': False,
-    'sticky_navigation': True,
-    'navigation_depth': -1,
-    'includehidden': True,
-    'titles_only': False,
-    'logo_only': True,
+    "collapse_navigation": False,
+    "show_toc_level": 3,
+    "navigation_depth": 4,
+    "logo": {
+        "image_light": "_static/pyLMD_text.svg",
+        "image_dark": "_static/py-lmd_logo.png",
+    },
 }
 
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+html_title = "py-lmd"
 html_static_path = ['_static']
-html_logo = "_static/py-lmd_logo.png"
+
+#placeholder to add favicon logo needs to be a png
+# html_favicon = "_static/pyLMD_text.svg"
 
 ##----- OPtions for Latex output 
 
