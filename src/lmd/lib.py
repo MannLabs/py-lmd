@@ -12,6 +12,24 @@ import sys
 import warnings
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial, reduce
+
+import numpy as np
+import matplotlib.pyplot as plt
+from lxml import etree as ET
+from matplotlib import image
+from skimage import data, color
+import matplotlib.ticker as ticker
+from svgelements import SVG
+from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index,_create_coord_index_sparse, _filter_coord_index
+from tqdm import tqdm
+# import warnings
+import warnings
+from rdp import rdp
+
+from skimage.morphology import dilation as binary_dilation
+from skimage.morphology import binary_erosion, disk
+from skimage.segmentation import find_boundaries
+
 from pathlib import Path
 from typing import Callable, Optional, Union, Iterable
 
@@ -138,27 +156,26 @@ class Collection:
         percentile_5 = np.percentile(lengths, 5).astype(float)
         percentile_95 = np.percentile(lengths, 95).astype(float)
 
-        print("===== Collection Stats =====")
-        print(f"Number of shapes: {num_shapes:,}")
-        print(f"Number of vertices: {num_vertices:,}")
-        print("============================")
-        print(f"Mean vertices: {mean_dp:,.0f}")
-        print(f"Min vertices: {min_dp:,.0f}")
-        print(f"5% percentile vertices: {percentile_5:,.0f}")
-        print(f"Median vertices: {median_dp:,.0f}")
-        print(f"95% percentile vertices: {percentile_95:,.0f}")
-        print(f"Max vertices: {max_dp:,.0f}")
-
-    def plot(
-        self,
-        calibration: bool = True,
-        mode: str = "line",
-        fig_size: tuple = (5, 5),
-        apply_orientation_transform: bool = True,
-        apply_scale: bool = False,
-        save_name: Optional[str] = None,
-        **kwargs,
-    ):
+        print('===== Collection Stats =====')
+        print(f'Number of shapes: {num_shapes:,}')
+        print(f'Number of vertices: {num_vertices:,}')
+        print('============================')
+        print(f'Mean vertices: {mean_dp:,.0f}')
+        print(f'Min vertices: {min_dp:,.0f}')
+        print(f'5% percentile vertices: {percentile_5:,.0f}')
+        print(f'Median vertices: {median_dp:,.0f}')
+        print(f'95% percentile vertices: {percentile_95:,.0f}')
+        print(f'Max vertices: {max_dp:,.0f}')
+        
+    def plot(self, calibration: bool = True, 
+             mode: str = "line", 
+             fig_size: tuple = (5,5),
+             apply_orientation_transform: bool = True,
+             apply_scale: bool = False, 
+             save_name: Optional[str] = None, 
+             return_fig: bool = False,
+             **kwargs):
+        
         """This function can be used to plot all shapes of the corresponding shape collection.
 
         Args:
@@ -178,6 +195,13 @@ class Collection:
             scale = self.scale
         else:
             scale = 1
+            
+            
+        if not mode in modes:
+            raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
+        
+        # check for calibration points
+        cal = np.array(self.calibration_points).T
 
         if not mode in modes:
             raise ValueError(
@@ -224,12 +248,18 @@ class Collection:
 
         ax.grid(True)
         ax.ticklabel_format(useOffset=False)
-        plt.xlabel("x-axis")
-        plt.ylabel("y-axis")
-        plt.axis("equal")
-
+        ax.set_xlabel('x-axis')
+        ax.set_ylabel('y-axis')
+        ax.set_aspect('equal', adjustable='box')
+        
+        fig.tight_layout()
+        
         if save_name is not None:
             plt.savefig(save_name)
+        
+        if return_fig:
+            return fig
+    
         plt.show()
 
     def add_shape(self, shape: Shape):
@@ -632,6 +662,27 @@ class Shape:
 
 class SegmentationLoader:
     """Select single cells from a segmentation and generate cutting data
+        
+        Args:
+            config (dict): Dict containing configuration parameters. See Note for further explanation.
+            processes (int): Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
+            threads (int): Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
+            
+            cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
+            
+            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.    
+
+            coords_lookup (None, dict): precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
+            
+            classes (np.array): Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
+                    
+        Example:
+                    
+            .. code-block:: python
+            
+                import numpy as np
+                from PIL import Image
+                from lmd.lib import SegmentationLoader
 
     Args:
         config (dict): Dict containing configuration parameters. See Note for further explanation.
@@ -689,8 +740,8 @@ class SegmentationLoader:
             # the resoltion of datapoints is twice as high as the resolution of pixel
             convolution_smoothing: 15
 
-            # fold reduction of datapoints for compression
-            poly_compression_factor: 30
+            # strength of coordinate reduction through the Ramer-Douglas-Peucker algorithm 0 is small 1 is very high
+            rdp_epsilon: 0.1
 
             # Optimization of the cutting path inbetween shapes
             # optimized paths improve the cutting time and the microscopes focus
@@ -717,29 +768,48 @@ class SegmentationLoader:
 
     # define all valid path optimization methods used with the "path_optimization" argument in the configuration
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
-
-    def __init__(self, config={}, verbose=False, processes=1):
+    DEFAULT_SEGMENTATION_DTYPE = np.uint64
+    
+    def __init__(self, config = {}, verbose = False, processes = 1):
         self.config = config
         self.verbose = verbose
         self._get_context()  # setup context for multiprocessing function calls to work with different operating systems
 
-        self.register_parameter("shape_dilation", 0)
-        self.register_parameter("shape_erosion", 0)
-        self.register_parameter("binary_smoothing", 3)
-        self.register_parameter("convolution_smoothing", 15)
-        self.register_parameter("poly_compression_factor", 10)
-        self.register_parameter("path_optimization", "hilbert")
-        self.register_parameter("greedy_k", 0)
-        self.register_parameter("hilbert_p", 7)
-        self.register_parameter("xml_decimal_transform", 100)
-        self.register_parameter("distance_heuristic", 300)
-        self.register_parameter("processes", 10)
-        self.register_parameter("join_intersecting", True)
-        self.register_parameter("orientation_transform", np.eye(2))
-        self.register_parameter("threads", 1)
+        self.register_parameter('shape_dilation', 0)
+        self.register_parameter('shape_erosion', 0)
+        self.register_parameter('binary_smoothing', 3)
+        self.register_parameter('convolution_smoothing', 15)
+        self.register_parameter('rdp_epsilon', 0.1)
+        self.register_parameter('path_optimization', 'hilbert')
+        self.register_parameter('greedy_k', 0)
+        self.register_parameter('hilbert_p', 7)
+        self.register_parameter('xml_decimal_transform', 100)
+        self.register_parameter('distance_heuristic', 300)
+        self.register_parameter('join_intersecting', True)
+        self.register_parameter('orientation_transform', np.eye(2))
+        self.register_parameter('threads', 10)
 
         self.coords_lookup = None
         self.processes = processes
+
+        self._configure_path_optimizer()
+
+    def _configure_path_optimizer(self):
+        #configure path optimizer
+        if 'path_optimization' in self.config:
+            optimization_method = self.config['path_optimization']
+        else:
+            optimization_method = "none"
+
+            # check if the optimizer is a valid option
+        if optimization_method in self.VALID_PATH_OPTIMIZERS:
+            pathoptimizer = optimization_method
+        else:
+            self.log("Path optimizer is no valid option, no optimization will be used.")
+            pathoptimizer = "none"
+        
+        self.log(f"Path optimizer used for XML generation: {optimization_method}")
+        self.optimization_method = pathoptimizer
 
     def _get_context(self):
         if platform.system() == "Windows":
@@ -748,32 +818,40 @@ class SegmentationLoader:
             self.context = "spawn"
         elif platform.system() == "Linux":
             self.context = "fork"
+    
+    def __call__(self, input_segmentation: np.ndarray | None, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.uint64)):
+        
+        if input_segmentation is None:
+            assert coords_lookup is not None, "If no input segmentation is provided, a coords_lookup must be provided."
 
-    def __call__(
-        self, input_segmentation, cell_sets, calibration_points, coords_lookup=None
-    ):
         self.calibration_points = calibration_points
         sets = []
 
         # iterate over all defined sets, perform sanity checks and load external data
         for i, cell_set in enumerate(cell_sets):
-            self.log(f"sanity check for cell set {i}")
             self.check_cell_set_sanity(cell_set)
             cell_set["classes_loaded"] = self.load_classes(cell_set)
             sets.append(cell_set)
             self.log(f"cell set {i} passed sanity check")
 
+        if len(sets) < self.processes:
+            self.processes = len(sets) #reduce number of processes if there are less cell sets than processes
+        
         self.input_segmentation = input_segmentation
 
         if coords_lookup is None:
             self.log("Calculating coordinate locations of all cells.")
-            self.coords_lookup = _create_coord_index(self.input_segmentation)
+            #deprecated infavour of more computationally efficient solution
+            #self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
+            #self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
+            self.coords_lookup = _create_coord_index_sparse(self.input_segmentation)
         else:
             self.log("Loading coordinates from external source")
             self.coords_lookup = coords_lookup
 
         # try multithreading
         if self.processes > 1:
+            self.multi_threading = True
             self.log("Processing cell sets in parallel")
             args = []
             for i, cell_set in enumerate(cell_sets):
@@ -785,13 +863,13 @@ class SegmentationLoader:
                 tqdm_args=dict(
                     file=sys.stdout,
                     disable=not self.verbose,
-                    desc="                  collecting cell sets",
+                    desc="collecting cell sets",
                 ),
                 n_threads=self.processes,
             )
         else:
             print("Processing cell sets in serial")
-            print(cell_set)
+            self.multi_threading = False
             collections = []
             for i, cell_set in enumerate(cell_sets):
                 collections.append(self.generate_cutting_data(i, cell_set))
@@ -808,15 +886,13 @@ class SegmentationLoader:
             )
 
         self.log("Convert label format into coordinate format")
-        center, length, coords = get_coordinate_form(
-            self.input_segmentation, cell_set["classes_loaded"], self.coords_lookup
-        )
+        center, length, coords = get_coordinate_form(cell_set["classes_loaded"], self.coords_lookup)
 
         self.log("Conversion finished, performing sanity check.")
 
         # Sanity check 1
         if len(center) == len(cell_set["classes_loaded"]):
-            self.log("Check passed")
+            pass
         else:
             self.log(
                 "Check failed, returned lengths do not match cell set.\n Some classes were not found in the segmentation and were therefore removed.\n Please make sure all classes specified are present in your segmentation."
@@ -827,8 +903,8 @@ class SegmentationLoader:
             )
 
         # Sanity check 2: for the returned coordinates
-        if len(center) == len(length) == len(length):
-            self.log("Check passed")
+        if len(center) == len(length):
+            pass
         else:
             self.log(
                 "Check failed, returned lengths do not match. Please check if all classes specified are present in your segmentation"
@@ -839,173 +915,113 @@ class SegmentationLoader:
         for el in coords:
             if len(el) == 0:
                 zero_elements += 1
-
-        if zero_elements == 0:
-            self.log("Check passed")
+                
+        if zero_elements <= 2: #allow at most for 2 zero elements (x = 0 and y = 0)
+            pass
         else:
             self.log(
                 "Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation"
             )
 
-        if self.config["join_intersecting"]:
-            print("Merging intersecting shapes")
-            center, length, coords = self.merge_dilated_shapes(
-                center,
-                length,
-                coords,
-                dilation=self.config["shape_dilation"],
-                erosion=self.config["shape_erosion"],
-            )
+        if self.config['join_intersecting']:
+            center, length, coords = self.merge_dilated_shapes(center, length, coords, 
+                                                               dilation = self.config['shape_dilation'],
+                                                               erosion = self.config['shape_erosion'])
 
         # Calculate dilation and erosion based on if merging was activated
-        dilation = (
-            self.config["binary_smoothing"]
-            if self.config["join_intersecting"]
-            else self.config["binary_smoothing"] + self.config["shape_dilation"]
-        )
-        erosion = (
-            self.config["binary_smoothing"]
-            if self.config["join_intersecting"]
-            else self.config["binary_smoothing"] + self.config["shape_erosion"]
-        )
-
-        self.log("Create shapes for merged cells")
-
-        if self.config["threads"] == 1:
+        dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
+        erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
+        
+        if self.config["threads"] == 1:  
             shapes = []
-            for coord in tqdm(coords, desc="creating shapes"):
-                shapes.append(
-                    tranform_to_map(
-                        coord, dilation=dilation, erosion=erosion, coord_format=False
-                    )
-                )
+            for coord in tqdm(coords, desc = "creating shapes"):
+                shapes.append(transform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
         else:
-            with mp.get_context(self.context).Pool(
-                processes=self.config["threads"]
-            ) as pool:
-                shapes = list(
-                    tqdm(
-                        pool.imap(
-                            partial(
-                                tranform_to_map,
-                                erosion=erosion,
-                                dilation=dilation,
-                                coord_format=False,
-                            ),
-                            coords,
-                        ),
-                        total=len(center),
-                        disable=not self.verbose,
-                        desc="creating shapes",
-                    )
-                )
-
-        self.log("Calculating polygons")
-        if self.config["threads"] == 1:
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
+                shapes = list(tqdm(pool.imap(partial(transform_to_map, 
+                                                    erosion = erosion,
+                                                    dilation = dilation,
+                                                    coord_format = False),
+                                                    coords), total=len(center), 
+                                                    disable = not self.verbose, 
+                                                    desc = "creating shapes"))
+                
+            
+        if self.config["threads"] == 1:  
             polygons = []
-            for shape in tqdm(shapes, desc="calculating polygons"):
-                polygons.append(
-                    _create_poly(
-                        shape,
-                        smoothing_filter_size=self.config["convolution_smoothing"],
-                        poly_compression_factor=self.config["poly_compression_factor"],
-                    )
-                )
+            for shape in tqdm(shapes, desc = "calculating polygons"):
+                polygons.append(_create_poly(shape, 
+                                          smoothing_filter_size = self.config['convolution_smoothing'],
+                                          rdp_epsilon = self.config['rdp_epsilon']))
         else:
-            with mp.get_context(self.context).Pool(
-                processes=self.config["threads"]
-            ) as pool:
-                polygons = list(
-                    tqdm(
-                        pool.imap(
-                            partial(
-                                _create_poly,
-                                smoothing_filter_size=self.config[
-                                    "convolution_smoothing"
-                                ],
-                                poly_compression_factor=self.config[
-                                    "poly_compression_factor"
-                                ],
-                            ),
-                            shapes,
-                        ),
-                        total=len(center),
-                        disable=not self.verbose,
-                        desc="calculating polygons",
-                    )
-                )
-
-        self.log("Polygon calculation finished")
-
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:      
+                polygons = list(tqdm(pool.imap(partial(_create_poly, 
+                                                    smoothing_filter_size = self.config['convolution_smoothing'],
+                                                    rdp_epsilon = self.config['rdp_epsilon']
+                                                    ),
+                                                    shapes), total=len(center), 
+                                                    disable = not self.verbose, 
+                                                    desc = "calculating polygons" ))
+        
+        #perform path optimization to minimize the total distance that the LMD travels during cutting (this improves cutting speed and focus)
         center = np.array(center)
         unoptimized_length = calc_len(center)
         self.log(f"Current path length: {unoptimized_length:,.2f} units")
 
-        # check if optimizer key has been set
-        if "path_optimization" in self.config:
-            optimization_method = self.config["path_optimization"]
-            self.log(f"Path optimizer defined in config: {optimization_method}")
+        if self.optimization_method != "none":
+            if self.optimization_method  == "greedy":
+                optimized_idx = tsp_greedy_solve(center, k=self.config['greedy_k'])
+        
+            elif self.optimization_method  == "hilbert":
+                optimized_idx = tsp_hilbert_solve(center, p=self.config['hilbert_p'])
+            
+            #update order of centers
+            center = center[optimized_idx]
+            self.indexes = optimized_idx
 
-            # check if the optimizer is a valid option
-            if optimization_method in self.VALID_PATH_OPTIMIZERS:
-                pathoptimizer = optimization_method
+            # calculate optimized path length and optimization factor
+            optimized_length = calc_len(center)
+            self.log(f"Optimized path length: {optimized_length:,.2f} units")
 
-            else:
-                self.log(
-                    "Path optimizer is no valid option, no optimization will be used."
-                )
-                pathoptimizer = "none"
-
+            optimization_factor = unoptimized_length / optimized_length
+            self.log(f"Optimization factor: {optimization_factor:,.1f}x")
         else:
-            self.log("No path optimizer has been defined")
-            pathoptimizer = "none"
-
-        if pathoptimizer == "greedy":
-            optimized_idx = tsp_greedy_solve(center, k=self.config["greedy_k"])
-
-        elif pathoptimizer == "hilbert":
-            optimized_idx = tsp_hilbert_solve(center, p=self.config["hilbert_p"])
-
-        else:
+            self.log("No path optimization used")
+            optimization_factor = 1
             optimized_idx = list(range(len(center)))
-
-        self.center = center[optimized_idx]
-
-        # calculate optimized path length and optimization factor
-        optimized_length = calc_len(center)
-        self.log(f"Optimized path length: {optimized_length:,.2f} units")
-
-        optimization_factor = unoptimized_length / optimized_length
-        self.log(f"Optimization factor: {optimization_factor:,.1f}x")
-
         # order list of shapes by the optimized index array
         polygons = [x for _, x in sorted(zip(optimized_idx, polygons))]
 
         # Plot coordinates if in debug mode
         if self.verbose:
-            center = np.array(center)
-            plt.figure(figsize=(10, 10))
-            ax = plt.gca()
+            
+            fig, axs = plt.subplots(1, 1, figsize=(10, 10))
 
-            if "background_image" in self.config:
-                ax.imshow(self.config["background_image"])
+            if 'background_image' in self.config:
+                axs.imshow(self.config['background_image'])
 
-            ax.scatter(center[:, 1], center[:, 0], s=1)
+            axs.scatter(center[:,1], center[:,0], s=1)
 
             for shape in polygons:
-                ax.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
+                axs.plot(shape[:,1], shape[:,0], color="red",linewidth=1)
+    
 
-            ax.scatter(
-                self.calibration_points[:, 1],
-                self.calibration_points[:, 0],
-                color="blue",
-            )
-            ax.plot(self.center[:, 1], self.center[:, 0], color="grey")
-            ax.invert_yaxis()
-            plt.axis("equal")
+            axs.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
+            axs.plot(center[:,1],center[:,0], color="grey")
+            axs.invert_yaxis()
+            axs.set_aspect('equal', adjustable='box')
+            axs.axis("off")
+            axs.set_title("Final cutting path")
+            fig.tight_layout()
 
-            plt.show()
-
+            if self.multi_threading:
+                self.log("Plotting shapes in debug mode is not supported in multi-threading mode.")
+                self.log("Saving plots to disk instead.")
+                fig.savefig(f"debug_plot_{i}.png")
+                plt.close(fig)
+            else:
+                plt.show(fig)
+    
         # Generate array of marker cross positions
         ds = Collection(calibration_points=self.calibration_points)
         ds.orientation_transform = self.config["orientation_transform"]
@@ -1018,37 +1034,30 @@ class SegmentationLoader:
                 ds.new_shape(shape)
         return ds
 
-    def merge_dilated_shapes(
-        self, input_center, input_length, input_coords, dilation=0, erosion=0
-    ):
+    def merge_dilated_shapes(self,
+                        input_center, 
+                        input_length, 
+                        input_coords, 
+                        dilation = 0,
+                        erosion = 0):
+        print("Intersecting Shapes will be merged into a single shape.")
+        
         # initialize all shapes and create dilated coordinates
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
 
         if self.config["threads"] == 1:
-            for coord in tqdm(input_coords, desc="dilating shapes"):
-                dilated_coords.append(tranform_to_map(coord, dilation=dilation))
-
+            for coord in tqdm(input_coords, desc = "dilating shapes"):
+                dilated_coords.append(transform_to_map(coord, dilation = dilation))
+        
         else:
-            with mp.get_context(self.context).Pool(
-                processes=self.config["processes"]
-            ) as pool:
-                dilated_coords = list(
-                    tqdm(
-                        pool.imap(
-                            partial(tranform_to_map, dilation=dilation), input_coords
-                        ),
-                        total=len(input_center),
-                    )
-                )
-
-        dilated_coords = [
-            np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten()
-            for d in dilated_coords
-        ]
-
-        # number of shapes to merge
-        num_shapes = len(input_center)
+            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
+                dilated_coords = list(tqdm(pool.imap(partial(transform_to_map, 
+                                                    dilation = dilation),
+                                                    input_coords), total=len(input_center), 
+                                                    desc = "dilating shapes"))
+            
+        dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
 
         # A sparse distance matrix is calculated for all cells which are closer than distance_heuristic
         center_arr = np.array(input_center)
@@ -1112,6 +1121,7 @@ class SegmentationLoader:
             output_length.append(new_len)
             output_coords.append(coords_2d)
 
+        print(len(to_merge) - len(output_center), "shapes that were intersecting were found and merged.")
         return output_center, output_length, output_coords
 
     def check_cell_set_sanity(self, cell_set):
@@ -1182,25 +1192,26 @@ class SegmentationLoader:
             print(msg)
 
     def register_parameter(self, key, value):
-        if isinstance(key, str):
-            config_handle = self.config
-
-        elif isinstance(key, list):
-            raise NotImplementedError(
-                "registration of parameters is not yet supported for nested parameters"
-            )
-
-        else:
-            raise TypeError("Key musst be of string or a list of strings")
-
-        if key not in config_handle:
-            self.log(
-                f"No configuration for {key} found, parameter will be set to {value}"
-            )
-            config_handle[key] = value
-
-
-def tranform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=False):
+            
+            if isinstance(key, str):
+                config_handle = self.config
+                
+            elif isinstance(key, list):
+                raise NotImplementedError('registration of parameters is not yet supported for nested parameters')
+                
+            else:
+                raise TypeError('Key musst be of string or a list of strings')
+            
+            if key not in config_handle:
+                self.log(f'No configuration for {key} found, parameter will be set to {value}')
+                config_handle[key] = value
+            
+            
+def transform_to_map(coords, 
+                    dilation = 0, 
+                    erosion = 0, 
+                    coord_format = True,
+                    debug = False):
     # safety boundary which extands the generated map size
     safety_offset = 3
     dilation_offset = int(dilation)
@@ -1208,6 +1219,8 @@ def tranform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fals
     coords = np.array(coords).astype(int)
 
     # top left offset used for creating the offset map
+    if coords.size == 0:
+        raise ValueError("coords array is empty; cannot compute minimum.")
     offset = np.min(coords, axis=0) - safety_offset - dilation_offset
     mat = np.array([offset, [0, 0]])
     offset = np.max(mat, axis=0)
@@ -1249,15 +1262,16 @@ def tranform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fals
     else:
         return (offset_map, offset)
 
+def _create_poly(in_tuple, 
+                smoothing_filter_size: int = 12,
+                rdp_epsilon: float = 0, 
+                debug: bool = False):
 
-def _create_poly(
-    in_tuple, smoothing_filter_size=12, poly_compression_factor=8, debug=False
-):
     """Converts a list of pixels into a polygon.
     Args
         smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
-
-        poly_compression_factor (int, default = 8 ): When compression is wanted, only every n-th element is kept for n = poly_compression_factor.
+        
+        rdp_epsilon (float, default = 0 ): When compression is wanted, this specifies the epsilon value for the Ramer-Douglas-Peucker algorithm. Higher values will result in more compression.
 
         dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
     """
@@ -1265,24 +1279,17 @@ def _create_poly(
 
     # find polygon bounds from mask
     bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
-
-    edges = np.array(np.where(bounds == 1)) / 2
+    
+    edges = np.array(np.where(bounds == 1))/2
     edges = edges.T
     edges = _sort_edges(edges)
 
     # smoothing resulting shape
-    smk = np.ones((smoothing_filter_size, 1)) / smoothing_filter_size
-    edges = convolve2d(edges, smk, mode="full", boundary="wrap")
-
-    # compression of the resulting polygon
-    newlen = np.round(len(edges) / poly_compression_factor).astype(int)
-
-    mine = 0
-    maxe = len(edges) - 1
-
-    indices = np.linspace(mine, maxe, newlen).astype(int)
-
-    poly = edges[indices]
+    smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
+    edges = convolve2d(edges, smk,mode="full",boundary="wrap")
+    
+    # compression of the resulting polygon   
+    poly = rdp(edges, epsilon = rdp_epsilon) # Ramer-Douglas-Peucker algorithm for polygon simplification
 
     # debuging
     """
