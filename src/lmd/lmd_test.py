@@ -138,7 +138,7 @@ def test_text():
 def test_segmentation_loader():
 
     package_base_path = pathlib.Path(__file__).parent.parent.parent.resolve().absolute()
-    test_segmentation_path = os.path.join(package_base_path, 'docs_source/pages/notebooks/Image_Segmentation/segmentation_cytosol.tiff')
+    test_segmentation_path = os.path.join(package_base_path, 'docs/pages/notebooks/Image_Segmentation/segmentation_cytosol.tiff')
 
     im = Image.open(test_segmentation_path)
     segmentation = np.array(im).astype(np.uint32)

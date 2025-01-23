@@ -10,6 +10,7 @@ tqdm
 hilbertcurve
 requests
 filelock
+rdp
 
 #packages for building docs
 sphinx
