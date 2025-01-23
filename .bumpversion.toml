@@ -25,4 +25,5 @@ pre_commit_hooks = []
 post_commit_hooks = ["echo Done"]
 
 [[tool.bumpversion.files]]
-filename = ["src/lmd/__init__.py", "pyproject.toml"]
+file1 = "src/lmd/__init__.py"
+file2 = "pyproject.toml"
