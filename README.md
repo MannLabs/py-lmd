@@ -12,7 +12,7 @@ Build reproducible workflows to calibrate, import SVG files and convert single-c
 
 Installation from Github
 ========================
-py-lmd has been tested with **Python 3.8, 3.9, 3.10 and 3.11**.
+py-lmd has been tested with **Python 3.9, 3.10 and 3.11**.
 The py-lmd library can be installed via pip.
 
 ``` 
