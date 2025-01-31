@@ -196,21 +196,10 @@ class Collection:
         else:
             scale = 1
             
-            
-        if not mode in modes:
+        if mode not in modes:
             raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
         
-        # check for calibration points
-        cal = np.array(self.calibration_points).T
-
-        if not mode in modes:
-            raise ValueError(
-                "Mode not known. Please use on of the following plotting modes: line, dots"
-            )
-        # check for calibration points
-
-        cal = np.array(self.calibration_points).T
-
+        #close current figures
         plt.clf()
         plt.cla()
         plt.close("all")
