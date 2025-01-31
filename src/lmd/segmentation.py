@@ -72,7 +72,9 @@ def _create_coord_index_sparse(mask: np.ndarray) -> dict:
 
     _ids, inverse_indices = np.unique(cell_ids, return_inverse=True)
 
-    return(_numba_accelerator_coord_calculation(_ids, inverse_indices, sparse_coords_0, sparse_coords_1))
+    coords_lookup = _numba_accelerator_coord_calculation(_ids, inverse_indices, sparse_coords_0, sparse_coords_1)
+    coords_lookup = dict(coords_lookup)
+    return(coords_lookup)
 
 @njit
 def _create_coord_index(mask, 
