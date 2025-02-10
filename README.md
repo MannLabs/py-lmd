@@ -2,7 +2,8 @@
 [![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) 
 ![PyPI - Version](https://img.shields.io/pypi/v/py-lmd)
 [![Python package](https://img.shields.io/badge/license-MIT-blue)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml)
-[![website](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/html/index.html)](https://mannlabs.github.io/py-lmd/html/index.html)
+[![website](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/)](https://mannlabs.github.io/py-lmd/)
+
 
 ![logo](https://github.com/MannLabs/py-lmd/assets/15019107/e7c619a2-69c9-4cb6-8723-fab94c8d3558)
 
