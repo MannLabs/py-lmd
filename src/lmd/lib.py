@@ -103,9 +103,7 @@ class Collection:
 
     Attributes:
         shapes (List[Shape]): Contains all shapes which are part of the collection.
-
         calibration_points (Optional[np.ndarray]): Calibration coordinates in the form of :math:`(3, 2)`.
-
         orientation_transform (np.ndarray): defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orientation_transform provided.
     """
 
@@ -113,6 +111,7 @@ class Collection:
         self,
         calibration_points: Optional[np.ndarray] = None,
         orientation_transform: Optional[np.ndarray] = None,
+        scale: float = 100,
     ):
         self.shapes: list[Shape] = []
 
@@ -123,7 +122,7 @@ class Collection:
 
         self.orientation_transform: np.ndarray = orientation_transform
 
-        self.scale = 100
+        self.scale: float = scale
 
         self.global_coordinates = 1
 
@@ -865,7 +864,7 @@ class SegmentationLoader:
 
         return reduce(lambda a, b: a.join(b), collections)
 
-    def generate_cutting_data(self, i, cell_set):
+    def generate_cutting_data(self, i: int, cell_set: dict) -> Collection:
         if 0 in cell_set["classes_loaded"]:
             cell_set["classes_loaded"] = cell_set["classes_loaded"][
                 cell_set["classes_loaded"] != 0
@@ -1012,7 +1011,7 @@ class SegmentationLoader:
                 plt.show(fig)
     
         # Generate array of marker cross positions
-        ds = Collection(calibration_points=self.calibration_points)
+        ds = Collection(calibration_points=self.calibration_points, scale = self.xml_decimal_transform)
         ds.orientation_transform = self.config["orientation_transform"]
 
         for shape in polygons:
