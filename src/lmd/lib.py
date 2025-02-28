@@ -1011,7 +1011,7 @@ class SegmentationLoader:
                 plt.show(fig)
     
         # Generate array of marker cross positions
-        ds = Collection(calibration_points=self.calibration_points, scale = self.xml_decimal_transform)
+        ds = Collection(calibration_points=self.calibration_points, scale = self.config["xml_decimal_transform"])
         ds.orientation_transform = self.config["orientation_transform"]
 
         for shape in polygons:
