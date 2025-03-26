@@ -263,7 +263,7 @@ class Collection:
             TypeError("Provided shape is not of type Shape")
 
     def new_shape(
-        self, points: np.ndarray, well: Optional[str] = None, name: Optional[str] = None
+        self, points: np.ndarray, well: Optional[str] = None, name: Optional[str] = None, **custom_attributes
     ):
         """Directly create a new Shape in the current collection.
 
@@ -273,6 +273,9 @@ class Collection:
             well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
 
             name: Name of the shape.
+
+            custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
+
         """
 
         to_add = Shape(
@@ -280,6 +283,7 @@ class Collection:
             well=well,
             name=name,
             orientation_transform=self.orientation_transform,
+            **custom_attributes
         )
         self.add_shape(to_add)
 
@@ -555,8 +559,6 @@ class Shape:
 
             custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
         """
-        custom_attributes = custom_attributes if custom_attributes is not None else {}
-
         if not all(isinstance(v, None | str | int | float) for v in custom_attributes.values()):
             raise ValueError("Custom attributes only support None, str, int, float type arguments")
 
