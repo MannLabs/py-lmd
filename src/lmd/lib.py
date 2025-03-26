@@ -619,7 +619,7 @@ class Shape:
                 self.well = str(child.text)
             else: 
                 if child.tag in self.custom_attributes:
-                    warnings.warn("Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
+                    warnings.warn(f"Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
                 self.custom_attributes[child.tag] = child.text
 
         self.points = np.array(points)
@@ -691,7 +691,7 @@ class Shape:
         elif name in self.custom_attributes:
             return self.custom_attributes.get(name)
         else:
-            warnings.warn(f"Attribute '{name}' not found in shape attributes. Returning None.")
+            warnings.warn(f"Attribute {name} not found in shape attributes. Returning None.")
             return None
 
 
