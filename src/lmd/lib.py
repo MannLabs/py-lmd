@@ -397,6 +397,7 @@ class Collection:
             well_column: Optional[str] = None,
             calibration_points: Optional[np.ndarray] = None, 
             global_coordinates: Optional[int] = None,
+            *custom_attribute_columns: str
         ) -> None:
         """Create collection from a geopandas dataframe
         
@@ -406,6 +407,7 @@ class Collection:
             well_column (str, optional): Column storing of well id as additional metadata
             calibration_points (np.ndarray, optional): Calibration points of collection 
             global_coordinates (int, optional): Number of global coordinates
+            custom_attribute_columns Custom shape metadata that will be added as additional xml-element to the shape
 
         Example:
 
@@ -437,11 +439,15 @@ class Collection:
         if global_coordinates is not None:
             self.global_coordinates = global_coordinates
 
+        if custom_attribute_columns is None:
+            custom_attribute_columns = []
+
         self.shapes = [
             Shape(
                 points=np.array(row[geometry_column].exterior.coords), 
                 name=row[name_column] if name_column is not None else None,
                 well=row[well_column] if well_column is not None else None,
+                **{att: row[att] for att in custom_attribute_columns}
             )
             for _, row in gdf.iterrows()
         ]
