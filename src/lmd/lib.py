@@ -338,7 +338,7 @@ class Collection:
         metadata = (
             pd.DataFrame(
                 [
-                    [shape.get_shape_annotation(att) | shape.custom_attributes.get(att) for att in attrs]
+                    [shape.get_shape_annotation(att) for att in attrs]
                     for shape in self.shapes
                 ],
                 columns=attrs,
