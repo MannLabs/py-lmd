@@ -8,16 +8,20 @@ import os
 import geopandas as gpd 
 import shapely 
 from lxml import etree as ET
+import pytest
 
 def test_collection():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
     
+
 def test_shape():
     rectangle_coordinates = np.array([[10,10], [40,10], [40,40], [10,40], [10,10]])
     rectangle = Shape(rectangle_coordinates)
 
+
 def test_shape_from_xml():
+    """Read a minimal xml representation of a cell shape and associated metadata"""
     # Define shape in xml
     shape_xml = """
     <Shape_1>
@@ -67,31 +71,68 @@ def test_plotting():
 
     my_first_collection.plot(calibration = True)
 
-def test_collection_load_geopandas():
-    gdf = gpd.GeoDataFrame(
-        data={"well": ["A1"], "name": "my_shape"},
+
+@pytest.fixture
+def geopandas_collection():
+    """Geopandas shape collection with both controlled (name, well) and custom metadata"""
+    return gpd.GeoDataFrame(
+        data={"well": ["A1"], "name": "my_shape", "string_attribute": "a"},
         geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
     )
 
+@pytest.mark.parametrize(
+        ("well_column", "name_column", "custom_attributes"),
+        [
+            ("well", None, None),
+            (None, "well", None),
+            (None, None, "string_attribute"),
+            ("well", "name", None),
+            ("well", "name", "string_attribute"),
+
+        ]
+)
+def test_collection_load_geopandas(
+    geopandas_collection: gpd.GeoDataFrame, 
+    well_column: str, 
+    name_column: str,
+    custom_attributes: list[str]
+    ) -> None:
 
     # Export well metadata
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
     calibration_points_old = c.calibration_points
-    c.load_geopandas(gdf, well_column="well", name_column="name")
-    assert c.to_geopandas("well", "name").equals(gdf)
+    c.load_geopandas(
+        geopandas_collection, 
+        well_column=well_column, 
+        name_column=name_column, 
+        custom_attribute_columns=custom_attributes
+    )
+    
+    all_columns = [
+        col for col in (well_column, custom_attributes) if col is not None
+    ]
+
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])
     assert (c.calibration_points == calibration_points_old).all()
 
     # Overwrite calibration points 
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
     calibration_points_new = np.array([[0, 0], [100, 0], [0, 100]])
-    c.load_geopandas(gdf, well_column="well", name_column="name", calibration_points=calibration_points_new)
-    assert c.to_geopandas("well", "name").equals(gdf)
+
+    c.load_geopandas(
+        geopandas_collection, 
+        calibration_points=calibration_points_new, 
+        well_column=well_column, 
+        name_column=name_column, 
+        custom_attribute_columns=custom_attributes
+    )
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])
     assert (c.calibration_points == calibration_points_new).all()
 
     # Do not export well metadata
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
-    c.load_geopandas(gdf)
-    assert c.to_geopandas().equals(gdf.drop(columns=["well", "name"]))
+    c.load_geopandas(geopandas_collection)
+    assert c.to_geopandas().equals(geopandas_collection[["geometry"]])
 
 def test_collection_save():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
@@ -105,7 +146,8 @@ def test_collection_save():
     my_first_collection.add_shape(rectangle)
 
     my_first_collection.save("first_collection.xml")
-    
+
+
 def test_tools_square():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
@@ -115,7 +157,8 @@ def test_tools_square():
 
     my_square = tools.rectangle(10, 10, offset=(30,30))
     my_first_collection.add_shape(my_square)
-                                  
+
+                            
 def test_glyphs():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points = calibration)
@@ -141,6 +184,7 @@ def test_text():
 
     identifier_3 = tools.text('0123456789-_ABCDEFGHI', offset=np.array([60, 40]), rotation = -np.pi/4)
     my_first_collection.join(identifier_3)                 
+
 
 def test_segmentation_loader():
 
