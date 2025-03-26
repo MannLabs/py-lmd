@@ -274,8 +274,8 @@ class Collection:
 
             name: Name of the shape.
 
-            custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
-                Only string values are correctly parsed
+            custom_attributes: Custom shape metadata that can be added as additional xml-element to the shape.
+                All values are converted to strings.
 
         """
         to_add = Shape(
@@ -323,7 +323,14 @@ class Collection:
         .. code-block:: python
             # Generate collection
             collection = pylmd.Collection()
-            shape = pylmd.Shape(np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), well="A1", name="Shape_1", orientation_transform=None)
+            shape = pylmd.Shape(
+                    np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), 
+                    well="A1", 
+                    name="Shape_1", 
+                    metadata1="A",
+                    metadata2="B",
+                    orientation_transform=None
+                )
             collection.add_shape(shape)
 
             # Get geopandas object
@@ -331,9 +338,9 @@ class Collection:
             >       geometry
                 0   POLYGON ((0 0, 0 -1, 1 0, 0 0))
 
-            collection.to_geopandas("well", "name")
-            >   well     name                         geometry
-                0   A1  Shape_1  POLYGON ((0 0, 0 -1, 1 0, 0 0))
+            collection.to_geopandas("well", "name", "metadata1", "metadata2")
+            >       well    name            metadata1 metadata2  geometry
+                0   A1      Shape_1         A         B          POLYGON ((0 0, 0 -1, 1 0, 0 0))
         """
         metadata = (
             pd.DataFrame(
@@ -566,7 +573,7 @@ class Shape:
 
             name: Name of the shape.
 
-            custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
+            custom_attributes: Custom shape metadata that will be added as additional xml-element to the shape
                 Values be implicitly converted to strings.
         """
         # Orientation transform of shapes
