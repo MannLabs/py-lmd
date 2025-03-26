@@ -31,7 +31,7 @@ from skimage.morphology import binary_erosion, disk
 from skimage.segmentation import find_boundaries
 
 from pathlib import Path
-from typing import Callable, Optional, Union, Iterable
+from typing import Callable, Optional, Union, Iterable, Any
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -338,7 +338,7 @@ class Collection:
         metadata = (
             pd.DataFrame(
                 [
-                    [shape.__getattribute__(att) for att in attrs]
+                    [shape.get_shape_annotation(att) | shape.custom_attributes.get(att) for att in attrs]
                     for shape in self.shapes
                 ],
                 columns=attrs,
@@ -665,6 +665,28 @@ class Shape:
             y.text = "{}".format(np.floor(point[1]).astype(int))
 
         return shape
+    
+    def get_shape_annotation(self, name: str) -> Any | None:
+        """Retrieve the value of an attribute from either instance attributes
+         or custom attributes by name.
+
+         Searches for the attribute by name in the 1) instance attributes
+         2) custom attributes, or 3) issues a warning and returns None
+
+        Args:
+            name (str): The name of the attribute to retrieve.
+
+        Returns:
+            Any | None: The value of the attribute if found, otherwise None.
+        """
+        if name in self.__dict__:
+            return getattr(self, name)
+        elif name in self.custom_attributes:
+            return self.custom_attributes.get(name)
+        else:
+            warnings.warn(f"Attribute '{name}' not found in shape attributes. Returning None.")
+            return None
+
 
     def to_shapely(self):
         return shapely.Polygon(self.points)
