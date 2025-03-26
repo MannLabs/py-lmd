@@ -660,7 +660,8 @@ class Shape:
         if write_custom_attributes:
             for attribute_name, attribute_value in self.custom_attributes.items():
                 custom_attribute = ET.SubElement(shape, attribute_name)
-                custom_attribute.text = attribute_value
+                # xml only accepts string values
+                custom_attribute.text = str(attribute_value)
 
         # write points
         for i, point in enumerate(transformed_points):
