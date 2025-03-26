@@ -608,6 +608,10 @@ class Shape:
                 points[point_id, 1] = int(child.text)  
             elif child.tag == "CapID":
                 self.well = str(child.text)
+            else: 
+                if child.tag in self.custom_attributes:
+                    warnings.warn("Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
+                self.custom_attributes[child.tag] = child.text
 
         self.points = np.array(points)
 
