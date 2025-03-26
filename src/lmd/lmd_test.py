@@ -24,6 +24,9 @@ def test_shape_from_xml():
         <PointCount>3</PointCount>
         <CapID>A1</CapID>
         <TEST>this is a test</TEST>
+        <test2>1</test2>
+        <test3>3.1415</test3>
+
         <X_1>0</X_1>
         <Y_1>-0</Y_1>
         <X_2>0</X_2>
@@ -41,6 +44,10 @@ def test_shape_from_xml():
     shape.from_xml(shape_xml)
     assert (shape.points == np.array([[ 0,  0], [ 0, -1], [ 1,  0]])).all()
     assert shape.well == "A1"
+    assert shape.custom_attributes["TEST"] == "this is a test"
+    assert shape.custom_attributes["test2"] == "1"
+    assert shape.custom_attributes["test3"] == "3.1415"
+
 
 def test_plotting():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
