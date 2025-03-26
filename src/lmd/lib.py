@@ -542,7 +542,7 @@ class Shape:
         well: Optional[str] = None,
         name: Optional[str] = None,
         orientation_transform=None,
-        **custom_attributes: dict[str, str | int | float]
+        **custom_attributes: dict[str, None | str | int | float]
     ):
         """Class for creating a single shape.
 
@@ -615,7 +615,7 @@ class Shape:
 
         self.points = np.array(points)
 
-    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int):
+    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int, *, write_custom_attributes: bool = True):
         """Generate XML shape node needed internally for export.
 
         Args:
@@ -624,6 +624,8 @@ class Shape:
             orientation_transform (np.array): Pass orientation_transform which is used if no local orientation transform is set.
 
             scale (int): Scalling factor used to enable higher decimal precision.
+
+            write_custom_attributes: Write custom attributes to xml file
 
         Note:
             If the Shape has a custom orientation_transform defined, the custom orientation_transform is applied at this point. If not, the oritenation_transform passed by the parent Collection is used. This highlights an important difference between the Shape and Collection class. The Collection will always has an orientation transform defined and will use `np.eye(2)` by default. The Shape object can have a orientation_transform but can also be set to `None` to use the Collection value.
@@ -645,6 +647,11 @@ class Shape:
         if self.well is not None:
             cap_id = ET.SubElement(shape, "CapID")
             cap_id.text = self.well
+
+        if write_custom_attributes:
+            for attribute_name, attribute_value in self.custom_attributes.items():
+                custom_attribute = ET.SubElement(shape, attribute_name)
+                custom_attribute.text = attribute_value
 
         # write points
         for i, point in enumerate(transformed_points):
