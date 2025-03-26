@@ -542,6 +542,7 @@ class Shape:
         well: Optional[str] = None,
         name: Optional[str] = None,
         orientation_transform=None,
+        **custom_attributes: dict[str, str | int | float]
     ):
         """Class for creating a single shape.
 
@@ -551,7 +552,13 @@ class Shape:
             well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
 
             name: Name of the shape.
+
+            custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
         """
+        custom_attributes = custom_attributes if custom_attributes is not None else {}
+
+        if not all(isinstance(v, None | str | int | float) for v in custom_attributes.values()):
+            raise ValueError("Custom attributes only support None, str, int, float type arguments")
 
         # Orientation transform of shapes
         self.orientation_transform: Optional[np.ndarray] = orientation_transform
@@ -568,6 +575,8 @@ class Shape:
 
         self.name: Optional[str] = name
         self.well: Optional[str] = well
+
+        self.custom_attributes = custom_attributes
 
     def from_xml(self, root):
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
