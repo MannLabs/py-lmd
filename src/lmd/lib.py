@@ -275,9 +275,9 @@ class Collection:
             name: Name of the shape.
 
             custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
+                Only string values are correctly parsed
 
         """
-
         to_add = Shape(
             points,
             well=well,
@@ -555,7 +555,7 @@ class Shape:
         well: Optional[str] = None,
         name: Optional[str] = None,
         orientation_transform=None,
-        **custom_attributes: dict[str, None | str | int | float]
+        **custom_attributes: dict[str, str]
     ):
         """Class for creating a single shape.
 
@@ -567,10 +567,8 @@ class Shape:
             name: Name of the shape.
 
             custom_attributes: Custom shape metadata that will can be added as additional xml-element to the shape
+                Values be implicitly converted to strings.
         """
-        if not all(isinstance(v, None | str | int | float) for v in custom_attributes.values()):
-            raise ValueError("Custom attributes only support None, str, int, float type arguments")
-
         # Orientation transform of shapes
         self.orientation_transform: Optional[np.ndarray] = orientation_transform
 
