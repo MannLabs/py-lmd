@@ -31,7 +31,7 @@ from skimage.morphology import binary_erosion, disk
 from skimage.segmentation import find_boundaries
 
 from pathlib import Path
-from typing import Callable, Optional, Union, Iterable
+from typing import Callable, Optional, Union, Iterable, Any
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -263,7 +263,7 @@ class Collection:
             TypeError("Provided shape is not of type Shape")
 
     def new_shape(
-        self, points: np.ndarray, well: Optional[str] = None, name: Optional[str] = None
+        self, points: np.ndarray, well: Optional[str] = None, name: Optional[str] = None, **custom_attributes
     ):
         """Directly create a new Shape in the current collection.
 
@@ -273,13 +273,17 @@ class Collection:
             well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
 
             name: Name of the shape.
-        """
 
+            custom_attributes: Custom shape metadata that can be added as additional xml-element to the shape.
+                All values are converted to strings.
+
+        """
         to_add = Shape(
             points,
             well=well,
             name=name,
             orientation_transform=self.orientation_transform,
+            **custom_attributes
         )
         self.add_shape(to_add)
 
@@ -319,7 +323,14 @@ class Collection:
         .. code-block:: python
             # Generate collection
             collection = pylmd.Collection()
-            shape = pylmd.Shape(np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), well="A1", name="Shape_1", orientation_transform=None)
+            shape = pylmd.Shape(
+                    np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), 
+                    well="A1", 
+                    name="Shape_1", 
+                    metadata1="A",
+                    metadata2="B",
+                    orientation_transform=None
+                )
             collection.add_shape(shape)
 
             # Get geopandas object
@@ -327,14 +338,14 @@ class Collection:
             >       geometry
                 0   POLYGON ((0 0, 0 -1, 1 0, 0 0))
 
-            collection.to_geopandas("well", "name")
-            >   well     name                         geometry
-                0   A1  Shape_1  POLYGON ((0 0, 0 -1, 1 0, 0 0))
+            collection.to_geopandas("well", "name", "metadata1", "metadata2")
+            >       well    name            metadata1 metadata2  geometry
+                0   A1      Shape_1         A         B          POLYGON ((0 0, 0 -1, 1 0, 0 0))
         """
         metadata = (
             pd.DataFrame(
                 [
-                    [shape.__getattribute__(att) for att in attrs]
+                    [shape.get_shape_annotation(att) for att in attrs]
                     for shape in self.shapes
                 ],
                 columns=attrs,
@@ -393,6 +404,7 @@ class Collection:
             well_column: Optional[str] = None,
             calibration_points: Optional[np.ndarray] = None, 
             global_coordinates: Optional[int] = None,
+            custom_attribute_columns: str | list[str] | None = None,
         ) -> None:
         """Create collection from a geopandas dataframe
         
@@ -402,6 +414,8 @@ class Collection:
             well_column (str, optional): Column storing of well id as additional metadata
             calibration_points (np.ndarray, optional): Calibration points of collection 
             global_coordinates (int, optional): Number of global coordinates
+            custom_attribute_columns Custom shape metadata that will be added as additional xml-element to the shape. 
+                Can be column name, list of column names or None
 
         Example:
 
@@ -433,11 +447,17 @@ class Collection:
         if global_coordinates is not None:
             self.global_coordinates = global_coordinates
 
+        if custom_attribute_columns is None:
+            custom_attribute_columns = []
+        if isinstance(custom_attribute_columns, str):
+            custom_attribute_columns = [custom_attribute_columns]
+
         self.shapes = [
             Shape(
                 points=np.array(row[geometry_column].exterior.coords), 
                 name=row[name_column] if name_column is not None else None,
                 well=row[well_column] if well_column is not None else None,
+                **{att: row[att] for att in custom_attribute_columns}
             )
             for _, row in gdf.iterrows()
         ]
@@ -542,6 +562,7 @@ class Shape:
         well: Optional[str] = None,
         name: Optional[str] = None,
         orientation_transform=None,
+        **custom_attributes: dict[str, str]
     ):
         """Class for creating a single shape.
 
@@ -551,8 +572,10 @@ class Shape:
             well: Well in which to sort the shape after cutting. For example A1, A2 or B3.
 
             name: Name of the shape.
-        """
 
+            custom_attributes: Custom shape metadata that will be added as additional xml-element to the shape
+                Values be implicitly converted to strings.
+        """
         # Orientation transform of shapes
         self.orientation_transform: Optional[np.ndarray] = orientation_transform
 
@@ -568,6 +591,8 @@ class Shape:
 
         self.name: Optional[str] = name
         self.well: Optional[str] = well
+
+        self.custom_attributes = custom_attributes
 
     def from_xml(self, root):
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
@@ -599,10 +624,14 @@ class Shape:
                 points[point_id, 1] = int(child.text)  
             elif child.tag == "CapID":
                 self.well = str(child.text)
+            else: 
+                if child.tag in self.custom_attributes:
+                    warnings.warn(f"Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
+                self.custom_attributes[child.tag] = child.text
 
         self.points = np.array(points)
 
-    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int):
+    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int, *, write_custom_attributes: bool = True):
         """Generate XML shape node needed internally for export.
 
         Args:
@@ -611,6 +640,8 @@ class Shape:
             orientation_transform (np.array): Pass orientation_transform which is used if no local orientation transform is set.
 
             scale (int): Scalling factor used to enable higher decimal precision.
+
+            write_custom_attributes: Write custom attributes to xml file
 
         Note:
             If the Shape has a custom orientation_transform defined, the custom orientation_transform is applied at this point. If not, the oritenation_transform passed by the parent Collection is used. This highlights an important difference between the Shape and Collection class. The Collection will always has an orientation transform defined and will use `np.eye(2)` by default. The Shape object can have a orientation_transform but can also be set to `None` to use the Collection value.
@@ -633,6 +664,12 @@ class Shape:
             cap_id = ET.SubElement(shape, "CapID")
             cap_id.text = self.well
 
+        if write_custom_attributes:
+            for attribute_name, attribute_value in self.custom_attributes.items():
+                custom_attribute = ET.SubElement(shape, attribute_name)
+                # xml only accepts string values
+                custom_attribute.text = str(attribute_value)
+
         # write points
         for i, point in enumerate(transformed_points):
             id = i + 1
@@ -643,6 +680,28 @@ class Shape:
             y.text = "{}".format(np.floor(point[1]).astype(int))
 
         return shape
+    
+    def get_shape_annotation(self, name: str) -> Any | None:
+        """Retrieve the value of an attribute from either instance attributes
+         or custom attributes by name.
+
+         Searches for the attribute by name in the 1) instance attributes
+         2) custom attributes, or 3) issues a warning and returns None
+
+        Args:
+            name (str): The name of the attribute to retrieve.
+
+        Returns:
+            Any | None: The value of the attribute if found, otherwise None.
+        """
+        if name in self.__dict__:
+            return getattr(self, name)
+        elif name in self.custom_attributes:
+            return self.custom_attributes.get(name)
+        else:
+            warnings.warn(f"Attribute {name} not found in shape attributes. Returning None.")
+            return None
+
 
     def to_shapely(self):
         return shapely.Polygon(self.points)
