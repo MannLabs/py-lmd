@@ -600,7 +600,7 @@ class Shape:
 
         # Assert correct dimensions
         point_shapes = points.shape
-        if (point_shapes.ndim != 2) or (point_shapes[1] != 2):
+        if (points.ndim != 2) or (point_shapes[1] != 2):
             raise ValueError(
                 f"Shape {name}: Shape dimensionality is not valid. Please provide a numpy array of shape (N, 2)"
             )
