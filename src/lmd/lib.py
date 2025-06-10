@@ -418,7 +418,7 @@ class Collection:
                     if raise_shape_errors:
                         raise ValueError(e)
                     else:
-                        warnings.warn(e, stacklevel=1)
+                        warnings.warn(str(e), stacklevel=1)
                     continue
 
     def load_geopandas(
