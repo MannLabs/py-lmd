@@ -44,8 +44,7 @@ def test_shape_from_xml():
     shape_xml = ET.fromstring(bytes(shape_xml, encoding="utf-8"))
 
     # Load xml with Shape
-    shape = Shape()
-    shape.from_xml(shape_xml)
+    shape = Shape.from_xml(shape_xml)
     assert (shape.points == np.array([[ 0,  0], [ 0, -1], [ 1,  0]])).all()
     assert shape.well == "A1"
     assert shape.custom_attributes["TEST"] == "this is a test"
