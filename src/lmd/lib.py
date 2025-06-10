@@ -579,7 +579,7 @@ class Shape:
         # Orientation transform of shapes
         self.orientation_transform: Optional[np.ndarray] = orientation_transform
 
-        # Allthoug a numpy array is recommended, list of lists is accepted
+        # Although a numpy array is recommended, list of lists is accepted
         points = np.array(points)
 
         # Assert correct dimensions
