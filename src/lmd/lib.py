@@ -634,12 +634,12 @@ class Shape:
             root: XML input node.
         """
         name = root.tag
+        well = None
+        custom_attributes = {}
 
         # get number of points
         point_count = int(root.find("PointCount").text)
         points = np.empty((point_count, 2), dtype=int)
-
-        custom_attributes = {}
 
         # compile regex
         xpattern = re.compile("X_(\d+)")
