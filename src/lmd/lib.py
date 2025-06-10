@@ -392,8 +392,7 @@ class Collection:
 
             # Load shapes
             elif "Shape_" in child.tag:
-                new_shape = Shape()
-                new_shape.from_xml(child)
+                new_shape = Shape.from_xml(child)
                 self.shapes.append(new_shape)
     
     def load_geopandas(
