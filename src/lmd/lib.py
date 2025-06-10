@@ -375,10 +375,11 @@ class Collection:
         return gpd.GeoDataFrame(data=metadata, geometry=geometry)
 
     # load xml from file
-    def load(self, file_location: str):
+    def load(self, file_location: str, *, raise_shape_errors: bool = False):
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
         Args:
             file_location: File path pointing to the XML file.
+            raise_errors: Whether to raise errors during shape collection. If `False` raises a warning.
 
         """
 
@@ -409,8 +410,16 @@ class Collection:
 
             # Load shapes
             elif "Shape_" in child.tag:
-                new_shape = Shape.from_xml(child)
-                self.shapes.append(new_shape)
+                try:
+                    new_shape = Shape.from_xml(child)
+                    self.shapes.append(new_shape)
+
+                except ValueError as e:
+                    if raise_shape_errors:
+                        raise ValueError(e)
+                    else:
+                        warnings.warn(e, stacklevel=1)
+                    continue
 
     def load_geopandas(
         self,
