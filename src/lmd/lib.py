@@ -594,17 +594,20 @@ class Shape:
 
         self.custom_attributes = custom_attributes
 
-    def from_xml(self, root):
+    @classmethod
+    def from_xml(cls, root, orientation_transform: np.ndarray | None = None):
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
         
         Args:
             root: XML input node.
         """
-        self.name = root.tag
+        name = root.tag
 
         # get number of points
         point_count = int(root.find("PointCount").text)   
         points = np.empty((point_count, 2), dtype=int)
+
+        custom_attributes = {}
 
         # compile regex 
         xpattern = re.compile("X_(\d+)")
@@ -623,13 +626,17 @@ class Shape:
                 point_id = int(ymatch[0]) - 1
                 points[point_id, 1] = int(child.text)  
             elif child.tag == "CapID":
-                self.well = str(child.text)
+                well = str(child.text)
             else: 
-                if child.tag in self.custom_attributes:
+                if child.tag in custom_attributes:
                     warnings.warn(f"Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
-                self.custom_attributes[child.tag] = child.text
+                custom_attributes[child.tag] = child.text
 
-        self.points = np.array(points)
+        points = np.array(points)
+
+        return cls(
+            points=points, name=name, well=well, orientation_transform=orientation_transform, **custom_attributes
+        )
 
     def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int, *, write_custom_attributes: bool = True):
         """Generate XML shape node needed internally for export.
