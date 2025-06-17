@@ -28,6 +28,10 @@ jobs:
       run: |
         pip install uv
         uv pip install --system .
+    - name: Run pre-commit checks
+      run: |
+        pre-commit install
+        pre-commit run --all-files
     - name: Test with pytest
       run: |
         uv pip install --system pytest
