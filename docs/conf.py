@@ -13,38 +13,39 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('../src'))
+sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 
-project = 'py-lmd'
-copyright = '2023 Georg Wallmann, Sophia Mädler and Niklas Schmacke'
-author = 'Georg Wallmann, Sophia Mädler and Niklas Schmacke'
+project = "py-lmd"
+copyright = "2023 Georg Wallmann, Sophia Mädler and Niklas Schmacke"
+author = "Georg Wallmann, Sophia Mädler and Niklas Schmacke"
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.2'
+release = "1.0.2"
 
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.napoleon','sphinx.ext.autodoc', 'sphinx_rtd_theme', "nbsphinx", 'sphinx_copybutton']
+extensions = ["sphinx.ext.napoleon", "sphinx.ext.autodoc", "sphinx_rtd_theme", "nbsphinx", "sphinx_copybutton"]
 nbsphinx_allow_errors = True
 
 autodoc_mock_imports = []
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 
-                    'Thumbs.db', 
-                    '.DS_Store', 
-                    '**.ipynb_checkpoints',
-                    ]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "**.ipynb_checkpoints",
+]
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -64,17 +65,17 @@ html_theme_options = {
 }
 
 html_title = "py-lmd"
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
-#placeholder to add favicon logo needs to be a png
+# placeholder to add favicon logo needs to be a png
 # html_favicon = "_static/pyLMD_text.svg"
 
-##----- OPtions for Latex output 
+##----- OPtions for Latex output
 
-latex_engine = 'pdflatex'
+latex_engine = "pdflatex"
 
 latex_elements = {
-  'extraclassoptions': 'openany,oneside',
-  'papersize': 'a4paper',
-  'pointsize': '10pt',
+    "extraclassoptions": "openany,oneside",
+    "papersize": "a4paper",
+    "pointsize": "10pt",
 }

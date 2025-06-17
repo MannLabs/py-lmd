@@ -8,7 +8,7 @@ To install the py-lmd library you can use pip.
 ::
 
   pip install py-lmd
-  
+
 Once installed the modules can be loaded as following:
 
 .. code-block:: python

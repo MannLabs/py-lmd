@@ -10,28 +10,11 @@ import sys
 
 # import warnings
 import warnings
+from collections.abc import Iterable
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from functools import partial, reduce
-
-import numpy as np
-import matplotlib.pyplot as plt
-from lxml import etree as ET
-from matplotlib import image
-from skimage import data, color
-import matplotlib.ticker as ticker
-from svgelements import SVG
-from lmd.segmentation import get_coordinate_form, tsp_greedy_solve, tsp_hilbert_solve, calc_len, _create_coord_index,_create_coord_index_sparse, _filter_coord_index
-from tqdm import tqdm
-# import warnings
-import warnings
-from rdp import rdp
-
-from skimage.morphology import dilation as binary_dilation
-from skimage.morphology import binary_erosion, disk
-from skimage.segmentation import find_boundaries
-
 from pathlib import Path
-from typing import Callable, Optional, Union, Iterable, Any
+from typing import Any, Callable, Optional, Union
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -41,16 +24,11 @@ import numpy as np
 import pandas as pd
 import scipy
 import shapely
-from lmd.segmentation import (
-    _create_coord_index,
-    _filter_coord_index,
-    calc_len,
-    get_coordinate_form,
-    tsp_greedy_solve,
-    tsp_hilbert_solve,
-)
 from lxml import etree as ET
 from matplotlib import image
+
+# import warnings
+from rdp import rdp
 from scipy import ndimage
 from scipy.signal import convolve2d
 from scipy.spatial import cKDTree
@@ -59,13 +37,20 @@ from skimage.morphology import binary_erosion, disk
 from skimage.morphology import dilation as binary_dilation
 from skimage.segmentation import find_boundaries
 from svgelements import SVG
-from tqdm import tqdm
 from tqdm.auto import tqdm
 
+from lmd.segmentation import (
+    _create_coord_index,
+    _create_coord_index_sparse,
+    _filter_coord_index,
+    calc_len,
+    get_coordinate_form,
+    tsp_greedy_solve,
+    tsp_hilbert_solve,
+)
 
-def _execute_indexed_parallel(
-    func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10
-) -> list:
+
+def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10) -> list:
     """parallelization of function call with indexed arguments using ThreadPoolExecutor. Returns a list of results in the order of the input arguments.
 
     Args:
@@ -109,13 +94,13 @@ class Collection:
 
     def __init__(
         self,
-        calibration_points: Optional[np.ndarray] = None,
-        orientation_transform: Optional[np.ndarray] = None,
+        calibration_points: np.ndarray | None = None,
+        orientation_transform: np.ndarray | None = None,
         scale: float = 100,
     ):
         self.shapes: list[Shape] = []
 
-        self.calibration_points: Optional[np.ndarray] = calibration_points
+        self.calibration_points: np.ndarray | None = calibration_points
 
         if orientation_transform is None:
             orientation_transform = np.eye(2)  # assign default value
@@ -155,26 +140,28 @@ class Collection:
         percentile_5 = np.percentile(lengths, 5).astype(float)
         percentile_95 = np.percentile(lengths, 95).astype(float)
 
-        print('===== Collection Stats =====')
-        print(f'Number of shapes: {num_shapes:,}')
-        print(f'Number of vertices: {num_vertices:,}')
-        print('============================')
-        print(f'Mean vertices: {mean_dp:,.0f}')
-        print(f'Min vertices: {min_dp:,.0f}')
-        print(f'5% percentile vertices: {percentile_5:,.0f}')
-        print(f'Median vertices: {median_dp:,.0f}')
-        print(f'95% percentile vertices: {percentile_95:,.0f}')
-        print(f'Max vertices: {max_dp:,.0f}')
-        
-    def plot(self, calibration: bool = True, 
-             mode: str = "line", 
-             fig_size: tuple = (5,5),
-             apply_orientation_transform: bool = True,
-             apply_scale: bool = False, 
-             save_name: Optional[str] = None, 
-             return_fig: bool = False,
-             **kwargs):
-        
+        print("===== Collection Stats =====")
+        print(f"Number of shapes: {num_shapes:,}")
+        print(f"Number of vertices: {num_vertices:,}")
+        print("============================")
+        print(f"Mean vertices: {mean_dp:,.0f}")
+        print(f"Min vertices: {min_dp:,.0f}")
+        print(f"5% percentile vertices: {percentile_5:,.0f}")
+        print(f"Median vertices: {median_dp:,.0f}")
+        print(f"95% percentile vertices: {percentile_95:,.0f}")
+        print(f"Max vertices: {max_dp:,.0f}")
+
+    def plot(
+        self,
+        calibration: bool = True,
+        mode: str = "line",
+        fig_size: tuple = (5, 5),
+        apply_orientation_transform: bool = True,
+        apply_scale: bool = False,
+        save_name: str | None = None,
+        return_fig: bool = False,
+        **kwargs,
+    ):
         """This function can be used to plot all shapes of the corresponding shape collection.
 
         Args:
@@ -194,11 +181,11 @@ class Collection:
             scale = self.scale
         else:
             scale = 1
-            
+
         if mode not in modes:
             raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
-        
-        #close current figures
+
+        # close current figures
         plt.clf()
         plt.cla()
         plt.close("all")
@@ -209,9 +196,7 @@ class Collection:
         if calibration and self.calibration_points is not None:
             # Apply orientation transform as default behavior
             if apply_orientation_transform:
-                calibration = (
-                    self.calibration_points @ self.orientation_transform * scale
-                )
+                calibration = self.calibration_points @ self.orientation_transform * scale
             else:
                 calibration = self.calibration_points * scale
 
@@ -236,18 +221,18 @@ class Collection:
 
         ax.grid(True)
         ax.ticklabel_format(useOffset=False)
-        ax.set_xlabel('x-axis')
-        ax.set_ylabel('y-axis')
-        ax.set_aspect('equal', adjustable='box')
-        
+        ax.set_xlabel("x-axis")
+        ax.set_ylabel("y-axis")
+        ax.set_aspect("equal", adjustable="box")
+
         fig.tight_layout()
-        
+
         if save_name is not None:
             plt.savefig(save_name)
-        
+
         if return_fig:
             return fig
-    
+
         plt.show()
 
     def add_shape(self, shape: Shape):
@@ -262,9 +247,7 @@ class Collection:
         else:
             TypeError("Provided shape is not of type Shape")
 
-    def new_shape(
-        self, points: np.ndarray, well: Optional[str] = None, name: Optional[str] = None, **custom_attributes
-    ):
+    def new_shape(self, points: np.ndarray, well: str | None = None, name: str | None = None, **custom_attributes):
         """Directly create a new Shape in the current collection.
 
         Args:
@@ -279,11 +262,7 @@ class Collection:
 
         """
         to_add = Shape(
-            points,
-            well=well,
-            name=name,
-            orientation_transform=self.orientation_transform,
-            **custom_attributes
+            points, well=well, name=name, orientation_transform=self.orientation_transform, **custom_attributes
         )
         self.add_shape(to_add)
 
@@ -324,9 +303,9 @@ class Collection:
             # Generate collection
             collection = pylmd.Collection()
             shape = pylmd.Shape(
-                    np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]), 
-                    well="A1", 
-                    name="Shape_1", 
+                    np.array([[ 0,  0], [ 0, -1], [ 1,  0], [ 0,  0]]),
+                    well="A1",
+                    name="Shape_1",
                     metadata1="A",
                     metadata2="B",
                     orientation_transform=None
@@ -344,10 +323,7 @@ class Collection:
         """
         metadata = (
             pd.DataFrame(
-                [
-                    [shape.get_shape_annotation(att) for att in attrs]
-                    for shape in self.shapes
-                ],
+                [[shape.get_shape_annotation(att) for att in attrs] for shape in self.shapes],
                 columns=attrs,
             )
             if (attrs is not None)
@@ -356,7 +332,7 @@ class Collection:
         geometry = [shape.to_shapely() for shape in self.shapes]
 
         return gpd.GeoDataFrame(data=metadata, geometry=geometry)
-    
+
     # load xml from file
     def load(self, file_location: str):
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
@@ -395,26 +371,26 @@ class Collection:
                 new_shape = Shape()
                 new_shape.from_xml(child)
                 self.shapes.append(new_shape)
-    
+
     def load_geopandas(
-            self, 
-            gdf: gpd.GeoDataFrame, 
-            geometry_column: str = "geometry",
-            name_column: Optional[str] = None,
-            well_column: Optional[str] = None,
-            calibration_points: Optional[np.ndarray] = None, 
-            global_coordinates: Optional[int] = None,
-            custom_attribute_columns: str | list[str] | None = None,
-        ) -> None:
+        self,
+        gdf: gpd.GeoDataFrame,
+        geometry_column: str = "geometry",
+        name_column: str | None = None,
+        well_column: str | None = None,
+        calibration_points: np.ndarray | None = None,
+        global_coordinates: int | None = None,
+        custom_attribute_columns: str | list[str] | None = None,
+    ) -> None:
         """Create collection from a geopandas dataframe
-        
+
         Args:
             gdf (geopandas.GeoDataFrame): Collection of shapes and optional metadata
             geometry_column (str, default: geometry): Name of column storing Shapes as `shapely.Polygon`, defaults to geometry
             well_column (str, optional): Column storing of well id as additional metadata
-            calibration_points (np.ndarray, optional): Calibration points of collection 
+            calibration_points (np.ndarray, optional): Calibration points of collection
             global_coordinates (int, optional): Number of global coordinates
-            custom_attribute_columns Custom shape metadata that will be added as additional xml-element to the shape. 
+            custom_attribute_columns Custom shape metadata that will be added as additional xml-element to the shape.
                 Can be column name, list of column names or None
 
         Example:
@@ -426,8 +402,7 @@ class Collection:
             import shapely
 
             gdf = gpd.GeoDataFrame(
-                data={"well": ["A1"], "name": ["test"]},
-                geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
+                data={"well": ["A1"], "name": ["test"]}, geometry=[shapely.Polygon([[0, 0], [0, 1], [1, 0], [0, 0]])]
             )
 
             # Create collection
@@ -454,10 +429,10 @@ class Collection:
 
         self.shapes = [
             Shape(
-                points=np.array(row[geometry_column].exterior.coords), 
+                points=np.array(row[geometry_column].exterior.coords),
                 name=row[name_column] if name_column is not None else None,
                 well=row[well_column] if well_column is not None else None,
-                **{att: row[att] for att in custom_attribute_columns}
+                **{att: row[att] for att in custom_attribute_columns},
             )
             for _, row in gdf.iterrows()
         ]
@@ -476,24 +451,22 @@ class Collection:
         global_coordinates.text = "1"
 
         # transform calibration points
-        transformed_calibration_points = (
-            self.calibration_points @ self.orientation_transform * self.scale
-        )
+        transformed_calibration_points = self.calibration_points @ self.orientation_transform * self.scale
 
         # write calibration points
         for i, point in enumerate(transformed_calibration_points):
             print(point)
 
             id = i + 1
-            x = ET.SubElement(root, "X_CalibrationPoint_{}".format(id))
-            x.text = "{}".format(np.floor(point[0]).astype(int))
+            x = ET.SubElement(root, f"X_CalibrationPoint_{id}")
+            x.text = f"{np.floor(point[0]).astype(int)}"
 
-            y = ET.SubElement(root, "Y_CalibrationPoint_{}".format(id))
-            y.text = "{}".format(np.floor(point[1]).astype(int))
+            y = ET.SubElement(root, f"Y_CalibrationPoint_{id}")
+            y.text = f"{np.floor(point[1]).astype(int)}"
 
         # write shape length
         shape_count = ET.SubElement(root, "ShapeCount")
-        shape_count.text = "{}".format(len(self.shapes))
+        shape_count.text = f"{len(self.shapes)}"
 
         # write shapes
         for i, shape in enumerate(self.shapes):
@@ -504,14 +477,12 @@ class Collection:
 
         # write root
         tree = ET.ElementTree(element=root)
-        tree.write(
-            file_location, encoding="utf-8", xml_declaration=True, pretty_print=True
-        )
+        tree.write(file_location, encoding="utf-8", xml_declaration=True, pretty_print=True)
 
     def svg_to_lmd(
         self,
         file_location,
-        offset=[0, 0],
+        offset=None,
         divisor=3,
         multiplier=60,
         rotation_matrix=np.eye(2),
@@ -528,16 +499,13 @@ class Collection:
 
         """
 
-        orientation_transform = (
-            self.orientation_transform
-            if orientation_transform is None
-            else orientation_transform
-        )
+        if offset is None:
+            offset = [0, 0]
+        orientation_transform = self.orientation_transform if orientation_transform is None else orientation_transform
 
         svg = SVG.parse(file_location)
-        paths = list(svg.elements())
+        list(svg.elements())
 
-        poly_list = []
         for path in svg:
             pl = []
             n_points = int(path.length() // divisor)
@@ -559,10 +527,10 @@ class Shape:
     def __init__(
         self,
         points: np.ndarray = np.empty((1, 2)),
-        well: Optional[str] = None,
-        name: Optional[str] = None,
+        well: str | None = None,
+        name: str | None = None,
         orientation_transform=None,
-        **custom_attributes: dict[str, str]
+        **custom_attributes: dict[str, str],
     ):
         """Class for creating a single shape.
 
@@ -577,7 +545,7 @@ class Shape:
                 Values be implicitly converted to strings.
         """
         # Orientation transform of shapes
-        self.orientation_transform: Optional[np.ndarray] = orientation_transform
+        self.orientation_transform: np.ndarray | None = orientation_transform
 
         # Allthoug a numpy array is recommended, list of lists is accepted
         points = np.array(points)
@@ -589,42 +557,41 @@ class Shape:
 
         self.points: np.ndarray = points
 
-        self.name: Optional[str] = name
-        self.well: Optional[str] = well
+        self.name: str | None = name
+        self.well: str | None = well
 
         self.custom_attributes = custom_attributes
 
     def from_xml(self, root):
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
-        
+
         Args:
             root: XML input node.
         """
         self.name = root.tag
 
         # get number of points
-        point_count = int(root.find("PointCount").text)   
+        point_count = int(root.find("PointCount").text)
         points = np.empty((point_count, 2), dtype=int)
 
-        # compile regex 
-        xpattern = re.compile("X_(\d+)")
-        ypattern = re.compile("Y_(\d+)")
-        
+        # compile regex
+        xpattern = re.compile(r"X_(\d+)")
+        ypattern = re.compile(r"Y_(\d+)")
+
         # parse all points
         for child in root:
-
             xmatch = re.findall(xpattern, child.tag)
             ymatch = re.findall(ypattern, child.tag)
-            
+
             if xmatch:
                 point_id = int(xmatch[0]) - 1
-                points[point_id, 0] = int(child.text)            
+                points[point_id, 0] = int(child.text)
             elif ymatch:
                 point_id = int(ymatch[0]) - 1
-                points[point_id, 1] = int(child.text)  
+                points[point_id, 1] = int(child.text)
             elif child.tag == "CapID":
                 self.well = str(child.text)
-            else: 
+            else:
                 if child.tag in self.custom_attributes:
                     warnings.warn(f"Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
                 self.custom_attributes[child.tag] = child.text
@@ -655,10 +622,10 @@ class Shape:
         else:
             transformed_points = self.points @ orientation_transform * scale
 
-        shape = ET.Element("Shape_{}".format(id))
+        shape = ET.Element(f"Shape_{id}")
 
         point_count = ET.SubElement(shape, "PointCount")
-        point_count.text = "{}".format(len(transformed_points))
+        point_count.text = f"{len(transformed_points)}"
 
         if self.well is not None:
             cap_id = ET.SubElement(shape, "CapID")
@@ -673,14 +640,14 @@ class Shape:
         # write points
         for i, point in enumerate(transformed_points):
             id = i + 1
-            x = ET.SubElement(shape, "X_{}".format(id))
-            x.text = "{}".format(np.floor(point[0]).astype(int))
+            x = ET.SubElement(shape, f"X_{id}")
+            x.text = f"{np.floor(point[0]).astype(int)}"
 
-            y = ET.SubElement(shape, "Y_{}".format(id))
-            y.text = "{}".format(np.floor(point[1]).astype(int))
+            y = ET.SubElement(shape, f"Y_{id}")
+            y.text = f"{np.floor(point[1]).astype(int)}"
 
         return shape
-    
+
     def get_shape_annotation(self, name: str) -> Any | None:
         """Retrieve the value of an attribute from either instance attributes
          or custom attributes by name.
@@ -699,9 +666,8 @@ class Shape:
         elif name in self.custom_attributes:
             return self.custom_attributes.get(name)
         else:
-            warnings.warn(f"Attribute {name} not found in shape attributes. Returning None.")
+            warnings.warn(f"Attribute {name} not found in shape attributes. Returning None.", stacklevel=2)
             return None
-
 
     def to_shapely(self):
         return shapely.Polygon(self.points)
@@ -709,24 +675,24 @@ class Shape:
 
 class SegmentationLoader:
     """Select single cells from a segmentation and generate cutting data
-        
+
         Args:
             config (dict): Dict containing configuration parameters. See Note for further explanation.
             processes (int): Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
             threads (int): Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
-            
+
             cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
-            
-            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.    
+
+            calibration_marker (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.
 
             coords_lookup (None, dict): precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
-            
+
             classes (np.array): Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
-                    
+
         Example:
-                    
+
             .. code-block:: python
-            
+
                 import numpy as np
                 from PIL import Image
                 from lmd.lib import SegmentationLoader
@@ -746,25 +712,21 @@ class SegmentationLoader:
             from PIL import Image
             from lmd.lib import SegmentationLoader
 
-            im = Image.open('segmentation_cytosol.tiff')
+            im = Image.open("segmentation_cytosol.tiff")
             segmentation = np.array(im).astype(np.uint32)
 
             all_classes = np.unique(segmentation)
 
             cell_sets = [{"classes": all_classes, "well": "A1"}]
 
-            calibration_points = np.array([[0,0],[0,1000],[1000,1000]])
+            calibration_points = np.array([[0, 0], [0, 1000], [1000, 1000]])
 
-            loader_config = {
-                'orientation_transform': np.array([[0, -1],[1, 0]])
-            }
+            loader_config = {"orientation_transform": np.array([[0, -1], [1, 0]])}
 
-            sl = SegmentationLoader(config = loader_config)
-            shape_collection = sl(segmentation,
-                                cell_sets,
-                                calibration_points)
+            sl = SegmentationLoader(config=loader_config)
+            shape_collection = sl(segmentation, cell_sets, calibration_points)
 
-            shape_collection.plot(fig_size = (10, 10))
+            shape_collection.plot(fig_size=(10, 10))
 
         .. image:: images/segmentation1.png
 
@@ -816,25 +778,27 @@ class SegmentationLoader:
     # define all valid path optimization methods used with the "path_optimization" argument in the configuration
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
     DEFAULT_SEGMENTATION_DTYPE = np.uint64
-    
-    def __init__(self, config = {}, verbose = False, processes = 1):
+
+    def __init__(self, config=None, verbose=False, processes=1):
+        if config is None:
+            config = {}
         self.config = config
         self.verbose = verbose
         self._get_context()  # setup context for multiprocessing function calls to work with different operating systems
 
-        self.register_parameter('shape_dilation', 0)
-        self.register_parameter('shape_erosion', 0)
-        self.register_parameter('binary_smoothing', 3)
-        self.register_parameter('convolution_smoothing', 15)
-        self.register_parameter('rdp_epsilon', 0.1)
-        self.register_parameter('path_optimization', 'hilbert')
-        self.register_parameter('greedy_k', 0)
-        self.register_parameter('hilbert_p', 7)
-        self.register_parameter('xml_decimal_transform', 100)
-        self.register_parameter('distance_heuristic', 300)
-        self.register_parameter('join_intersecting', True)
-        self.register_parameter('orientation_transform', np.eye(2))
-        self.register_parameter('threads', 10)
+        self.register_parameter("shape_dilation", 0)
+        self.register_parameter("shape_erosion", 0)
+        self.register_parameter("binary_smoothing", 3)
+        self.register_parameter("convolution_smoothing", 15)
+        self.register_parameter("rdp_epsilon", 0.1)
+        self.register_parameter("path_optimization", "hilbert")
+        self.register_parameter("greedy_k", 0)
+        self.register_parameter("hilbert_p", 7)
+        self.register_parameter("xml_decimal_transform", 100)
+        self.register_parameter("distance_heuristic", 300)
+        self.register_parameter("join_intersecting", True)
+        self.register_parameter("orientation_transform", np.eye(2))
+        self.register_parameter("threads", 10)
 
         self.coords_lookup = None
         self.processes = processes
@@ -842,9 +806,9 @@ class SegmentationLoader:
         self._configure_path_optimizer()
 
     def _configure_path_optimizer(self):
-        #configure path optimizer
-        if 'path_optimization' in self.config:
-            optimization_method = self.config['path_optimization']
+        # configure path optimizer
+        if "path_optimization" in self.config:
+            optimization_method = self.config["path_optimization"]
         else:
             optimization_method = "none"
 
@@ -854,7 +818,7 @@ class SegmentationLoader:
         else:
             self.log("Path optimizer is no valid option, no optimization will be used.")
             pathoptimizer = "none"
-        
+
         self.log(f"Path optimizer used for XML generation: {optimization_method}")
         self.optimization_method = pathoptimizer
 
@@ -865,9 +829,15 @@ class SegmentationLoader:
             self.context = "spawn"
         elif platform.system() == "Linux":
             self.context = "fork"
-    
-    def __call__(self, input_segmentation: np.ndarray | None, cell_sets, calibration_points, coords_lookup = None, classes = np.array([], dtype=np.uint64)):
-        
+
+    def __call__(
+        self,
+        input_segmentation: np.ndarray | None,
+        cell_sets,
+        calibration_points,
+        coords_lookup=None,
+        classes=np.array([], dtype=np.uint64),
+    ):
         if input_segmentation is None:
             assert coords_lookup is not None, "If no input segmentation is provided, a coords_lookup must be provided."
 
@@ -882,15 +852,15 @@ class SegmentationLoader:
             self.log(f"cell set {i} passed sanity check")
 
         if len(sets) < self.processes:
-            self.processes = len(sets) #reduce number of processes if there are less cell sets than processes
-        
+            self.processes = len(sets)  # reduce number of processes if there are less cell sets than processes
+
         self.input_segmentation = input_segmentation
 
         if coords_lookup is None:
             self.log("Calculating coordinate locations of all cells.")
-            #deprecated infavour of more computationally efficient solution
-            #self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
-            #self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
+            # deprecated infavour of more computationally efficient solution
+            # self.coords_lookup = _create_coord_index(self.input_segmentation, classes = classes)
+            # self.coords_lookup = {k: np.array(v) for k, v in self.coords_lookup.items()}
             self.coords_lookup = _create_coord_index_sparse(self.input_segmentation)
         else:
             self.log("Loading coordinates from external source")
@@ -907,11 +877,11 @@ class SegmentationLoader:
             collections = _execute_indexed_parallel(
                 self.generate_cutting_data,
                 args=args,
-                tqdm_args=dict(
-                    file=sys.stdout,
-                    disable=not self.verbose,
-                    desc="collecting cell sets",
-                ),
+                tqdm_args={
+                    "file": sys.stdout,
+                    "disable": not self.verbose,
+                    "desc": "collecting cell sets",
+                },
                 n_threads=self.processes,
             )
         else:
@@ -925,12 +895,8 @@ class SegmentationLoader:
 
     def generate_cutting_data(self, i: int, cell_set: dict) -> Collection:
         if 0 in cell_set["classes_loaded"]:
-            cell_set["classes_loaded"] = cell_set["classes_loaded"][
-                cell_set["classes_loaded"] != 0
-            ]
-            warnings.warn(
-                "Class 0 is not a valid class and was removed from the cell set"
-            )
+            cell_set["classes_loaded"] = cell_set["classes_loaded"][cell_set["classes_loaded"] != 0]
+            warnings.warn("Class 0 is not a valid class and was removed from the cell set", stacklevel=2)
 
         self.log("Convert label format into coordinate format")
         center, length, coords = get_coordinate_form(cell_set["classes_loaded"], self.coords_lookup)
@@ -945,9 +911,7 @@ class SegmentationLoader:
                 "Check failed, returned lengths do not match cell set.\n Some classes were not found in the segmentation and were therefore removed.\n Please make sure all classes specified are present in your segmentation."
             )
             elements_removed = len(cell_set["classes_loaded"]) - len(center)
-            self.log(
-                f"{elements_removed} classes were not found and therefore removed."
-            )
+            self.log(f"{elements_removed} classes were not found and therefore removed.")
 
         # Sanity check 2: for the returned coordinates
         if len(center) == len(length):
@@ -962,67 +926,89 @@ class SegmentationLoader:
         for el in coords:
             if len(el) == 0:
                 zero_elements += 1
-                
-        if zero_elements <= 2: #allow at most for 2 zero elements (x = 0 and y = 0)
+
+        if zero_elements <= 2:  # allow at most for 2 zero elements (x = 0 and y = 0)
             pass
         else:
             self.log(
                 "Check failed, returned coordinates contain empty elements. Please check if all classes specified are present in your segmentation"
             )
 
-        if self.config['join_intersecting']:
-            center, length, coords = self.merge_dilated_shapes(center, length, coords, 
-                                                               dilation = self.config['shape_dilation'],
-                                                               erosion = self.config['shape_erosion'])
+        if self.config["join_intersecting"]:
+            center, length, coords = self.merge_dilated_shapes(
+                center, length, coords, dilation=self.config["shape_dilation"], erosion=self.config["shape_erosion"]
+            )
 
         # Calculate dilation and erosion based on if merging was activated
-        dilation = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_dilation']
-        erosion = self.config['binary_smoothing'] if self.config['join_intersecting'] else self.config['binary_smoothing'] + self.config['shape_erosion']
-        
-        if self.config["threads"] == 1:  
+        dilation = (
+            self.config["binary_smoothing"]
+            if self.config["join_intersecting"]
+            else self.config["binary_smoothing"] + self.config["shape_dilation"]
+        )
+        erosion = (
+            self.config["binary_smoothing"]
+            if self.config["join_intersecting"]
+            else self.config["binary_smoothing"] + self.config["shape_erosion"]
+        )
+
+        if self.config["threads"] == 1:
             shapes = []
-            for coord in tqdm(coords, desc = "creating shapes"):
-                shapes.append(transform_to_map(coord, dilation = dilation, erosion = erosion, coord_format = False))
+            for coord in tqdm(coords, desc="creating shapes"):
+                shapes.append(transform_to_map(coord, dilation=dilation, erosion=erosion, coord_format=False))
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
-                shapes = list(tqdm(pool.imap(partial(transform_to_map, 
-                                                    erosion = erosion,
-                                                    dilation = dilation,
-                                                    coord_format = False),
-                                                    coords), total=len(center), 
-                                                    disable = not self.verbose, 
-                                                    desc = "creating shapes"))
-                
-            
-        if self.config["threads"] == 1:  
+            with mp.get_context(self.context).Pool(processes=self.config["threads"]) as pool:
+                shapes = list(
+                    tqdm(
+                        pool.imap(
+                            partial(transform_to_map, erosion=erosion, dilation=dilation, coord_format=False), coords
+                        ),
+                        total=len(center),
+                        disable=not self.verbose,
+                        desc="creating shapes",
+                    )
+                )
+
+        if self.config["threads"] == 1:
             polygons = []
-            for shape in tqdm(shapes, desc = "calculating polygons"):
-                polygons.append(_create_poly(shape, 
-                                          smoothing_filter_size = self.config['convolution_smoothing'],
-                                          rdp_epsilon = self.config['rdp_epsilon']))
+            for shape in tqdm(shapes, desc="calculating polygons"):
+                polygons.append(
+                    _create_poly(
+                        shape,
+                        smoothing_filter_size=self.config["convolution_smoothing"],
+                        rdp_epsilon=self.config["rdp_epsilon"],
+                    )
+                )
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:      
-                polygons = list(tqdm(pool.imap(partial(_create_poly, 
-                                                    smoothing_filter_size = self.config['convolution_smoothing'],
-                                                    rdp_epsilon = self.config['rdp_epsilon']
-                                                    ),
-                                                    shapes), total=len(center), 
-                                                    disable = not self.verbose, 
-                                                    desc = "calculating polygons" ))
-        
-        #perform path optimization to minimize the total distance that the LMD travels during cutting (this improves cutting speed and focus)
+            with mp.get_context(self.context).Pool(processes=self.config["threads"]) as pool:
+                polygons = list(
+                    tqdm(
+                        pool.imap(
+                            partial(
+                                _create_poly,
+                                smoothing_filter_size=self.config["convolution_smoothing"],
+                                rdp_epsilon=self.config["rdp_epsilon"],
+                            ),
+                            shapes,
+                        ),
+                        total=len(center),
+                        disable=not self.verbose,
+                        desc="calculating polygons",
+                    )
+                )
+
+        # perform path optimization to minimize the total distance that the LMD travels during cutting (this improves cutting speed and focus)
         center = np.array(center)
         unoptimized_length = calc_len(center)
         self.log(f"Current path length: {unoptimized_length:,.2f} units")
 
         if self.optimization_method != "none":
-            if self.optimization_method  == "greedy":
-                optimized_idx = tsp_greedy_solve(center, k=self.config['greedy_k'])
-        
-            elif self.optimization_method  == "hilbert":
-                optimized_idx = tsp_hilbert_solve(center, p=self.config['hilbert_p'])
-            
-            #update order of centers
+            if self.optimization_method == "greedy":
+                optimized_idx = tsp_greedy_solve(center, k=self.config["greedy_k"])
+
+            elif self.optimization_method == "hilbert":
+                optimized_idx = tsp_hilbert_solve(center, p=self.config["hilbert_p"])
+
+            # update order of centers
             center = center[optimized_idx]
             self.indexes = optimized_idx
 
@@ -1041,22 +1027,20 @@ class SegmentationLoader:
 
         # Plot coordinates if in debug mode
         if self.verbose:
-            
             fig, axs = plt.subplots(1, 1, figsize=(10, 10))
 
-            if 'background_image' in self.config:
-                axs.imshow(self.config['background_image'])
+            if "background_image" in self.config:
+                axs.imshow(self.config["background_image"])
 
-            axs.scatter(center[:,1], center[:,0], s=1)
+            axs.scatter(center[:, 1], center[:, 0], s=1)
 
             for shape in polygons:
-                axs.plot(shape[:,1], shape[:,0], color="red",linewidth=1)
-    
+                axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
 
-            axs.scatter(self.calibration_points[:,1], self.calibration_points[:,0], color="blue")
-            axs.plot(center[:,1],center[:,0], color="grey")
+            axs.scatter(self.calibration_points[:, 1], self.calibration_points[:, 0], color="blue")
+            axs.plot(center[:, 1], center[:, 0], color="grey")
             axs.invert_yaxis()
-            axs.set_aspect('equal', adjustable='box')
+            axs.set_aspect("equal", adjustable="box")
             axs.axis("off")
             axs.set_title("Final cutting path")
             fig.tight_layout()
@@ -1068,9 +1052,9 @@ class SegmentationLoader:
                 plt.close(fig)
             else:
                 plt.show(fig)
-    
+
         # Generate array of marker cross positions
-        ds = Collection(calibration_points=self.calibration_points, scale = self.config["xml_decimal_transform"])
+        ds = Collection(calibration_points=self.calibration_points, scale=self.config["xml_decimal_transform"])
         ds.orientation_transform = self.config["orientation_transform"]
 
         for shape in polygons:
@@ -1081,38 +1065,34 @@ class SegmentationLoader:
                 ds.new_shape(shape)
         return ds
 
-    def merge_dilated_shapes(self,
-                        input_center, 
-                        input_length, 
-                        input_coords, 
-                        dilation = 0,
-                        erosion = 0):
+    def merge_dilated_shapes(self, input_center, input_length, input_coords, dilation=0, erosion=0):
         print("Intersecting Shapes will be merged into a single shape.")
-        
+
         # initialize all shapes and create dilated coordinates
         # coordinates are created as complex numbers to facilitate comparison with np.isin
         dilated_coords = []
 
         if self.config["threads"] == 1:
-            for coord in tqdm(input_coords, desc = "dilating shapes"):
-                dilated_coords.append(transform_to_map(coord, dilation = dilation))
-        
+            for coord in tqdm(input_coords, desc="dilating shapes"):
+                dilated_coords.append(transform_to_map(coord, dilation=dilation))
+
         else:
-            with mp.get_context(self.context).Pool(processes=self.config['threads']) as pool:           
-                dilated_coords = list(tqdm(pool.imap(partial(transform_to_map, 
-                                                    dilation = dilation),
-                                                    input_coords), total=len(input_center), 
-                                                    desc = "dilating shapes"))
-            
+            with mp.get_context(self.context).Pool(processes=self.config["threads"]) as pool:
+                dilated_coords = list(
+                    tqdm(
+                        pool.imap(partial(transform_to_map, dilation=dilation), input_coords),
+                        total=len(input_center),
+                        desc="dilating shapes",
+                    )
+                )
+
         dilated_coords = [np.apply_along_axis(lambda args: [complex(*args)], 1, d).flatten() for d in dilated_coords]
 
         # A sparse distance matrix is calculated for all cells which are closer than distance_heuristic
         center_arr = np.array(input_center)
         center_tree = cKDTree(center_arr)
 
-        sparse_distance = center_tree.sparse_distance_matrix(
-            center_tree, self.config["distance_heuristic"]
-        )
+        sparse_distance = center_tree.sparse_distance_matrix(center_tree, self.config["distance_heuristic"])
         sparse_distance = scipy.sparse.tril(sparse_distance)
 
         # sparse intersection matrix is calculated based on the sparse distance matrix
@@ -1130,9 +1110,7 @@ class SegmentationLoader:
                 intersect_data.append(1 if do_intersect else 0)
 
         # create sparse intersection matrix and drop zero elements
-        sparse_intersect = scipy.sparse.coo_matrix(
-            (intersect_data, (sparse_distance.row, sparse_distance.col))
-        )
+        sparse_intersect = scipy.sparse.coo_matrix((intersect_data, (sparse_distance.row, sparse_distance.col)))
         sparse_intersect.eliminate_zeros()
 
         # create networkx graph from sparse intersection matrix
@@ -1155,9 +1133,7 @@ class SegmentationLoader:
 
             coords_complex = np.concatenate(coords)
             coords_complex = np.unique(coords_complex)
-            coords_2d = np.array(
-                [coords_complex.real, coords_complex.imag], dtype=int
-            ).T
+            coords_2d = np.array([coords_complex.real, coords_complex.imag], dtype=int).T
 
             # calculate properties length and center from coords
             new_center = np.mean(coords_2d, axis=0)
@@ -1205,27 +1181,20 @@ class SegmentationLoader:
             if os.path.isabs(cell_set["classes"]):
                 path = cell_set["classes"]
             else:
-                path = os.path.join(
-                    Path(self.directory).parents[0], cell_set["classes"]
-                )
+                path = os.path.join(Path(self.directory).parents[0], cell_set["classes"])
 
             if os.path.isfile(path):
                 try:
-                    cr = csv.reader(open(path, "r"))
-                    filtered_classes = np.array(
-                        [int(el[0]) for el in list(cr)], dtype="int64"
-                    )
-                    self.log("Loaded {} classes from csv".format(len(filtered_classes)))
+                    cr = csv.reader(open(path))
+                    filtered_classes = np.array([int(el[0]) for el in list(cr)], dtype="int64")
+                    self.log(f"Loaded {len(filtered_classes)} classes from csv")
                     return filtered_classes
-                except:
-                    self.log(
-                        "CSV file could not be converted to list of integers: {path}"
-                    )
-                    raise ValueError()
+                except (ValueError, TypeError) as e:
+                    self.log(f"CSV file could not be converted to list of integers: {path}")
+                    raise ValueError() from e
             else:
                 self.log("Path containing classes could not be read: {path}")
                 raise ValueError()
-
         else:
             self.log(
                 "classes argument for a cell set needs to be a list of integer ids or a path pointing to a csv of integer ids."
@@ -1239,26 +1208,21 @@ class SegmentationLoader:
             print(msg)
 
     def register_parameter(self, key, value):
-            
-            if isinstance(key, str):
-                config_handle = self.config
-                
-            elif isinstance(key, list):
-                raise NotImplementedError('registration of parameters is not yet supported for nested parameters')
-                
-            else:
-                raise TypeError('Key musst be of string or a list of strings')
-            
-            if key not in config_handle:
-                self.log(f'No configuration for {key} found, parameter will be set to {value}')
-                config_handle[key] = value
-            
-            
-def transform_to_map(coords, 
-                    dilation = 0, 
-                    erosion = 0, 
-                    coord_format = True,
-                    debug = False):
+        if isinstance(key, str):
+            config_handle = self.config
+
+        elif isinstance(key, list):
+            raise NotImplementedError("registration of parameters is not yet supported for nested parameters")
+
+        else:
+            raise TypeError("Key musst be of string or a list of strings")
+
+        if key not in config_handle:
+            self.log(f"No configuration for {key} found, parameter will be set to {value}")
+            config_handle[key] = value
+
+
+def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=False):
     # safety boundary which extands the generated map size
     safety_offset = 3
     dilation_offset = int(dilation)
@@ -1275,9 +1239,7 @@ def transform_to_map(coords,
     offset_coords = coords - offset
     offset_coords = offset_coords.astype(np.uint)
 
-    offset_map_size = (
-        np.max(offset_coords, axis=0) + 2 * safety_offset + dilation_offset
-    )
+    offset_map_size = np.max(offset_coords, axis=0) + 2 * safety_offset + dilation_offset
     offset_map_size = offset_map_size.astype(np.uint)
 
     offset_map = np.zeros(offset_map_size, dtype=np.ubyte)
@@ -1309,15 +1271,12 @@ def transform_to_map(coords,
     else:
         return (offset_map, offset)
 
-def _create_poly(in_tuple, 
-                smoothing_filter_size: int = 12,
-                rdp_epsilon: float = 0, 
-                debug: bool = False):
 
+def _create_poly(in_tuple, smoothing_filter_size: int = 12, rdp_epsilon: float = 0, debug: bool = False):
     """Converts a list of pixels into a polygon.
     Args
         smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
-        
+
         rdp_epsilon (float, default = 0 ): When compression is wanted, this specifies the epsilon value for the Ramer-Douglas-Peucker algorithm. Higher values will result in more compression.
 
         dilation (int, default = 0): Binary dilation used before polygon creation for increasing the mask size. This Dilation ignores potential neighbours. Neighbour aware dilation of segmentation mask needs to be defined during segmentation.
@@ -1326,17 +1285,17 @@ def _create_poly(in_tuple,
 
     # find polygon bounds from mask
     bounds = find_boundaries(offset_map, connectivity=1, mode="subpixel", background=0)
-    
-    edges = np.array(np.where(bounds == 1))/2
+
+    edges = np.array(np.where(bounds == 1)) / 2
     edges = edges.T
     edges = _sort_edges(edges)
 
     # smoothing resulting shape
-    smk = np.ones((smoothing_filter_size,1))/smoothing_filter_size
-    edges = convolve2d(edges, smk,mode="full",boundary="wrap")
-    
-    # compression of the resulting polygon   
-    poly = rdp(edges, epsilon = rdp_epsilon) # Ramer-Douglas-Peucker algorithm for polygon simplification
+    smk = np.ones((smoothing_filter_size, 1)) / smoothing_filter_size
+    edges = convolve2d(edges, smk, mode="full", boundary="wrap")
+
+    # compression of the resulting polygon
+    poly = rdp(edges, epsilon=rdp_epsilon)  # Ramer-Douglas-Peucker algorithm for polygon simplification
 
     # debuging
     """

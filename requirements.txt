@@ -10,6 +10,6 @@ tqdm
 hilbertcurve
 requests
 filelock
-geopandas 
+geopandas
 shapely
 rdp
