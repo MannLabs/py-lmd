@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-Apache-brightgreen)](https://github.com/MannLabs/py-lmd/blob/main/LICENSE)
 [![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) 
 [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/index.html)](https://mannlabs.github.io/py-lmd/index.html)
-![PyPI - Version](https://img.shields.io/pypi/v/py-lmd)
+[![PyPI version](https://img.shields.io/pypi/v/py-lmd.svg)](https://pypi.org/project/py-lmd/)
 [![PyPI Downloads](https://static.pepy.tech/badge/py-lmd)](https://pepy.tech/projects/py-lmd)
 
 
