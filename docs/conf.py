@@ -32,7 +32,7 @@ release = "1.0.2"
 extensions = ["sphinx.ext.napoleon", "sphinx.ext.autodoc", "sphinx_rtd_theme", "nbsphinx", "sphinx_copybutton"]
 nbsphinx_allow_errors = True
 
-autodoc_mock_imports = []
+autodoc_mock_imports: list[str] = []
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
