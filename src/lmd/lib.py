@@ -642,8 +642,8 @@ class Shape:
         points = np.empty((point_count, 2), dtype=int)
 
         # compile regex
-        xpattern = re.compile("X_(\d+)")
-        ypattern = re.compile("Y_(\d+)")
+        xpattern = re.compile(r"X_(\d+)")
+        ypattern = re.compile(r"Y_(\d+)")
 
         # parse all points
         for child in root:
