@@ -105,6 +105,8 @@ def _download(
         if archive_format:
             shutil.unpack_archive(download_to_path, output_path, format=archive_format)
             os.remove(download_to_path)
+        else:
+            download_to_path.with_name(output_file_name)
 
     Path(lock_path).unlink()
 
@@ -134,3 +136,25 @@ def _download_glyphs() -> Path:
             )
 
     return save_path
+
+
+def _download_segmentation_example_file() -> Path:
+    """Download example segmentation file.
+
+    Returns:
+        Path to the downloaded and extracted tiff file.
+    """
+
+    data_dir = Path(_get_data_dir())
+    save_path = data_dir / "segmentation_cytosol_example"
+
+    output_file_name = "segmentation_mask.tif"
+    if not save_path.exists():
+        _download(
+            url="https://zenodo.org/records/15681419/files/segmentation_cytosol.tiff?download=1",
+            output_path=str(save_path),
+            output_file_name=output_file_name,
+            archive_format=None,
+        )
+
+    return save_path / output_file_name
