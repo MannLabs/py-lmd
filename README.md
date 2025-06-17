@@ -33,4 +33,13 @@ SPARCS, a platform for genome-scale CRISPR screening for spatial cellular phenot
 Niklas Arndt Schmacke, Sophia Clara Maedler, Georg Wallmann, Andreas Metousis, Marleen Berouti, Hartmann Harz, Heinrich Leonhardt, Matthias Mann, Veit Hornung
 bioRxiv 2023.06.01.542416; doi: https://doi.org/10.1101/2023.06.01.542416
 
+## Contributing
+
+If you like this software, consider giving us a star to boost our visibility! For detailed guidelines on how to contribute, please refer to our [contributing guide](CONTRIBUTING.md).
+
+We welcome all types of contributions! You can:
+
+- Post a new [issue](https://github.com/MannLabs/py-lmd/issues) if you encounter a bug or have a feature request.
+- Clone the repository, create a new branch, and submit a [pull request](https://github.com/MannLabs/py-lmd/pulls).
+
 
