@@ -13,12 +13,14 @@ keywords = ["LMD"]
 dynamic = ["dependencies", "optional-dependencies"]
 authors = [
   {name = "Georg Wallmann"},
-  {name = "Sophia Maedler"},
+  {name = "Sophia Maedler", email = "hello@sophia-maedler.com"},
   {name = "Niklas Schmacke"},
+  {name = "Lucas Diedrich"}
 ]
 maintainers = [
+  {name = "Sophia Maedler", email = "hello@sophia-maedler.com"},
+  {name = "Lucas Diedrich", email = "wallmann@biochem.mpg.de"},
   {name = "Georg Wallmann", email = "wallmann@biochem.mpg.de"},
-  {name = "Sophia Maedler", email = "maedler@biochem.mpg.de"},
 ]
 
 classifiers = [
