@@ -598,7 +598,7 @@ class Shape:
 
         self.points = np.array(points)
 
-    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: int, *, write_custom_attributes: bool = True):
+    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: float, *, write_custom_attributes: bool = True):
         """Generate XML shape node needed internally for export.
 
         Args:
@@ -606,7 +606,7 @@ class Shape:
 
             orientation_transform (np.array): Pass orientation_transform which is used if no local orientation transform is set.
 
-            scale (int): Scalling factor used to enable higher decimal precision.
+            scale (float): Scalling factor used to enable higher decimal precision.
 
             write_custom_attributes: Write custom attributes to xml file
 
