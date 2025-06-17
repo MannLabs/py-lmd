@@ -95,7 +95,10 @@ def geopandas_collection():
     ],
 )
 def test_collection_load_geopandas(
-    geopandas_collection: gpd.GeoDataFrame, well_column: str, name_column: str, custom_attributes: list[str]
+    geopandas_collection: gpd.GeoDataFrame,
+    well_column: str,
+    name_column: str,
+    custom_attributes: list[str],
 ) -> None:
     # Export well metadata
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
@@ -108,8 +111,7 @@ def test_collection_load_geopandas(
     )
 
     all_columns = [col for col in (well_column, custom_attributes) if col is not None]
-
-    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_old).all()
 
     # Overwrite calibration points
@@ -123,7 +125,8 @@ def test_collection_load_geopandas(
         name_column=name_column,
         custom_attribute_columns=custom_attributes,
     )
-    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])
+
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_new).all()
 
     # Do not export well metadata
