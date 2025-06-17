@@ -41,4 +41,4 @@ optional_value = "final"
 filename = "pyproject.toml"
 
 [[tool.bumpversion.files]]
-filename = "./src/scportrait/__init__.py"
+filename = "./src/lmd/__init__.py"
