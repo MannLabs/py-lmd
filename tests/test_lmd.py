@@ -13,27 +13,17 @@ from lmd._utils import _download_segmentation_example_file
 from lmd.lib import Collection, SegmentationLoader, Shape
 
 
-def test_collection():
-    calibration = np.array([[0, 0], [0, 100], [50, 50]])
-    Collection(calibration_points=calibration)
-
-
-def test_shape():
-    rectangle_coordinates = np.array([[10, 10], [40, 10], [40, 40], [10, 40], [10, 10]])
-    Shape(rectangle_coordinates)
-
-
-def test_shape_from_xml():
-    """Read a minimal xml representation of a cell shape and associated metadata"""
+@pytest.fixture
+def shape_xml():
+    """Shape XML"""
     # Define shape in xml
-    shape_xml = """
+    return """
     <Shape_1>
         <PointCount>3</PointCount>
         <CapID>A1</CapID>
         <TEST>this is a test</TEST>
         <test2>1</test2>
         <test3>3.1415</test3>
-
         <X_1>0</X_1>
         <Y_1>-0</Y_1>
         <X_2>0</X_2>
@@ -43,12 +33,144 @@ def test_shape_from_xml():
     </Shape_1>
     """.strip()
 
-    # Parse xml
-    shape_xml = ET.fromstring(bytes(shape_xml, encoding="utf-8"))
 
+@pytest.fixture
+def incorrect_shape_xml():
+    """Shape XML"""
+    # Define shape in xml
+    return """
+    <Shape_1>
+        <PointCount>2</PointCount>
+        <CapID>A1</CapID>
+        <TEST>this is a test</TEST>
+        <test2>1</test2>
+        <test3>3.1415</test3>
+        <X_1>0</X_1>
+        <Y_1>-0</Y_1>
+        <X_2>0</X_2>
+        <Y_2>-1</Y_2>
+    </Shape_1>
+    """.strip()
+
+
+@pytest.fixture
+def collection_xml(tmpdir, shape_xml):
+    """Shape XML"""
+    # Define shape in xml
+    collection = f"""
+    <?xml version='1.0' encoding='UTF-8'?>
+    <ImageData>
+        <GlobalCoordinates>1</GlobalCoordinates>
+        <X_CalibrationPoint_1>0</X_CalibrationPoint_1>
+        <Y_CalibrationPoint_1>0</Y_CalibrationPoint_1>
+        <X_CalibrationPoint_2>0</X_CalibrationPoint_2>
+        <Y_CalibrationPoint_2>10000</Y_CalibrationPoint_2>
+        <X_CalibrationPoint_3>5000</X_CalibrationPoint_3>
+        <Y_CalibrationPoint_3>5000</Y_CalibrationPoint_3>
+        <ShapeCount>1</ShapeCount>
+        {shape_xml}
+    </ImageData>
+    """.strip()
+
+    tmpfile = os.path.join(tmpdir, "test.xml")
+    with open(tmpfile, "w") as f:
+        f.write(collection)
+    yield tmpfile
+    os.remove(tmpfile)
+
+
+@pytest.fixture
+def incorrect_collection_xml(tmpdir, incorrect_shape_xml):
+    """Shape XML"""
+    # Define shape in xml
+    collection = f"""
+    <?xml version='1.0' encoding='UTF-8'?>
+    <ImageData>
+        <GlobalCoordinates>1</GlobalCoordinates>
+        <X_CalibrationPoint_1>0</X_CalibrationPoint_1>
+        <Y_CalibrationPoint_1>0</Y_CalibrationPoint_1>
+        <X_CalibrationPoint_2>0</X_CalibrationPoint_2>
+        <Y_CalibrationPoint_2>10000</Y_CalibrationPoint_2>
+        <X_CalibrationPoint_3>5000</X_CalibrationPoint_3>
+        <Y_CalibrationPoint_3>5000</Y_CalibrationPoint_3>
+        <ShapeCount>1</ShapeCount>
+        {incorrect_shape_xml}
+    </ImageData>
+    """.strip()
+
+    tmpfile = os.path.join(tmpdir, "test.xml")
+
+    with open(tmpfile, "w") as f:
+        f.write(collection)
+    yield tmpfile
+    os.remove(tmpfile)
+
+
+def test_collection() -> None:
+    calibration = np.array([[0, 0], [0, 100], [50, 50]])
+    Collection(calibration_points=calibration)
+
+
+def test_collection_load(collection_xml) -> None:
+    """Test collection loading from xml"""
+    collection = Collection()
+    collection.load(collection_xml)
+
+
+def test_collection_invalid_shapes_raise(incorrect_collection_xml) -> None:
+    """Test collection loading from xml with incorrect shapes"""
+    collection = Collection()
+    with pytest.raises(ValueError):
+        collection.load(incorrect_collection_xml, raise_shape_errors=True)
+
+
+def test_collection_invalid_shapes_warn(incorrect_collection_xml) -> None:
+    """Test collection loading from xml with incorrect shapes"""
+    collection = Collection()
+    with pytest.warns():
+        collection.load(incorrect_collection_xml, raise_shape_errors=False)
+
+
+def test_shape():
+    rectangle_coordinates = np.array([[10, 10], [40, 10], [40, 40], [10, 40], [10, 10]])
+    Shape(rectangle_coordinates)
+
+
+@pytest.mark.parametrize(
+    ("invalid_shape", "error_message"),
+    [
+        # 2 points
+        (
+            np.array([[0, 0], [0, 1]]),
+            "Valid shape must contain at least 3 points, but only contains 2",
+        ),
+        # Additional dimension
+        (
+            np.zeros(shape=(2, 2, 2)),
+            "Shape dimensionality is not valid",
+        ),
+        # 3d points
+        (
+            np.zeros(shape=(5, 3)),
+            "Shape dimensionality is not valid",
+        ),
+        # 3d points and too few points - covered by dimensionality validation
+        (
+            np.zeros(shape=(2, 3)),
+            "Shape dimensionality is not valid",
+        ),
+    ],
+)
+def test_shape_invalid_shapes(invalid_shape, error_message):
+    with pytest.raises(ValueError, match=error_message):
+        Shape(points=invalid_shape)
+
+
+def test_shape_from_xml(shape_xml):
+    """Read a minimal xml representation of a cell shape and associated metadata"""
     # Load xml with Shape
-    shape = Shape()
-    shape.from_xml(shape_xml)
+    shape_xml = ET.fromstring(bytes(shape_xml, encoding="utf-8"))
+    shape = Shape.from_xml(shape_xml)
     assert (shape.points == np.array([[0, 0], [0, -1], [1, 0]])).all()
     assert shape.well == "A1"
     assert shape.custom_attributes["TEST"] == "this is a test"
@@ -111,6 +233,7 @@ def test_collection_load_geopandas(
     )
 
     all_columns = [col for col in (well_column, custom_attributes) if col is not None]
+
     assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_old).all()
 
@@ -125,7 +248,6 @@ def test_collection_load_geopandas(
         name_column=name_column,
         custom_attribute_columns=custom_attributes,
     )
-
     assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_new).all()
 

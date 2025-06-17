@@ -183,7 +183,7 @@ class Collection:
             scale = 1
 
         if mode not in modes:
-            raise ValueError("Mode not known. Please use on of the following plotting modes: line, dots")
+            raise ValueError("Mode not known. Please use one of the following plotting modes: line, dots")
 
         # close current figures
         plt.clf()
@@ -247,7 +247,13 @@ class Collection:
         else:
             TypeError("Provided shape is not of type Shape")
 
-    def new_shape(self, points: np.ndarray, well: str | None = None, name: str | None = None, **custom_attributes):
+    def new_shape(
+        self,
+        points: np.ndarray,
+        well: str | None = None,
+        name: str | None = None,
+        **custom_attributes,
+    ):
         """Directly create a new Shape in the current collection.
 
         Args:
@@ -262,7 +268,11 @@ class Collection:
 
         """
         to_add = Shape(
-            points, well=well, name=name, orientation_transform=self.orientation_transform, **custom_attributes
+            points,
+            well=well,
+            name=name,
+            orientation_transform=self.orientation_transform,
+            **custom_attributes,
         )
         self.add_shape(to_add)
 
@@ -334,10 +344,11 @@ class Collection:
         return gpd.GeoDataFrame(data=metadata, geometry=geometry)
 
     # load xml from file
-    def load(self, file_location: str):
+    def load(self, file_location: str, *, raise_shape_errors: bool = False):
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
         Args:
             file_location: File path pointing to the XML file.
+            raise_errors: Whether to raise errors during shape collection. If `False` raises a warning.
 
         """
 
@@ -368,9 +379,16 @@ class Collection:
 
             # Load shapes
             elif "Shape_" in child.tag:
-                new_shape = Shape()
-                new_shape.from_xml(child)
-                self.shapes.append(new_shape)
+                try:
+                    new_shape = Shape.from_xml(child)
+                    self.shapes.append(new_shape)
+
+                except ValueError as e:
+                    if raise_shape_errors:
+                        raise ValueError(e) from e
+                    else:
+                        warnings.warn(str(e), stacklevel=1)
+                    continue
 
     def load_geopandas(
         self,
@@ -547,13 +565,20 @@ class Shape:
         # Orientation transform of shapes
         self.orientation_transform: np.ndarray | None = orientation_transform
 
-        # Allthoug a numpy array is recommended, list of lists is accepted
+        # Although a numpy array is recommended, list of lists is accepted
         points = np.array(points)
 
         # Assert correct dimensions
         point_shapes = points.shape
-        if (len(point_shapes) != 2) or (point_shapes[1] != 2) or (point_shapes[0] == 0):
-            raise ValueError("please provide a numpy array of shape (N, 2)")
+        if (points.ndim != 2) or (point_shapes[1] != 2):
+            raise ValueError(
+                f"Shape {name}: Shape dimensionality is not valid. Please provide a numpy array of shape (N, 2)"
+            )
+
+        if len(points) < 3:
+            raise ValueError(
+                f"Shape {name}: Valid shape must contain at least 3 points, but only contains {len(points)}"
+            )
 
         self.points: np.ndarray = points
 
@@ -562,13 +587,16 @@ class Shape:
 
         self.custom_attributes = custom_attributes
 
-    def from_xml(self, root):
+    @classmethod
+    def from_xml(cls, root, orientation_transform: np.ndarray | None = None):
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
 
         Args:
             root: XML input node.
         """
-        self.name = root.tag
+        name = root.tag
+        well = None
+        custom_attributes = {}
 
         # get number of points
         point_count = int(root.find("PointCount").text)
@@ -590,15 +618,33 @@ class Shape:
                 point_id = int(ymatch[0]) - 1
                 points[point_id, 1] = int(child.text)
             elif child.tag == "CapID":
-                self.well = str(child.text)
+                well = str(child.text)
             else:
-                if child.tag in self.custom_attributes:
-                    warnings.warn(f"Shape attribute {child.tag} already found in shape, overwrite", stacklevel=1)
-                self.custom_attributes[child.tag] = child.text
+                if child.tag in custom_attributes:
+                    warnings.warn(
+                        f"Shape attribute {child.tag} already found in shape, overwrite",
+                        stacklevel=1,
+                    )
+                custom_attributes[child.tag] = child.text
 
-        self.points = np.array(points)
+        points = np.array(points)
 
-    def to_xml(self, id: int, orientation_transform: np.ndarray, scale: float, *, write_custom_attributes: bool = True):
+        return cls(
+            points=points,
+            name=name,
+            well=well,
+            orientation_transform=orientation_transform,
+            **custom_attributes,
+        )
+
+    def to_xml(
+        self,
+        id: int,
+        orientation_transform: np.ndarray,
+        scale: float,
+        *,
+        write_custom_attributes: bool = True,
+    ):
         """Generate XML shape node needed internally for export.
 
         Args:
@@ -963,7 +1009,13 @@ class SegmentationLoader:
                 shapes = list(
                     tqdm(
                         pool.imap(
-                            partial(transform_to_map, erosion=erosion, dilation=dilation, coord_format=False), coords
+                            partial(
+                                transform_to_map,
+                                erosion=erosion,
+                                dilation=dilation,
+                                coord_format=False,
+                            ),
+                            coords,
                         ),
                         total=len(center),
                         disable=not self.verbose,
@@ -1040,7 +1092,11 @@ class SegmentationLoader:
             for shape in polygons:
                 axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
 
-            axs.scatter(self.calibration_points[:, 1], self.calibration_points[:, 0], color="blue")
+            axs.scatter(
+                self.calibration_points[:, 1],
+                self.calibration_points[:, 0],
+                color="blue",
+            )
             axs.plot(center[:, 1], center[:, 0], color="grey")
             axs.invert_yaxis()
             axs.set_aspect("equal", adjustable="box")
@@ -1147,7 +1203,10 @@ class SegmentationLoader:
             output_length.append(new_len)
             output_coords.append(coords_2d)
 
-        print(len(to_merge) - len(output_center), "shapes that were intersecting were found and merged.")
+        print(
+            len(to_merge) - len(output_center),
+            "shapes that were intersecting were found and merged.",
+        )
         return output_center, output_length, output_coords
 
     def check_cell_set_sanity(self, cell_set):
@@ -1275,7 +1334,12 @@ def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fal
         return (offset_map, offset)
 
 
-def _create_poly(in_tuple, smoothing_filter_size: int = 12, rdp_epsilon: float = 0, debug: bool = False):
+def _create_poly(
+    in_tuple,
+    smoothing_filter_size: int = 12,
+    rdp_epsilon: float = 0,
+    debug: bool = False,
+):
     """Converts a list of pixels into a polygon.
     Args
         smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
