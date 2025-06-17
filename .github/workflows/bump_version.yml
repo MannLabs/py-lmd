@@ -48,7 +48,7 @@ jobs:
             automated pr
           assignees: sophia-maedler
           delete-branch: true
-      
+
       - name: Create tag
         if: inputs.create_tag == 'true' && steps.bump.outputs.bumped == 'true'
         uses: actions/github-script@v5
@@ -59,8 +59,8 @@ jobs:
               repo: context.repo.repo,
               ref: 'refs/tags/v${{ steps.bump.outputs.current-version }}',
               sha: '${{ steps.create-pull-request.outputs.pull-request-head-sha }}'
-            }) 
-          
+            })
+
       - name: Check
         if: steps.bump.outputs.bumped == 'true'
         run: |

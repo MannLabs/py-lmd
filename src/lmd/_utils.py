@@ -12,12 +12,14 @@ import requests
 from filelock import FileLock
 from tqdm import tqdm
 
+
 def _get_data_dir() -> Path:
     """Get path to data that was packaged with scPortrait.
 
     Returns:
         Path to data directory
     """
+
     def find_root_by_folder(marker_folder: str, current_path: Path) -> Path | None:
         for parent in current_path.parents:
             if (parent / marker_folder).is_dir():
@@ -28,10 +30,11 @@ def _get_data_dir() -> Path:
 
     if src_code_dir is None:
         raise FileNotFoundError("Could not find pyLMD source directory")
-    
+
     data_dir = src_code_dir / "pylmd_data"
 
     return data_dir.absolute()
+
 
 def _download(
     url: str,
@@ -89,7 +92,10 @@ def _download(
 
         temp_file_name = f"{download_to_path}.part"
 
-        with open(temp_file_name, "wb") as file, tqdm(total=total, unit="B", unit_scale=True, desc="Downloading...") as progress_bar:
+        with (
+            open(temp_file_name, "wb") as file,
+            tqdm(total=total, unit="B", unit_scale=True, desc="Downloading...") as progress_bar,
+        ):
             for data in response.iter_content(block_size):
                 file.write(data)
                 progress_bar.update(len(data))
@@ -99,8 +105,11 @@ def _download(
         if archive_format:
             shutil.unpack_archive(download_to_path, output_path, format=archive_format)
             os.remove(download_to_path)
+        else:
+            download_to_path.with_name(output_file_name)
 
     Path(lock_path).unlink()
+
 
 def _download_glyphs() -> Path:
     """Download and extract the Glyphs.
@@ -111,7 +120,6 @@ def _download_glyphs() -> Path:
     data_dir = Path(_get_data_dir())
     save_path = data_dir / "glyphs"
 
-
     if not save_path.exists():
         _download(
             url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
@@ -119,7 +127,7 @@ def _download_glyphs() -> Path:
             archive_format="zip",
         )
     else:
-        #check that directory is not empty
+        # check that directory is not empty
         if not any(save_path.iterdir()):
             _download(
                 url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
@@ -128,3 +136,25 @@ def _download_glyphs() -> Path:
             )
 
     return save_path
+
+
+def _download_segmentation_example_file() -> Path:
+    """Download example segmentation file.
+
+    Returns:
+        Path to the downloaded and extracted tiff file.
+    """
+
+    data_dir = Path(_get_data_dir())
+    save_path = data_dir / "segmentation_cytosol_example"
+
+    output_file_name = "segmentation_mask.tif"
+    if not save_path.exists():
+        _download(
+            url="https://zenodo.org/records/15681419/files/segmentation_cytosol.tiff?download=1",
+            output_path=str(save_path),
+            output_file_name=output_file_name,
+            archive_format=None,
+        )
+
+    return save_path / output_file_name

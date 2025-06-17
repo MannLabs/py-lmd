@@ -2,7 +2,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/mannlabs/py-lmd?logoColor=green&color=brightgreen)](https://github.com/MannLabs/py-lmd/releases)
 ![Versions](https://img.shields.io/badge/python-3.9_%7C_3.10_%7C_3.11_%7C_3.12-brightgreen)
 [![License](https://img.shields.io/badge/license-Apache-brightgreen)](https://github.com/MannLabs/py-lmd/blob/main/LICENSE)
-[![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml) 
+[![Python package](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/MannLabs/py-lmd/actions/workflows/python-package.yml)
 [![Docs](https://img.shields.io/website?url=https%3A%2F%2Fmannlabs.github.io/py-lmd/index.html)](https://mannlabs.github.io/py-lmd/index.html)
 [![PyPI version](https://img.shields.io/pypi/v/py-lmd.svg)](https://pypi.org/project/py-lmd/)
 [![PyPI Downloads](https://static.pepy.tech/badge/py-lmd)](https://pepy.tech/projects/py-lmd)
@@ -19,10 +19,10 @@ Installation
 The py-lmd library can be installed via pip.
 py-lmd has been tested with **Python 3.9, 3.10, 3.11 and 3.12**.
 
-``` 
+```
 pip install py-lmd
 ```
-  
+
 Documentation
 =============
 The current documentation can be found under https://mannlabs.github.io/py-lmd/html/index.html.
@@ -44,5 +44,3 @@ We welcome all types of contributions! You can:
 
 - Post a new [issue](https://github.com/MannLabs/py-lmd/issues) if you encounter a bug or have a feature request.
 - Clone the repository, create a new branch, and submit a [pull request](https://github.com/MannLabs/py-lmd/pulls).
-
-

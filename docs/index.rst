@@ -19,7 +19,7 @@ In addition, you can build reproducible workflows to calibrate slides, import SV
 Installation
 ============
 
-py-lmd has been tested with Python 3.9, 3.10 and 3.11. It is recommended to use the library with a conda environment. 
+py-lmd has been tested with Python 3.9, 3.10 and 3.11. It is recommended to use the library with a conda environment.
 You can install py-lmd from PyPI using pip.
 
 .. code::
@@ -29,7 +29,7 @@ You can install py-lmd from PyPI using pip.
    conda install python=3.9 -c conda-forge
    pip install py-lmd
 
-If you are installing on an M1 apple silicon Mac you will need to install numba via conda instead of pip before 
+If you are installing on an M1 apple silicon Mac you will need to install numba via conda instead of pip before
 proceeding with the installation of the py-lmd library.
 
 .. code::
@@ -50,9 +50,8 @@ bioRxiv 2023.06.01.542416; doi: https://doi.org/10.1101/2023.06.01.542416
    :maxdepth: 2
    :caption: Documentation
    :numbered:
-   
+
    pages/quickstart
    pages/segmentation_loader
    pages/example_notebooks
    pages/api
-

@@ -1,14 +1,16 @@
-import numpy as np
-from lmd.lib import Collection, Shape
-from lmd import tools
-from PIL import Image
-from lmd.lib import SegmentationLoader
-import pathlib
 import os
+import pathlib
+
 import geopandas as gpd
+import numpy as np
+import pytest
 import shapely
 from lxml import etree as ET
-import pytest
+from PIL import Image
+
+from lmd import tools
+from lmd._utils import _download_segmentation_example_file
+from lmd.lib import Collection, SegmentationLoader, Shape
 
 
 @pytest.fixture
@@ -106,7 +108,7 @@ def incorrect_collection_xml(tmpdir, incorrect_shape_xml):
 
 def test_collection() -> None:
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
-    my_first_collection = Collection(calibration_points=calibration)
+    Collection(calibration_points=calibration)
 
 
 def test_collection_load(collection_xml) -> None:
@@ -131,7 +133,7 @@ def test_collection_invalid_shapes_warn(incorrect_collection_xml) -> None:
 
 def test_shape():
     rectangle_coordinates = np.array([[10, 10], [40, 10], [40, 40], [10, 40], [10, 10]])
-    rectangle = Shape(rectangle_coordinates)
+    Shape(rectangle_coordinates)
 
 
 @pytest.mark.parametrize(
@@ -232,9 +234,7 @@ def test_collection_load_geopandas(
 
     all_columns = [col for col in (well_column, custom_attributes) if col is not None]
 
-    assert c.to_geopandas(*all_columns).equals(
-        geopandas_collection[[*all_columns, "geometry"]]
-    )
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_old).all()
 
     # Overwrite calibration points
@@ -248,9 +248,7 @@ def test_collection_load_geopandas(
         name_column=name_column,
         custom_attribute_columns=custom_attributes,
     )
-    assert c.to_geopandas(*all_columns).equals(
-        geopandas_collection[[*all_columns, "geometry"]]
-    )
+    assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_new).all()
 
     # Do not export well metadata
@@ -308,18 +306,12 @@ def test_text():
     identifier_2 = tools.text("0456_B2", offset=np.array([30, 40]), rotation=-np.pi / 4)
     my_first_collection.join(identifier_2)
 
-    identifier_3 = tools.text(
-        "0123456789-_ABCDEFGHI", offset=np.array([60, 40]), rotation=-np.pi / 4
-    )
+    identifier_3 = tools.text("0123456789-_ABCDEFGHI", offset=np.array([60, 40]), rotation=-np.pi / 4)
     my_first_collection.join(identifier_3)
 
 
 def test_segmentation_loader():
-    package_base_path = pathlib.Path(__file__).parent.parent.parent.resolve().absolute()
-    test_segmentation_path = os.path.join(
-        package_base_path,
-        "docs/pages/notebooks/Image_Segmentation/segmentation_cytosol.tiff",
-    )
+    test_segmentation_path = _download_segmentation_example_file()
 
     im = Image.open(test_segmentation_path)
     segmentation = np.array(im).astype(np.uint32)
@@ -333,4 +325,4 @@ def test_segmentation_loader():
     loader_config = {"orientation_transform": np.array([[0, -1], [1, 0]])}
 
     sl = SegmentationLoader(config=loader_config)
-    shape_collection = sl(segmentation, cell_sets, calibration_points)
+    sl(segmentation, cell_sets, calibration_points)
