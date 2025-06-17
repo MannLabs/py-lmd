@@ -14,10 +14,10 @@ Read, create and write cutting data for the Leica LMD6 & LMD7 microscope.
 Build reproducible workflows to calibrate, import SVG files and convert single-cell segmentation masks.
 
 
-Installation from Github
-========================
-py-lmd has been tested with **Python 3.9, 3.10, 3.11 and 3.12**.
+Installation
+============
 The py-lmd library can be installed via pip.
+py-lmd has been tested with **Python 3.9, 3.10, 3.11 and 3.12**.
 
 ``` 
 pip install py-lmd
