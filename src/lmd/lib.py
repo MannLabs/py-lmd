@@ -196,11 +196,11 @@ class Collection:
         if calibration and self.calibration_points is not None:
             # Apply orientation transform as default behavior
             if apply_orientation_transform:
-                calibration = self.calibration_points @ self.orientation_transform * scale
+                calibration_points = self.calibration_points @ self.orientation_transform * scale
             else:
-                calibration = self.calibration_points * scale
+                calibration_points = self.calibration_points * scale
 
-            plt.scatter(calibration[:, 0], calibration[:, 1], marker="x")
+            plt.scatter(calibration_points[:, 0], calibration_points[:, 1], marker="x")
 
         for shape in self.shapes:
             # Apply orientation transform as default behavior
