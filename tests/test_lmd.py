@@ -107,8 +107,7 @@ def test_collection_load_geopandas(
         custom_attribute_columns=custom_attributes,
     )
 
-    all_columns = [col for col in (well_column, custom_attributes) if col is not None]
-
+    all_columns = ([well_column] if well_column is not None else []) + custom_attributes
     assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])
     assert (c.calibration_points == calibration_points_old).all()
 
