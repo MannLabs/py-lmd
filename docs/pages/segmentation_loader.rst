@@ -47,14 +47,16 @@ Getting started with the SegmentationLoader
 
 Before we can start with the :py:class:`~lmd.lib.SegmentationLoader`, we have to load our image which contains the labels for our cells. The segmentation loader expects a numpy array of integers where the background is assigned to label 0. There are no further restrictions to the shape or number of labels other than being continuos. All pixel with a certain label need to be in contact with each other. Functional labels which assign cells based on the cell type must be converted.
 
-As example we will use the cytosol segmentation seen above which can be found under `notebooks/Image_Segmentation/segmentation_cytosol.tiff`. First, we will load this image and convert it to a numpy array.
+As example we will use the cytosol segmentation seen above which can be downloaded directly within py-lmd. First, we will load this image and convert it to a numpy array.
 
 .. code-block:: python
 
     import numpy as np
     from PIL import Image
+    from lmd._utils import _download_segmentation_example_file
 
-    im = Image.open('segmentation_cytosol.tiff')
+    image_path = _download_segmentation_example_file()
+    im = Image.open(image_path)
     segmentation = np.array(im).astype(np.uint32)
 
 Based on this segmentation we have to select group of cells. These groups can be assigned to separate wells and intersecting shapes and cutting paths will be optimized separately for every group. In our case, all cells will be selected and assigned to the same well A1.

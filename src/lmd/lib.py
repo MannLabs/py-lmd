@@ -711,8 +711,11 @@ class SegmentationLoader:
             import numpy as np
             from PIL import Image
             from lmd.lib import SegmentationLoader
+            from lmd._utils import _download_segmentation_example_file
 
-            im = Image.open("segmentation_cytosol.tiff")
+            # use example image provided within py-lmd
+            example_image_path = _download_segmentation_example_file()
+            im = Image.open(example_image_path)
             segmentation = np.array(im).astype(np.uint32)
 
             all_classes = np.unique(segmentation)
