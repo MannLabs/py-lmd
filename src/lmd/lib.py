@@ -208,7 +208,7 @@ class Collection:
 
         if mode not in modes:
             raise ValueError(
-                "Mode not known. Please use on of the following plotting modes: line, dots"
+                "Mode not known. Please use one of the following plotting modes: line, dots"
             )
 
         # close current figures
