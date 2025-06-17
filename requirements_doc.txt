@@ -1,0 +1,15 @@
+pre-commit
+
+#packages for building docs
+sphinx
+sphinx-argparse
+sphinx-rtd-theme==2.0.0
+nbsphinx
+sphinx_book_theme
+sphinx-copybutton
+
+#for running example notebooks
+geojson
+
+#packages for testing
+pytest

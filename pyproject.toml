@@ -14,7 +14,7 @@ dynamic = ["dependencies", "optional-dependencies"]
 authors = [
   {name = "Georg Wallmann"},
   {name = "Sophia Maedler"},
-  {name = "Niklas Schmacke"}, 
+  {name = "Niklas Schmacke"},
 ]
 maintainers = [
   {name = "Georg Wallmann", email = "wallmann@biochem.mpg.de"},
@@ -34,7 +34,14 @@ classifiers = [
 dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.dynamic.optional-dependencies]
-dev = {file = ["requirements_dev.txt"]}
+dev_only = {file = ["requirements_dev.txt"]}
+doc = {file = ["requirements_doc.txt"]}
+test = {file = ["requirements_test.txt"]}
+
+dev = {file = [
+    "requirements_dev.txt",
+    "requirements_test.txt",
+]}
 
 [project.urls]
 Homepage = "https://github.com/MannLabs/py-lmd"
