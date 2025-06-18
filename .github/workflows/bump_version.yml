@@ -1,67 +1,24 @@
+# Bump the version for releases
+# Requires a .bumpversion.toml file in the root of the repository
 name: Bump version
 
 on:
   workflow_dispatch:
     inputs:
-      bump-type:
-        description: 'Bump type'
+      bump_type:
+        description: "Bump type"
         required: true
-        default: 'patch'
+        default: "patch"
         type: choice
         options:
-        - major
-        - minor
-        - patch
-      create_tag:
-        description: "create tag"
-        required: false
-        type: boolean
-        default: false
+          - prerelease
+          - patch
+          - minor
+          - major
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout the code
-        uses: actions/checkout@v4
-
-      - name: Bump version
-        id: bump
-        uses: callowayproject/bump-my-version@master
-        env:
-          BUMPVERSION_TAG: "false"
-        with:
-          args: ${{ inputs.bump-type }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create a pull request
-        id: create-pull-request
-        if: steps.bump.outputs.bumped == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: "bump-version-${{ steps.bump.outputs.current-version }}"
-          title: "[VERSION] Bump version to ${{ steps.bump.outputs.current-version }}"
-          body: "This PR bumps the project version to ${{ steps.bump.outputs.current-version }}."
-          labels:
-            automated pr
-          assignees: sophia-maedler
-          delete-branch: true
-
-      - name: Create tag
-        if: inputs.create_tag == 'true' && steps.bump.outputs.bumped == 'true'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: 'refs/tags/v${{ steps.bump.outputs.current-version }}',
-              sha: '${{ steps.create-pull-request.outputs.pull-request-head-sha }}'
-            })
-
-      - name: Check
-        if: steps.bump.outputs.bumped == 'true'
-        run: |
-          echo "Version was bumped from ${{ steps.bump.outputs.previous-version }} to ${{ steps.bump.outputs.current-version }}!"
+  bump-version:
+    uses: MannLabs/alphashared/.github/workflows/bump_version.yml@v1
+    secrets: inherit
+    with:
+      bump_type: ${{inputs.bump_type}}
