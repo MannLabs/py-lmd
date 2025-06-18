@@ -25,7 +25,7 @@ pip install py-lmd
 
 Documentation
 =============
-The current documentation can be found under https://mannlabs.github.io/py-lmd/html/index.html.
+The current documentation can be found [here](https://mannlabs.github.io/py-lmd/index.html).
 
 Citing our Work
 =================
