@@ -1061,22 +1061,28 @@ class SegmentationLoader:
         self.log(f"Current path length: {unoptimized_length:,.2f} units")
 
         if self.optimization_method != "none":
-            if self.optimization_method == "greedy":
-                optimized_idx = tsp_greedy_solve(center, k=self.config["greedy_k"])
+            if len(center) > 1:
+                if self.optimization_method == "greedy":
+                    optimized_idx = tsp_greedy_solve(center, k=self.config["greedy_k"])
 
-            elif self.optimization_method == "hilbert":
-                optimized_idx = tsp_hilbert_solve(center, p=self.config["hilbert_p"])
+                elif self.optimization_method == "hilbert":
+                    optimized_idx = tsp_hilbert_solve(center, p=self.config["hilbert_p"])
 
-            # update order of centers
-            center = center[optimized_idx]
-            self.indexes = optimized_idx
+                # update order of centers
+                center = center[optimized_idx]
+                self.indexes = optimized_idx
 
-            # calculate optimized path length and optimization factor
-            optimized_length = calc_len(center)
-            self.log(f"Optimized path length: {optimized_length:,.2f} units")
+                # calculate optimized path length and optimization factor
+                optimized_length = calc_len(center)
+                self.log(f"Optimized path length: {optimized_length:,.2f} units")
 
-            optimization_factor = unoptimized_length / optimized_length
-            self.log(f"Optimization factor: {optimization_factor:,.1f}x")
+                optimization_factor = unoptimized_length / optimized_length
+                self.log(f"Optimization factor: {optimization_factor:,.1f}x")
+            else:
+                self.log("Path optimization was activated, but only a single shape found.")
+                self.log("Skipping path optimization step.")
+                optimization_factor = 1
+                optimized_idx = list(range(len(center)))
         else:
             self.log("No path optimization used")
             optimization_factor = 1
