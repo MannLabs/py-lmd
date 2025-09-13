@@ -1097,7 +1097,10 @@ class SegmentationLoader:
             if "background_image" in self.config:
                 axs.imshow(self.config["background_image"])
 
-            axs.scatter(center[:, 1], center[:, 0], s=1)
+            if len(center) > 1:
+                axs.scatter(center[:, 1], center[:, 0], s=1)
+            else:
+                axs.scatter(center[1], center[0], s=1)
 
             for shape in polygons:
                 axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
