@@ -295,6 +295,9 @@ def calc_len(data):
 
     index = np.arange(len(data)).astype(int)
 
+    if len(data) < 2:
+        return 0
+
     not_shifted = data[index[:-1]]
     shifted = data[index[1:]]
 
