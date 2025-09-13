@@ -1097,11 +1097,15 @@ class SegmentationLoader:
             if "background_image" in self.config:
                 axs.imshow(self.config["background_image"])
 
-            if len(center) > 1:
-                axs.scatter(center[:, 1], center[:, 0], s=1)
+            # center can be [], (2,), or (1,2)
+            if center is None or len(center) == 0:
+                pass
             else:
-                print(center)
-                axs.scatter(center[0][1], center[0][0], s=1)
+                arr = np.asarray(center)
+                if arr.ndim == 1:  # single point [y, x]
+                    axs.scatter(arr[1], arr[0], s=1)
+                else:  # multiple points (N, 2)
+                    axs.scatter(arr[:, 1], arr[:, 0], s=1)
 
             for shape in polygons:
                 axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
