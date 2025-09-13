@@ -984,9 +984,13 @@ class SegmentationLoader:
             )
 
         if self.config["join_intersecting"]:
-            center, length, coords = self.merge_dilated_shapes(
-                center, length, coords, dilation=self.config["shape_dilation"], erosion=self.config["shape_erosion"]
-            )
+            if len(center) > 1:
+                center, length, coords = self.merge_dilated_shapes(
+                    center, length, coords, dilation=self.config["shape_dilation"], erosion=self.config["shape_erosion"]
+                )
+            else:
+                self.log("Merging of intersecting shapes was activated, but only a single shape found.")
+                self.log("Skipping merging step.")
 
         # Calculate dilation and erosion based on if merging was activated
         dilation = (
