@@ -1097,6 +1097,16 @@ class SegmentationLoader:
             if "background_image" in self.config:
                 axs.imshow(self.config["background_image"])
 
+            for shape in polygons:
+                axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
+
+            axs.scatter(
+                self.calibration_points[:, 1],
+                self.calibration_points[:, 0],
+                color="blue",
+            )
+            # axs.plot(center[:, 1], center[:, 0], color="grey")
+
             # center can be [], (2,), or (1,2)
             if center is None or len(center) == 0:
                 pass
@@ -1107,15 +1117,6 @@ class SegmentationLoader:
                 else:  # multiple points (N, 2)
                     axs.scatter(arr[:, 1], arr[:, 0], s=1)
 
-            for shape in polygons:
-                axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
-
-            axs.scatter(
-                self.calibration_points[:, 1],
-                self.calibration_points[:, 0],
-                color="blue",
-            )
-            axs.plot(center[:, 1], center[:, 0], color="grey")
             axs.invert_yaxis()
             axs.set_aspect("equal", adjustable="box")
             axs.axis("off")
