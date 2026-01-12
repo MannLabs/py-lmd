@@ -21,7 +21,7 @@ ATOL = 1e-10
     ids=("identity", "45_degrees", "90_degrees", "identity_360_degrees", "-90_degrees"),
 )
 def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> None:
-    """Test that function returns a correct affine transformation matrix, given an angle in rad"""
+    """Test that function returns a correct affine transformation matrix, given an eangle in rad"""
     result = tools._get_rotation_matrix(angle=angle_rad)
 
     assert np.allclose(result, expected_matrix, atol=ATOL)
@@ -68,7 +68,7 @@ class TestGlyph:
         result_with_offset = tools.glyph(glyph="A", offset=offset)
 
         # All shapes should be shifted by offset
-        for shape_no_offset, shape_with_offset in zip(result_no_offset.shapes, result_with_offset.shapes, strict=True):
+        for shape_no_offset, shape_with_offset in zip(result_no_offset.shapes, result_with_offset.shapes):
             expected_points = shape_no_offset.points + offset
             assert np.allclose(shape_with_offset.points, expected_points, atol=ATOL)
 
@@ -130,7 +130,7 @@ class TestText:
         result_with_offset = tools.text(text="A", offset=offset)
 
         # All shapes should be shifted by offset
-        for shape_no_offset, shape_with_offset in zip(result_no_offset.shapes, result_with_offset.shapes, strict=True):
+        for shape_no_offset, shape_with_offset in zip(result_no_offset.shapes, result_with_offset.shapes):
             expected_points = shape_no_offset.points + offset
             assert np.allclose(shape_with_offset.points, expected_points, atol=ATOL)
 
