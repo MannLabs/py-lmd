@@ -1,16 +1,7 @@
-import os
-import pathlib
-
-import geopandas as gpd
 import numpy as np
-import pytest
-import shapely
-from lxml import etree as ET
-from PIL import Image
 
 from lmd import tools
-from lmd._utils import _download_segmentation_example_file
-from lmd.lib import Collection, SegmentationLoader, Shape
+from lmd.lib import Collection
 
 
 def test_tools_square():
