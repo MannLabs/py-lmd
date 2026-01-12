@@ -38,7 +38,7 @@ def glyph_path(glyph):
         raise NotImplementedError(f"You tried to load the glyph {glyph}. This has not been implemented yet.")
 
 
-# TODO: Remove unused function argument
+# TODO: Remove unused function argument `divisor`
 # TODO: Document local_multiplier
 def glyph(glyph, offset=np.array([0, 0]), rotation=0, divisor=10, multiplier=1, **kwargs):
     """Get an uncalibrated lmd.lib.Collection for a glyph of interest.
