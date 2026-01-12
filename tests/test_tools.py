@@ -13,7 +13,6 @@ from lmd._utils import _download_segmentation_example_file
 from lmd.lib import Collection, SegmentationLoader, Shape
 
 
-
 def test_tools_square():
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
     my_first_collection = Collection(calibration_points=calibration)
@@ -51,4 +50,3 @@ def test_text():
 
     identifier_3 = tools.text("0123456789-_ABCDEFGHI", offset=np.array([60, 40]), rotation=-np.pi / 4)
     my_first_collection.join(identifier_3)
-

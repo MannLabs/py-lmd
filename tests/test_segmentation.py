@@ -13,7 +13,6 @@ from lmd._utils import _download_segmentation_example_file
 from lmd.lib import Collection, SegmentationLoader, Shape
 
 
-
 def test_segmentation_loader():
     test_segmentation_path = _download_segmentation_example_file()
 
