@@ -50,6 +50,7 @@ from lmd.segmentation import (
 )
 
 
+# TODO: Rename tqdm_args to tqdm_kwargs
 def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10) -> list:
     """parallelization of function call with indexed arguments using ThreadPoolExecutor. Returns a list of results in the order of the input arguments.
 
@@ -291,10 +292,11 @@ class Collection:
                 shapes = collection.shapes
                 for shape in shapes:
                     shape.orientation_transform = self.orientation_transform
-                else:
-                    Warning(
-                        "Orientation transform of the joined collection is not equal to the current collection, but update_orientation_transform is set to False. Shapes will be merged without updating the orientation transform."
-                    )
+            else:
+                warnings.warn(
+                    "Orientation transform of the joined collection is not equal to the current collection, but update_orientation_transform is set to False. Shapes will be merged without updating the orientation transform.",
+                    stacklevel=2,
+                )
         self.shapes += collection.shapes
 
         return self
