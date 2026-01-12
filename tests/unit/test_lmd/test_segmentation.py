@@ -154,10 +154,10 @@ def test__create_coord_index(mask: np.ndarray, expected_result: dict[int, np.nda
 @pytest.mark.parametrize(
     ("mask", "classes", "expected_result"),
     [
-        (np.array([[0]], dtype=np.uint64), np.array([0]), {0: np.array([[0, 0]], dtype=np.uint64)}),
+        (np.array([[0]], dtype=np.uint64), np.array([0], dtype=np.uint64), {0: np.array([[0, 0]], dtype=np.uint64)}),
         (
             np.ones(shape=(33, 1), dtype=np.uint64),
-            np.array([1]),
+            np.array([1], dtype=np.uint64),
             {1: np.stack([np.arange(33), np.zeros(33)], axis=-1)},
         ),
     ],
