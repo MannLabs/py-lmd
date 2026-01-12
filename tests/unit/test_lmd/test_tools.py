@@ -21,7 +21,7 @@ ATOL = 1e-10
     ids=("identity", "45_degrees", "90_degrees", "identity_360_degrees", "-90_degrees"),
 )
 def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> None:
-    """Test that function returns a correct affine transformation matrix, given an eangle in rad"""
+    """Test that function returns a correct affine transformation matrix, given an angle in rad"""
     result = tools._get_rotation_matrix(angle=angle_rad)
 
     assert np.allclose(result, expected_matrix, atol=ATOL)
