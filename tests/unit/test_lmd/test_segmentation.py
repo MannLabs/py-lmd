@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pytest
 
@@ -304,7 +306,7 @@ def test_tsp_hilbert_solve(data: np.ndarray, p: int) -> None:
         "empty_choices",
     ),
 )
-def test__get_closest(used: list[int], choices: list[int], world_size: int, expected_result: int | None) -> None:
+def test__get_closest(used: list[int], choices: list[int], world_size: int, expected_result: Optional[int]) -> None:
     """Test `_get_closest` for finding first unused element from choices"""
     # Act
     result = _get_closest(used=used, choices=choices, world_size=world_size)
