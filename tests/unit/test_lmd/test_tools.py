@@ -21,7 +21,7 @@ ATOL = 1e-10
     ids=("identity", "45_degrees", "90_degrees", "identity_360_degrees", "-90_degrees"),
 )
 def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> None:
-    """Test that function returns a correct affine transformation matrix, given an eangle in rad"""
+    """Test that function returns a correct affine transformation matrix, given an angle in rad"""
     result = tools._get_rotation_matrix(angle=angle_rad)
 
     assert np.allclose(result, expected_matrix, atol=ATOL)
@@ -30,7 +30,7 @@ def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> 
 # TODO: Resolve authentification issues
 @pytest.mark.skip(reason="Skip due to issues with the authentification of glyph download in tests (HTTP: 403)")
 class TestGlyphPath:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("013456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
     def test_glyph_path(self, glyph_string: str) -> None:
         """Test that implemented glyphs exist (only glyphs A-I implemented)"""
         result = tools.glyph_path(glyph=glyph_string)
@@ -47,7 +47,7 @@ class TestGlyphPath:
 # TODO: Resolve authentification issues
 @pytest.mark.skip(reason="Skip due to issues with the authentification of glyph download in tests (HTTP: 403)")
 class TestGlyph:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("013456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
     def test_glyph(self, glyph_string: str) -> None:
         """Test that collection is created from a glyph"""
 
@@ -286,7 +286,7 @@ class TestEllipse:
     def test_ellipse(self, major_axis: float, minor_axis: float) -> None:
         shape = tools.ellipse(major_axis=major_axis, minor_axis=minor_axis, offset=0, rotation=0, polygon_resolution=1)
 
-        # Validate that points follow standard ellipsis equation: x^2/a^2 + y^2/b^2 = 1
+        # Validate that points follow standard ellipse equation: x^2/a^2 + y^2/b^2 = 1
         curve = shape.points[:, 0] ** 2 / major_axis**2 + shape.points[:, 1] ** 2 / minor_axis**2
         expected_result = np.ones_like(curve)
 
@@ -305,7 +305,7 @@ class TestEllipse:
         )
         centered_points = shape.points - np.array(offset)
 
-        # Validate that points follow standard ellipsis equation: x^2/a^2 + y^2/b^2 = 1
+        # Validate that points follow standard ellipse equation: x^2/a^2 + y^2/b^2 = 1
         curve = centered_points[:, 0] ** 2 / major_axis**2 + centered_points[:, 1] ** 2 / minor_axis**2
         expected_result = np.ones_like(curve)
 
