@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Literal
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -167,7 +168,7 @@ class TestDownload:
         ids=["zip", "tar", "tar.gz", "tgz"],
     )
     def test_download_supports_archive_formats(
-        self, temp_dir: Path, mock_response: MagicMock, archive_format: str
+        self, temp_dir: Path, mock_response: MagicMock, archive_format: Literal["zip", "tar", "tar.gz", "tgz"]
     ) -> None:
         """Test that _download supports various archive formats."""
         # Arrange
