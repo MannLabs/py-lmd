@@ -8,16 +8,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 from lmd._utils import _download_glyphs, _download_segmentation_example_file
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import pytest
 
-# TODO: Enable download of glyphs
-@pytest.mark.skip(reason="Zenodo download is currently unauthorized (HTTP: 403)")
+
 class TestDownloadGlyphsIntegration:
     """Integration tests for _download_glyphs with real downloads."""
 
@@ -35,19 +33,17 @@ class TestDownloadGlyphsIntegration:
         assert result.exists()
         assert result.is_dir()
 
-        # Check that glyph XML files were extracted
-        xml_files = list(result.rglob("*.xml"))
-        assert len(xml_files) > 0, "Expected glyph XML files to be extracted"
+        # Check that glyph SVG files were extracted
+        svg_files = list(result.rglob("*.svg"))
+        assert len(svg_files) > 0, f"Expected glyph SVG files to be extracted, found {list(result.glob('*'))}"
 
         # Verify at least some expected glyphs exist (0-9, a-i, A-I)
-        glyph_names = {f.stem for f in xml_files}
+        glyph_names = {f.stem for f in svg_files}
         expected_glyphs = {"0", "1", "2", "a", "b", "A", "B"}
         found_glyphs = expected_glyphs & glyph_names
         assert len(found_glyphs) > 0, f"Expected some standard glyphs, found: {glyph_names}"
 
 
-# TODO: Enable download of glyphs
-@pytest.mark.skip(reason="Zenodo download is currently unauthorized (HTTP: 403)")
 class TestDownloadSegmentationIntegration:
     """Integration tests for _download_segmentation_example_file with real downloads."""
 
