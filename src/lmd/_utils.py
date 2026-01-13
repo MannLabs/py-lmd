@@ -120,9 +120,11 @@ def _download_glyphs() -> Path:
     data_dir = Path(_get_data_dir())
     save_path = data_dir / "glyphs"
 
+    DOWNLOAD_URL = "https://datashare.biochem.mpg.de/s/2YfyHFEyXNsaf5M/download"
+
     if not save_path.exists():
         _download(
-            url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
+            url=DOWNLOAD_URL,
             output_path=str(save_path),
             archive_format="zip",
         )
@@ -130,7 +132,7 @@ def _download_glyphs() -> Path:
         # check that directory is not empty
         if not any(save_path.iterdir()):
             _download(
-                url="https://zenodo.org/records/14623414/files/glyphs.zip?download=1",
+                url=DOWNLOAD_URL,
                 output_path=str(save_path),
                 archive_format="zip",
             )
@@ -147,11 +149,12 @@ def _download_segmentation_example_file() -> Path:
 
     data_dir = Path(_get_data_dir())
     save_path = data_dir / "segmentation_cytosol_example"
+    DOWNLOAD_URL = "https://datashare.biochem.mpg.de/s/QZtxFNDy8gSqTqf/download"
 
     output_file_name = "segmentation_mask.tif"
     if not save_path.exists():
         _download(
-            url="https://zenodo.org/records/15681419/files/segmentation_cytosol.tiff?download=1",
+            url=DOWNLOAD_URL,
             output_path=str(save_path),
             output_file_name=output_file_name,
             archive_format=None,
