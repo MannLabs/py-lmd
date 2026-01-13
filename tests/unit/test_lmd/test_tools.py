@@ -103,7 +103,7 @@ class TestGlyph:
 
 
 class TestText:
-    @pytest.mark.parametrize(("text_string",), argvalues=[("a",), ("abc",)])
+    @pytest.mark.parametrize(("text_string",), argvalues=[("A",), ("ABC",)])
     def test_text(self, text_string: str) -> None:
         """Test that function returns a collection"""
         result = tools.text(text=text_string)
