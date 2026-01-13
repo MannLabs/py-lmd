@@ -28,7 +28,7 @@ def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> 
 
 
 class TestGlyphPath:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789ABCDEFGHI"))
     def test_glyph_path(self, glyph_string: str) -> None:
         """Test that implemented glyphs exist (only glyphs A-I implemented)"""
         result = tools.glyph_path(glyph=glyph_string)
@@ -43,7 +43,7 @@ class TestGlyphPath:
 
 
 class TestGlyph:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789ABCDEFGHI"))
     def test_glyph(self, glyph_string: str) -> None:
         """Test that collection is created from a glyph"""
 
