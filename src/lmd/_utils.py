@@ -14,26 +14,10 @@ from tqdm import tqdm
 
 
 def _get_data_dir() -> Path:
-    """Get path to data that was packaged with scPortrait.
-
-    Returns:
-        Path to data directory
-    """
-
-    def find_root_by_folder(marker_folder: str, current_path: Path) -> Path | None:
-        for parent in current_path.parents:
-            if (parent / marker_folder).is_dir():
-                return parent
-        return None
-
-    src_code_dir = find_root_by_folder("lmd", Path(__file__))
-
-    if src_code_dir is None:
-        raise FileNotFoundError("Could not find pyLMD source directory")
-
-    data_dir = src_code_dir / "pylmd_data"
-
-    return data_dir.absolute()
+    """Get path to pyLMD data/cache directory."""
+    data_dir = Path.home() / ".pylmd"
+    data_dir.mkdir(parents=True, exist_ok=True)
+    return data_dir
 
 
 def _download(
