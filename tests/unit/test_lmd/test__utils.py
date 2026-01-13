@@ -18,12 +18,12 @@ class TestGetDataDir:
     """Tests for _get_data_dir function."""
 
     def test_returns_path(self) -> None:
-        """Test that _get_data_dir returns an absolute Path object that ends with pylmd_data."""
+        """Test that _get_data_dir returns an absolute Path object that ends with .pylmd."""
         result = _get_data_dir()
 
         assert isinstance(result, Path)
         assert result.is_absolute()
-        assert result.name == "pylmd_data"
+        assert result.name == ".pylmd"
 
 
 class TestDownload:
@@ -216,7 +216,7 @@ class TestDownloadGlyphs:
     @pytest.fixture
     def mock_data_dir(self, tmp_path: Path) -> Path:
         """Fixture providing a mock data directory."""
-        data_dir = tmp_path / "pylmd_data"
+        data_dir = tmp_path / ".pylmd"
         data_dir.mkdir(parents=True, exist_ok=True)
         return data_dir
 
@@ -294,7 +294,7 @@ class TestDownloadSegmentationExampleFile:
     @pytest.fixture
     def mock_data_dir(self, tmp_path: Path) -> Path:
         """Fixture providing a mock data directory."""
-        data_dir = tmp_path / "pylmd_data"
+        data_dir = tmp_path / ".pylmd"
         data_dir.mkdir(parents=True, exist_ok=True)
         return data_dir
 
