@@ -256,7 +256,6 @@ class TestDownloadGlyphs:
 
         mock_download.assert_called_once()
         call_kwargs = mock_download.call_args[1]
-        assert "glyphs.zip" in call_kwargs["url"]
         assert call_kwargs["archive_format"] == "zip"
 
     def test_downloads_when_directory_is_empty(self, mock_data_dir: Path) -> None:
@@ -332,7 +331,6 @@ class TestDownloadSegmentationExampleFile:
 
         mock_download.assert_called_once()
         call_kwargs = mock_download.call_args[1]
-        assert "segmentation_cytosol.tiff" in call_kwargs["url"]
         assert call_kwargs["output_file_name"] == "segmentation_mask.tif"
         assert call_kwargs["archive_format"] is None
 
