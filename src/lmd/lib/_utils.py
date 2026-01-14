@@ -46,6 +46,9 @@ def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = N
     return results
 
 
+# TODO: Remove debug argument [Breaking]
+# TODO: Add type hints
+# TODO: Add docstring to public method
 def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=False):
     # safety boundary which extands the generated map size
     safety_offset = 3
@@ -96,6 +99,7 @@ def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fal
         return (offset_map, offset)
 
 
+# TODO: Remove debugging logic
 def _create_poly(
     in_tuple,
     smoothing_filter_size: int = 12,
@@ -144,10 +148,9 @@ def _create_poly(
 
 def _sort_edges(edges):
     """Sorts the vertices of the polygon.
+
     Greedy sorting is performed, might have difficulties with complex shapes.
-
     """
-
     it = len(edges)
     new = []
     new.append(edges[0])
