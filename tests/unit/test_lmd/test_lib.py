@@ -8,7 +8,7 @@ import pytest
 import shapely
 from lxml import etree as ET
 
-from lmd.lib import Collection, Shape, _create_poly, _execute_indexed_parallel, _sort_edges
+from lmd.lib import Collection, Shape, _create_poly, _execute_indexed_parallel, _sort_edges, transform_to_map
 
 
 @pytest.fixture
@@ -419,3 +419,52 @@ def test__create_poly_rdp_epsilon_reduces_points(square_mask: np.ndarray) -> Non
     result_with_compression = _create_poly(in_tuple, smoothing_filter_size=3, rdp_epsilon=1.0)
 
     assert len(result_with_compression) <= len(result_no_compression)
+
+
+class TestTransformToMap:
+    @pytest.mark.parametrize(
+        ("coords",),
+        [(np.array([[0, 0]]),), (np.array([[2, 1]]),), (np.array([[0, 0], [2, 1]]),)],
+        ids=("simple", "assymmetric", "multiple_coords"),
+    )
+    def test_transform_to_map__no_changes__coord_format(self, coords: np.ndarray) -> None:
+        """Test that `coord_format=True` just returns the coords if no dilation/erosion is applied"""
+        # Essentially identity transform
+        result = transform_to_map(coords=coords, dilation=0, erosion=0, coord_format=True, debug=False)
+
+        assert np.array_equal(result, coords)
+
+    @pytest.mark.parametrize(
+        ("coords", "expected_shape", "expected_offsets", "sparse_coords_result_mask"),
+        [
+            (np.array([[0, 0]]), (6, 6), np.array([0, 0]), np.array([[0, 0]])),  # minimal size with buffer
+            (np.array([[2, 1]]), (8, 7), np.array([0, 0]), np.array([[2, 1]])),
+            (np.array([[0, 0], [2, 1]]), (8, 7), np.array([0, 0]), np.array([[0, 0], [2, 1]])),
+            (np.array([[100, 100]]), (9, 9), np.array([97, 97]), np.array([[3, 3]])),  # boundary left/right
+            (
+                np.array([[0, 0], [100, 100]]),
+                (106, 106),
+                np.array([0, 0]),
+                np.array([[0, 0], [100, 100]]),
+            ),  # boundary left/right, no offset
+        ],
+        ids=("simple", "assymmetric", "multiple_coords", "with_offsets", "large_without_offsets"),
+    )
+    def test_transform_to_map__no_changes__mask_format(
+        self,
+        coords: np.ndarray,
+        expected_shape: np.ndarray,
+        expected_offsets: tuple[int, int],
+        sparse_coords_result_mask: np.ndarray,
+    ) -> None:
+        """Test that `coord_format=False` returns a binary mask with the indicated coords if no dilation/erosion is applied"""
+        # Build expected results mask from sparse coords (N, 2)
+        expected_mask = np.zeros(shape=expected_shape)
+        for dim0_index, dim1_index in sparse_coords_result_mask:
+            expected_mask[dim0_index, dim1_index] = 1
+
+        binary_mask, offset = transform_to_map(coords=coords, dilation=0, erosion=0, coord_format=False, debug=False)
+
+        assert binary_mask.shape == expected_shape
+        assert np.allclose(offset, expected_offsets)
+        assert np.allclose(binary_mask, expected_mask)
