@@ -94,10 +94,9 @@ def _get_closest(used, choices, world_size):
     # all choices have been taken, return closest free index due to local optimality
 
 
-# TODO: Rename to TSP (traveling sales person)
 # TODO: Add type hints
 # TODO: Add umap as optional dependency
-def _tps_greedy_solve(data, k=100):
+def _tsp_greedy_solve(data, k=100):
     samples = len(data)
 
     print(f"{samples} nodes left")
@@ -139,7 +138,7 @@ def _tps_greedy_solve(data, k=100):
 
     # join lists
 
-    return np.concatenate([data[nodes], _tps_greedy_solve(node_data_left, k=k)])
+    return np.concatenate([data[nodes], _tsp_greedy_solve(node_data_left, k=k)])
 
 
 # TODO: Add type hints
@@ -175,7 +174,7 @@ def tsp_greedy_solve(node_list, k=100, return_sorted=False):
 
     """
 
-    sorted_nodes = _tps_greedy_solve(node_list)
+    sorted_nodes = _tsp_greedy_solve(node_list)
 
     if return_sorted:
         return sorted_nodes

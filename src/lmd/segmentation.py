@@ -18,7 +18,7 @@ from lmd.path import (
     _get_nodes as __get_nodes,
 )
 from lmd.path import (
-    _tps_greedy_solve as __tps_greedy_solve,
+    _tsp_greedy_solve as __tsp_greedy_solve,
 )
 from lmd.path import (
     assign_vertices as _assign_vertices,
@@ -254,12 +254,12 @@ def _get_nodes(data, sorted_data):
 
 
 def _tps_greedy_solve(data, k=100):
-    """Deprecated: Use lmd.path._tps_greedy_solve instead."""
+    """Deprecated: Use lmd.path._tsp_greedy_solve instead."""
     warnings.warn(
-        "_tps_greedy_solve has been moved to lmd.path. "
+        "_tps_greedy_solve has been moved to lmd.path and renamed to _tsp_greedy_solve. "
         "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
-        "Please use: from lmd.path import _tps_greedy_solve",
+        "Please use: from lmd.path import _tsp_greedy_solve",
         DeprecationWarning,
         stacklevel=2,
     )
-    return __tps_greedy_solve(data, k=k)
+    return __tsp_greedy_solve(data, k=k)
