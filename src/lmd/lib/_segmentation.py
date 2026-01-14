@@ -18,13 +18,8 @@ import scipy
 from scipy.spatial import cKDTree
 from tqdm.auto import tqdm
 
-from lmd.segmentation import (
-    _create_coord_index_sparse,
-    calc_len,
-    get_coordinate_form,
-    tsp_greedy_solve,
-    tsp_hilbert_solve,
-)
+from lmd.path import calc_len, tsp_greedy_solve, tsp_hilbert_solve
+from lmd.segmentation import _create_coord_index_sparse, get_coordinate_form
 
 from ._geom import Collection
 from ._utils import _create_poly, _execute_indexed_parallel, transform_to_map
