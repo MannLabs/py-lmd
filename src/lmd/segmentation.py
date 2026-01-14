@@ -6,7 +6,11 @@ from hilbertcurve.hilbertcurve import HilbertCurve
 from numba import njit, prange, types
 from scipy.sparse import coo_array
 
+# TODO: Rename index_list to index_dict to correctly represent type
+# TODO: Rename index_list to index_dict to correctly represent type
 
+
+# TODO: Add parameter documentation, return information
 @njit
 def _numba_accelerator_coord_calculation(
     _ids: np.ndarray, inverse_indices: np.ndarray, sparse_coords_0: np.ndarray, sparse_coords_1: np.ndarray
@@ -74,6 +78,9 @@ def _create_coord_index_sparse(mask: np.ndarray) -> dict:
     return coords_lookup
 
 
+# TODO: add type hints. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689850963
+# TODO: Remove unused argument `background`. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689831082
+# TODO: Clarify whether it is desired that non-existent classes (e.g. 1 in case classes=[0, 2]) are still returned
 @njit
 def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64), dtype=np.uint64):
     if len(classes) == 0:
@@ -115,6 +122,7 @@ def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64
     return index_list
 
 
+# TODO: add type hints
 def _filter_coord_index(index_list, classes, background=0):
     filtered_index_list = []
     for _idx, class_id in enumerate(classes):
@@ -127,6 +135,7 @@ def _filter_coord_index(index_list, classes, background=0):
     return filtered_index_list
 
 
+# TODO: Make private
 def get_coordinate_form(classes, coords_lookup, debug=False):
     # return with empty lists if no classes are provided
     if len(classes) == 0:
@@ -136,6 +145,7 @@ def get_coordinate_form(classes, coords_lookup, debug=False):
 
     center = [np.mean(el, axis=0) for el in coords_filtered]
 
+    # TODO: Remove print statement
     if debug:
         print("start length calculation")
 
@@ -169,6 +179,9 @@ def tsp_hilbert_solve(data, p=3):
     return order
 
 
+# TODO: Remove unused argument `world_size`
+# TODO: Add type hints
+# TODO: Add docstrings
 # return the first element not present in a list
 def _get_closest(used, choices, world_size):
     for element in choices:
@@ -183,6 +196,9 @@ def _get_closest(used, choices, world_size):
     # all choices have been taken, return closest free index due to local optimality
 
 
+# TODO: Rename to TSP (traveling sales person)
+# TODO: Add type hints
+# TODO: Add umap as optional dependency
 def _tps_greedy_solve(data, k=100):
     samples = len(data)
 
@@ -228,6 +244,8 @@ def _tps_greedy_solve(data, k=100):
     return np.concatenate([data[nodes], _tps_greedy_solve(node_data_left, k=k)])
 
 
+# TODO: Add type hints
+# TODO: Add docstrings
 # calculate the index array for a sorted 2d list based on an unsorted list
 @njit()
 def _get_nodes(data, sorted_data):
@@ -246,6 +264,7 @@ def _get_nodes(data, sorted_data):
     return nodes
 
 
+# TODO: Add type hints
 def tsp_greedy_solve(node_list, k=100, return_sorted=False):
     """Find an approximation of the closest path through a list of coordinates
 
