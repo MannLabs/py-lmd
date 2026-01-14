@@ -6,6 +6,33 @@ import numpy as np
 from numba import njit, prange, types
 from scipy.sparse import coo_array
 
+# =============================================================================
+# Deprecation Aliases - Path Optimization Functions
+# =============================================================================
+# These functions have been moved to lmd.path module.
+# Imports from lmd.segmentation are deprecated and will be removed in v3.0.0
+from lmd.path import (
+    _get_closest as __get_closest,
+)
+from lmd.path import (
+    _get_nodes as __get_nodes,
+)
+from lmd.path import (
+    _tps_greedy_solve as __tps_greedy_solve,
+)
+from lmd.path import (
+    assign_vertices as _assign_vertices,
+)
+from lmd.path import (
+    calc_len as _calc_len,
+)
+from lmd.path import (
+    tsp_greedy_solve as _tsp_greedy_solve,
+)
+from lmd.path import (
+    tsp_hilbert_solve as _tsp_hilbert_solve,
+)
+
 # TODO: Rename index_list to index_dict to correctly represent type
 # TODO: Rename index_list to index_dict to correctly represent type
 
@@ -152,35 +179,6 @@ def get_coordinate_form(classes, coords_lookup, debug=False):
     length = [len(el) for el in coords_filtered]
 
     return center, length, coords_filtered
-
-
-# =============================================================================
-# Deprecation Aliases - Path Optimization Functions
-# =============================================================================
-# These functions have been moved to lmd.path module.
-# Imports from lmd.segmentation are deprecated and will be removed in v3.0.0
-
-from lmd.path import (
-    _get_closest as __get_closest,
-)
-from lmd.path import (
-    _get_nodes as __get_nodes,
-)
-from lmd.path import (
-    _tps_greedy_solve as __tps_greedy_solve,
-)
-from lmd.path import (
-    assign_vertices as _assign_vertices,
-)
-from lmd.path import (
-    calc_len as _calc_len,
-)
-from lmd.path import (
-    tsp_greedy_solve as _tsp_greedy_solve,
-)
-from lmd.path import (
-    tsp_hilbert_solve as _tsp_hilbert_solve,
-)
 
 
 def calc_len(data):
