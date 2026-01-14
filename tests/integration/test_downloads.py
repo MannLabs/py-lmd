@@ -2,6 +2,13 @@
 
 These tests actually download files from Zenodo and validate the content.
 They require network access and may be slow.
+
+NOTE: While it is unusual to call third-party services in tests (typically you
+would mock requests), these integration tests serve as end-to-end validation
+that the download URLs and extraction logic work correctly with the real
+upstream data. They have proven valuable in catching real issues (e.g., server
+header requirements, URL changes). The unit tests in test_utils.py mock the
+network layer for fast, isolated testing.
 """
 
 from __future__ import annotations
@@ -26,14 +33,12 @@ class TestDownloadGlyphsIntegration:
         data_dir.mkdir(parents=True, exist_ok=True)
         monkeypatch.setattr("lmd._utils._get_data_dir", lambda: data_dir)
 
-        # Act
         result = _download_glyphs()
 
-        # Assert
         assert result.exists()
         assert result.is_dir()
 
-        # Check that glyph XML files were extracted
+        # Check that glyph SVG files were extracted
         svg_files = list(result.rglob("*.svg"))
         assert len(svg_files) > 0, "Expected glyph SVG files to be extracted"
 
