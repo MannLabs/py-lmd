@@ -2,22 +2,27 @@
 
 These tests actually download files from Zenodo and validate the content.
 They require network access and may be slow.
+
+NOTE: While it is unusual to call third-party services in tests (typically you
+would mock requests), these integration tests serve as end-to-end validation
+that the download URLs and extraction logic work correctly with the real
+upstream data. They have proven valuable in catching real issues (e.g., server
+header requirements, URL changes). The unit tests in test_utils.py mock the
+network layer for fast, isolated testing.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import pytest
-
 from lmd._utils import _download_glyphs, _download_segmentation_example_file
 
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import pytest
 
-# TODO: Enable download of glyphs
-@pytest.mark.skip(reason="Zenodo download is currently unauthorized (HTTP: 403)")
+
 class TestDownloadGlyphsIntegration:
     """Integration tests for _download_glyphs with real downloads."""
 
@@ -28,26 +33,22 @@ class TestDownloadGlyphsIntegration:
         data_dir.mkdir(parents=True, exist_ok=True)
         monkeypatch.setattr("lmd._utils._get_data_dir", lambda: data_dir)
 
-        # Act
         result = _download_glyphs()
 
-        # Assert
         assert result.exists()
         assert result.is_dir()
 
-        # Check that glyph XML files were extracted
-        xml_files = list(result.rglob("*.xml"))
-        assert len(xml_files) > 0, "Expected glyph XML files to be extracted"
+        # Check that glyph SVG files were extracted
+        svg_files = list(result.rglob("*.svg"))
+        assert len(svg_files) > 0, "Expected glyph SVG files to be extracted"
 
         # Verify at least some expected glyphs exist (0-9, a-i, A-I)
-        glyph_names = {f.stem for f in xml_files}
+        glyph_names = {f.stem for f in svg_files}
         expected_glyphs = {"0", "1", "2", "a", "b", "A", "B"}
         found_glyphs = expected_glyphs & glyph_names
         assert len(found_glyphs) > 0, f"Expected some standard glyphs, found: {glyph_names}"
 
 
-# TODO: Enable download of glyphs
-@pytest.mark.skip(reason="Zenodo download is currently unauthorized (HTTP: 403)")
 class TestDownloadSegmentationIntegration:
     """Integration tests for _download_segmentation_example_file with real downloads."""
 
