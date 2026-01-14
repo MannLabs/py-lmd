@@ -87,6 +87,7 @@ def _download(
             else:
                 print(f"{warning} Overwriting...")
 
+        # Zenodo declines downloads from requests without identifying headers (HTTP 403).
         headers = {"User-Agent": "pyLMD/1.0"}
         response = requests.get(url, stream=True, headers=headers)
         response.raise_for_status()
