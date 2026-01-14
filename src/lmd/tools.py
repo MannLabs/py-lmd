@@ -38,6 +38,8 @@ def glyph_path(glyph):
         raise NotImplementedError(f"You tried to load the glyph {glyph}. This has not been implemented yet.")
 
 
+# TODO: Remove unused function argument `divisor`
+# TODO: Document local_multiplier
 def glyph(glyph, offset=np.array([0, 0]), rotation=0, divisor=10, multiplier=1, **kwargs):
     """Get an uncalibrated lmd.lib.Collection for a glyph of interest.
 
@@ -67,6 +69,7 @@ def glyph(glyph, offset=np.array([0, 0]), rotation=0, divisor=10, multiplier=1, 
     return shapefile
 
 
+# TODO: Remove unused function argument - divisor
 def text(text, offset=np.array([0, 0]), divisor=1, multiplier=1, rotation=0, **kwargs):
     """Get an uncalibrated lmd.lib.Collection for a text.
 
@@ -217,6 +220,8 @@ def ellipse(major_axis, minor_axis, offset=(0, 0), rotation=0, polygon_resolutio
     return Shape(ellipse)
 
 
+# TODO: Rename to make_cross to make name more pythonic.
+# TODO: Update documentation of `dist` parameter: The dist parameter is currently multiplied by a factor of 2 (2*dist) to make the shape work
 def makeCross(center, arms, width, dist):
     """Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.
 
