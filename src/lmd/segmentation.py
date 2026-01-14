@@ -78,8 +78,8 @@ def _create_coord_index_sparse(mask: np.ndarray) -> dict:
     return coords_lookup
 
 
-# TODO: add type hints
-# TODO: Remove unused argument `background`/Clarify whether argument should be used
+# TODO: add type hints. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689850963
+# TODO: Remove unused argument `background`. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689831082
 # TODO: Clarify whether it is desired that non-existent classes (e.g. 1 in case classes=[0, 2]) are still returned
 @njit
 def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64), dtype=np.uint64):
