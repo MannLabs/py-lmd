@@ -27,10 +27,8 @@ def test__get_rotation_matrix(angle_rad: float, expected_matrix: np.ndarray) -> 
     assert np.allclose(result, expected_matrix, atol=ATOL)
 
 
-# TODO: Resolve authentification issues
-@pytest.mark.skip(reason="Skip due to issues with the authentification of glyph download in tests (HTTP: 403)")
 class TestGlyphPath:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789ABCDEFGHI"))
     def test_glyph_path(self, glyph_string: str) -> None:
         """Test that implemented glyphs exist (only glyphs A-I implemented)"""
         result = tools.glyph_path(glyph=glyph_string)
@@ -44,10 +42,8 @@ class TestGlyphPath:
             _ = tools.glyph_path(glyph=glyph_string)
 
 
-# TODO: Resolve authentification issues
-@pytest.mark.skip(reason="Skip due to issues with the authentification of glyph download in tests (HTTP: 403)")
 class TestGlyph:
-    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789abcdefghiABCDEFGHI"))
+    @pytest.mark.parametrize(("glyph_string",), argvalues=list("0123456789ABCDEFGHI"))
     def test_glyph(self, glyph_string: str) -> None:
         """Test that collection is created from a glyph"""
 
@@ -106,10 +102,8 @@ class TestGlyph:
         assert np.allclose(scaled_size, expected_size, rtol=0.01)
 
 
-# TODO: Resolve authentification issues
-@pytest.mark.skip(reason="Skip due to issues with the authentification of glyph download in tests (HTTP: 403)")
 class TestText:
-    @pytest.mark.parametrize(("text_string",), argvalues=[("a",), ("abc",)])
+    @pytest.mark.parametrize(("text_string",), argvalues=[("A",), ("ABC",)])
     def test_text(self, text_string: str) -> None:
         """Test that function returns a collection"""
         result = tools.text(text=text_string)
