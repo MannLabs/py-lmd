@@ -104,7 +104,12 @@ def _tsp_greedy_solve(data, k=100):
     if samples == 1:
         return data
 
-    import umap
+    try:
+        import umap
+    except ImportError:
+        raise ImportError(
+            "umap-learn is required for this function. " "Install it with: pip install py-lmd[umap]"
+        ) from None
 
     knn_index, knn_dist, _ = umap.umap_.nearest_neighbors(
         data, n_neighbors=k, metric="euclidean", metric_kwds={}, angular=True, random_state=np.random.RandomState(42)
