@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import re
-
-# import warnings
 import warnings
 from typing import Any
 
