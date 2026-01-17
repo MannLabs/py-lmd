@@ -16,6 +16,13 @@ import numpy as np
 from hilbertcurve.hilbertcurve import HilbertCurve
 from numba import njit
 
+try:
+    import umap
+
+    UMAP_INSTALLED = True
+except ImportError:
+    UMAP_INSTALLED = False
+
 T = TypeVar("T")
 
 
@@ -131,20 +138,17 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
         k: K-Nearest neighbors selection
 
     Returns:
-        Ordered indices of data of the shape `(N,)` according to their position along the Hilbert curve.
+        Ordered indices of data of the shape `(N,)`.
     """
+    if not UMAP_INSTALLED:
+        raise ImportError(
+            "umap-learn is required for this function. Install it with: pip install py-lmd[umap]"
+        ) from None
     samples = len(data)
 
     # recursive abort
     if samples == 1:
         return data
-
-    try:
-        import umap
-    except ImportError:
-        raise ImportError(
-            "umap-learn is required for this function. Install it with: pip install py-lmd[umap]"
-        ) from None
 
     knn_index, knn_dist, _ = umap.umap_.nearest_neighbors(
         data, n_neighbors=k, metric="euclidean", metric_kwds={}, angular=True, random_state=np.random.RandomState(42)
