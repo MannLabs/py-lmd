@@ -5,8 +5,6 @@ from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
-
-# import warnings
 from rdp import rdp
 from scipy import ndimage
 from scipy.signal import convolve2d
