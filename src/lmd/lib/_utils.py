@@ -48,7 +48,7 @@ def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = N
 # TODO: Add type hints
 # TODO: Add docstring to public method
 def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=False):
-    # safety boundary which extands the generated map size
+    # safety boundary which extends the generated map size
     safety_offset = 3
     dilation_offset = int(dilation)
 
