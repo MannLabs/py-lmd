@@ -52,8 +52,23 @@ def assign_vertices(hilbert_points, data_rounded):
     return output_order
 
 
-def tsp_hilbert_solve(data, p=3):
-    p = p
+def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
+    """Approximate a short traversal path between centroids with a Hilbert Curve
+
+    A Hilbert curve provides a space-filling mapping from 2D coordinates to a
+    one-dimensional order that tends to preserve spatial locality. Here, this
+    property is used as a heuristic to obtain an ordering of point centroids that
+    typically yields a shorter traversal path than a random ordering, but does
+    not guarantee an optimal Traveling Salesperson solution.
+
+
+    Args:
+        data: 2D Array of shape `(N, 2)` containing a list of coordinates
+        p: Iterations to use in constructing the Hilbert curve.
+
+    Returns:
+        Ordered indices of data of the shape `(N,)` according to their position along the Hilbert curve.
+    """
     n = 2
     max_n = 2 ** (p * n)
     hilbert_curve = HilbertCurve(p, n)
@@ -108,7 +123,7 @@ def _tsp_greedy_solve(data, k=100):
         import umap
     except ImportError:
         raise ImportError(
-            "umap-learn is required for this function. " "Install it with: pip install py-lmd[umap]"
+            "umap-learn is required for this function. Install it with: pip install py-lmd[umap]"
         ) from None
 
     knn_index, knn_dist, _ = umap.umap_.nearest_neighbors(
