@@ -581,7 +581,7 @@ class SegmentationLoader:
             raise NotImplementedError("registration of parameters is not yet supported for nested parameters")
 
         else:
-            raise TypeError("Key musst be of string or a list of strings")
+            raise TypeError("Key must be of string or a list of strings")
 
         if key not in config_handle:
             self.log(f"No configuration for {key} found, parameter will be set to {value}")
