@@ -3,11 +3,6 @@
 This module provides algorithms for solving the Traveling Salesman Problem (TSP)
 to optimize the order of cutting shapes, minimizing total travel distance for
 laser microdissection operations.
-
-Functions:
-    tsp_hilbert_solve: Hilbert curve-based TSP approximation
-    tsp_greedy_solve: Greedy k-NN based TSP approximation
-    calc_len: Calculate total path length from coordinates
 """
 
 from typing import Any, TypeVar
