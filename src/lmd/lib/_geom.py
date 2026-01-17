@@ -361,7 +361,7 @@ class Collection:
         if isinstance(shape, Shape):
             self.shapes.append(shape)
         else:
-            TypeError("Provided shape is not of type Shape")
+            raise TypeError("Provided shape is not of type Shape")
 
     def new_shape(
         self,
