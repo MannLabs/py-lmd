@@ -115,7 +115,7 @@ class SegmentationLoader:
             # valid options are ["none", "hilbert", "greedy"]
             path_optimization: "hilbert"
 
-            # Paramter required for hilbert curve based path optimization.
+            # Parameter required for hilbert curve based path optimization.
             # Defines the order of the hilbert curve used, which needs to be tuned with the total cutting area.
             # For areas of 1 x 1 mm we recommend at least p = 4,  for whole slides we recommend p = 7.
             hilbert_p: 7
@@ -123,7 +123,7 @@ class SegmentationLoader:
             # Parameter required for greedy path optimization.
             # Instead of a global distance matrix, the k nearest neighbours are approximated.
             # The optimization problem is then greedily solved for the known set of nearest neighbours until the first set of neighbours is exhausted.
-            # Established edges are then removed and the nearest neighbour approximation is recursivly repeated.
+            # Established edges are then removed and the nearest neighbour approximation is recursively repeated.
             greedy_k: 20
 
             # Overlapping shapes are merged based on a nearest neighbour heuristic.
