@@ -27,7 +27,7 @@ jobs:
     - name: Install package
       run: |
         pip install uv
-        uv pip install --system ".[tests, dev]"
+        uv pip install --system ".[tests, dev, umap]"
     - name: Run pre-commit checks
       run: |
         pre-commit install

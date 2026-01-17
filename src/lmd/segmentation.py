@@ -1,10 +1,37 @@
 import gc
+import warnings
 
 import numba as nb
 import numpy as np
-from hilbertcurve.hilbertcurve import HilbertCurve
 from numba import njit, prange, types
 from scipy.sparse import coo_array
+
+# =============================================================================
+# Deprecation Aliases - Path Optimization Functions
+# =============================================================================
+# These functions have been moved to lmd.path module.
+# Imports from lmd.segmentation are deprecated and will be removed in v3.0.0
+from lmd.path import (
+    _get_closest as __get_closest,
+)
+from lmd.path import (
+    _get_nodes as __get_nodes,
+)
+from lmd.path import (
+    _tsp_greedy_solve as __tsp_greedy_solve,
+)
+from lmd.path import (
+    assign_vertices as _assign_vertices,
+)
+from lmd.path import (
+    calc_len as _calc_len,
+)
+from lmd.path import (
+    tsp_greedy_solve as _tsp_greedy_solve,
+)
+from lmd.path import (
+    tsp_hilbert_solve as _tsp_hilbert_solve,
+)
 
 # TODO: Rename index_list to index_dict to correctly represent type
 # TODO: Rename index_list to index_dict to correctly represent type
@@ -154,171 +181,85 @@ def get_coordinate_form(classes, coords_lookup, debug=False):
     return center, length, coords_filtered
 
 
-def tsp_hilbert_solve(data, p=3):
-    p = p
-    n = 2
-    max_n = 2 ** (p * n)
-    hilbert_curve = HilbertCurve(p, n)
-    distances = list(range(max_n))
-    hilbert_points = hilbert_curve.points_from_distances(distances)
-    hilbert_points = np.array(hilbert_points)
-
-    data_min = np.min(data, axis=0)
-    data_max = np.max(data, axis=0)
-
-    hilbert_min = np.min(hilbert_points, axis=0)
-    hilbert_max = np.max(hilbert_points, axis=0)
-
-    data_scaled = data - data_min
-    data_scaled = data_scaled / (data_max - data_min) * (hilbert_max - hilbert_min)
-
-    data_rounded = np.round(data_scaled).astype(int)
-
-    order = assign_vertices(hilbert_points, data_rounded)
-
-    return order
-
-
-# TODO: Remove unused argument `world_size`
-# TODO: Add type hints
-# TODO: Add docstrings
-# return the first element not present in a list
-def _get_closest(used, choices, world_size):
-    for element in choices:
-        if element not in used:
-            # knn matrix contains -1 if the number of elements is smaller than k
-            if element == -1:
-                return None
-            else:
-                return element
-
-    return None
-    # all choices have been taken, return closest free index due to local optimality
-
-
-# TODO: Rename to TSP (traveling sales person)
-# TODO: Add type hints
-# TODO: Add umap as optional dependency
-def _tps_greedy_solve(data, k=100):
-    samples = len(data)
-
-    print(f"{samples} nodes left")
-    # recursive abort
-    if samples == 1:
-        return data
-
-    import umap
-
-    knn_index, knn_dist, _ = umap.umap_.nearest_neighbors(
-        data, n_neighbors=k, metric="euclidean", metric_kwds={}, angular=True, random_state=np.random.RandomState(42)
-    )
-
-    knn_index = knn_index[:, 1:]
-    knn_dist = knn_dist[:, 1:]
-
-    # follow greedy knn as long as a nearest neighbour is found in the current tree
-    nodes = []
-    current_node = 0
-    while current_node is not None:
-        nodes.append(current_node)
-        # print(current_node, knn_index[current_node], next_node)
-        next_node = _get_closest(nodes, knn_index[current_node], samples)
-
-        current_node = next_node
-
-    # as soon as no nearest neigbour can be found, create a new list of all elements still remeining
-    # nodes: [0, 2, 5], nodes_left: [1, 3, 4, 6, 7, 8, 9]
-    # add the last node assigned as starting point to the new list
-    # nodes: [0, 2], nodes_left: [5, 1, 3, 4, 6, 7, 8, 9]
-
-    nodes_left = list(set(range(samples)) - set(nodes))
-
-    # add last node from nodes to nodes_left
-
-    nodes_left = [nodes.pop(-1)] + nodes_left
-
-    node_data_left = data[nodes_left]
-
-    # join lists
-
-    return np.concatenate([data[nodes], _tps_greedy_solve(node_data_left, k=k)])
-
-
-# TODO: Add type hints
-# TODO: Add docstrings
-# calculate the index array for a sorted 2d list based on an unsorted list
-@njit()
-def _get_nodes(data, sorted_data):
-    indexed_data = list(enumerate(data))
-
-    nodes = []
-
-    print("start sorting")
-    for element in sorted_data:
-        for j, tup in enumerate(indexed_data):
-            i, el = tup
-
-            if np.array_equal(el, element):
-                nodes.append(i)
-                indexed_data.pop(j)
-    return nodes
-
-
-# TODO: Add type hints
-def tsp_greedy_solve(node_list, k=100, return_sorted=False):
-    """Find an approximation of the closest path through a list of coordinates
-
-    Args:
-        node_list (np.array): Array of shape `(N, 2)` containing a list of coordinates
-
-        k (int, default: 100): Number of Nearest Neighbours calculated for each Node.
-
-        return_sorted: If set to False a list of indices is returned. If set to True the sorted coordinates are returned.
-
-    """
-
-    sorted_nodes = _tps_greedy_solve(node_list)
-
-    if return_sorted:
-        return sorted_nodes
-
-    else:
-        nodes_order = _get_nodes(node_list, sorted_nodes)
-        return nodes_order
-
-
-@njit()
-def assign_vertices(hilbert_points, data_rounded):
-    data_rounded = data_rounded.astype(np.int64)
-    hilbert_points = hilbert_points.astype(np.int64)
-
-    output_order = np.zeros(len(data_rounded)).astype(np.int64)
-    current_index = 0
-
-    for hilbert_point in hilbert_points:
-        for i, data_point in enumerate(data_rounded):
-            if np.array_equal(hilbert_point, data_point):
-                output_order[current_index] = i
-                current_index += 1
-
-    return output_order
-
-
 def calc_len(data):
-    """calculate the length of a path based on a list of coordinates
+    """Deprecated: Use lmd.path.calc_len instead."""
+    warnings.warn(
+        "calc_len has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import calc_len",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _calc_len(data)
 
-    Args:
-        data (np.array): Array of shape `(N, 2)` containing a list of coordinates
 
-    """
+def tsp_hilbert_solve(data, p=3):
+    """Deprecated: Use lmd.path.tsp_hilbert_solve instead."""
+    warnings.warn(
+        "tsp_hilbert_solve has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import tsp_hilbert_solve",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _tsp_hilbert_solve(data, p=p)
 
-    index = np.arange(len(data)).astype(int)
 
-    not_shifted = data[index[:-1]]
-    shifted = data[index[1:]]
+def tsp_greedy_solve(node_list, k=100, return_sorted=False):
+    """Deprecated: Use lmd.path.tsp_greedy_solve instead."""
+    warnings.warn(
+        "tsp_greedy_solve has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import tsp_greedy_solve",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _tsp_greedy_solve(node_list, k=k, return_sorted=return_sorted)
 
-    diff = not_shifted - shifted
-    sq = np.square(diff)
-    dist = np.sum(np.sqrt(np.sum(sq, axis=1)))
 
-    return dist
+def assign_vertices(hilbert_points, data_rounded):
+    """Deprecated: Use lmd.path.assign_vertices instead."""
+    warnings.warn(
+        "assign_vertices has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import assign_vertices",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return _assign_vertices(hilbert_points, data_rounded)
+
+
+def _get_closest(used, choices, world_size):
+    """Deprecated: Use lmd.path._get_closest instead."""
+    warnings.warn(
+        "_get_closest has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import _get_closest",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return __get_closest(used, choices, world_size)
+
+
+def _get_nodes(data, sorted_data):
+    """Deprecated: Use lmd.path._get_nodes instead."""
+    warnings.warn(
+        "_get_nodes has been moved to lmd.path. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import _get_nodes",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return __get_nodes(data, sorted_data)
+
+
+def _tps_greedy_solve(data, k=100):
+    """Deprecated: Use lmd.path._tsp_greedy_solve instead."""
+    warnings.warn(
+        "_tps_greedy_solve has been moved to lmd.path and renamed to _tsp_greedy_solve. "
+        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Please use: from lmd.path import _tsp_greedy_solve",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return __tsp_greedy_solve(data, k=k)
