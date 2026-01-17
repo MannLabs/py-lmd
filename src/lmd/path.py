@@ -174,7 +174,6 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
 
     # add last node from nodes to nodes_left
     nodes_left = [nodes.pop(-1)] + nodes_left
-
     node_data_left = data[nodes_left]
 
     # join lists
@@ -183,14 +182,25 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
 
 # TODO: Add type hints
 # TODO: Add docstrings
-# calculate the index array for a sorted 2d list based on an unsorted list
 @njit()
-def _get_nodes(data, sorted_data):
+def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
+    """Find indices that map original coordinates to their sorted positions.
+
+    Given an unsorted array and its sorted version, returns the indices
+    such that `data[result]` produces `sorted_data`.
+
+    Args:
+        data: Array of shape `(N, 2)` containing original coordinates.
+        sorted_data: Array of shape `(N, 2)` containing the same coordinates
+            in sorted order.
+
+    Returns:
+        List of indices representing the order to traverse `data` to match
+        `sorted_data`.
+    """
     indexed_data = list(enumerate(data))
 
     nodes = []
-
-    print("start sorting")
     for element in sorted_data:
         for j, tup in enumerate(indexed_data):
             i, el = tup
@@ -201,19 +211,20 @@ def _get_nodes(data, sorted_data):
     return nodes
 
 
-# TODO: Add type hints
-def tsp_greedy_solve(node_list, k=100, return_sorted=False):
+def tsp_greedy_solve(
+    node_list: np.ndarray, k: int = 100, return_sorted: bool = False
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """Find an approximation of the closest path through a list of coordinates
 
     Args:
-        node_list (np.array): Array of shape `(N, 2)` containing a list of coordinates
-
-        k (int, default: 100): Number of Nearest Neighbours calculated for each Node.
-
+        node_list: Array of shape `(N, 2)` containing a list of coordinates
+        k: Number of Nearest Neighbours calculated for each Node.
         return_sorted: If set to False a list of indices is returned. If set to True the sorted coordinates are returned.
 
+    Returns:
+        `return_sorted=True`: Array of sorted nodes
+        `return_sorted=False`: Ordered indices of nodes
     """
-
     sorted_nodes = _tsp_greedy_solve(node_list)
 
     if return_sorted:
