@@ -15,12 +15,14 @@ from hilbertcurve.hilbertcurve import HilbertCurve
 from numba import njit
 
 
-def calc_len(data):
-    """calculate the length of a path based on a list of coordinates
+def calc_len(data: np.ndarray) -> float:
+    """Calculate the length of a path based on a list of coordinates
 
     Args:
         data (np.array): Array of shape `(N, 2)` containing a list of coordinates
 
+    Returns:
+        Length of path
     """
 
     index = np.arange(len(data)).astype(int)
