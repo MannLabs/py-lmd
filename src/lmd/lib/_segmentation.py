@@ -550,6 +550,7 @@ class SegmentationLoader:
             else:
                 path = os.path.join(Path(self.directory).parents[0], cell_set["classes"])
 
+            # TODO: Close file again https://github.com/MannLabs/py-lmd/pull/61#discussion_r2692370486
             if os.path.isfile(path):
                 try:
                     cr = csv.reader(open(path))
