@@ -375,6 +375,7 @@ class SegmentationLoader:
             optimized_length = calc_len(center)
             self.log(f"Optimized path length: {optimized_length:,.2f} units")
 
+            # TODO: Remove unused variable optimization_factor
             optimization_factor = unoptimized_length / optimized_length
             self.log(f"Optimization factor: {optimization_factor:,.1f}x")
         else:
