@@ -123,9 +123,16 @@ def _get_closest(used: list[T], choices: list[T], world_size: Any) -> T | None:
     return None
 
 
-# TODO: Add type hints
-# TODO: Add umap as optional dependency
-def _tsp_greedy_solve(data, k=100):
+def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
+    """Approximate a short traversal path between centroids with a greedy nearest neighbors search
+
+    Args:
+        data: Array of shape `(N, 2)` containing a list of coordinates
+        k: K-Nearest neighbors selection
+
+    Returns:
+        Ordered indices of data of the shape `(N,)` according to their position along the Hilbert curve.
+    """
     samples = len(data)
 
     print(f"{samples} nodes left")
