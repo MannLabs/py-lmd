@@ -33,11 +33,17 @@ class SegmentationLoader:
 
         Args:
             config (dict): Dict containing configuration parameters. See Note for further explanation.
+
             processes (int): Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
+
             threads (int): Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
+
             cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
+
             calibration_points (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.
+
             coords_lookup (None, dict): precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
+
             classes (np.array): Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
 
         Example:
