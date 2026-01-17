@@ -96,7 +96,7 @@ class TestTransformToMap:
     @pytest.mark.parametrize(
         ("coords",),
         [(np.array([[0, 0]]),), (np.array([[2, 1]]),), (np.array([[0, 0], [2, 1]]),)],
-        ids=("simple", "assymmetric", "multiple_coords"),
+        ids=("simple", "asymmetric", "multiple_coords"),
     )
     def test_transform_to_map__no_changes__coord_format(self, coords: np.ndarray) -> None:
         """Test that `coord_format=True` just returns the coords if no dilation/erosion is applied"""
@@ -119,7 +119,7 @@ class TestTransformToMap:
                 np.array([[0, 0], [100, 100]]),
             ),  # boundary left/right, no offset
         ],
-        ids=("simple", "assymmetric", "multiple_coords", "with_offsets", "large_without_offsets"),
+        ids=("simple", "asymmetric", "multiple_coords", "with_offsets", "large_without_offsets"),
     )
     def test_transform_to_map__no_changes__mask_format(
         self,
