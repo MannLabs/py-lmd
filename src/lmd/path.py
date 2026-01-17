@@ -10,9 +10,13 @@ Functions:
     calc_len: Calculate total path length from coordinates
 """
 
+from typing import Any, TypeVar
+
 import numpy as np
 from hilbertcurve.hilbertcurve import HilbertCurve
 from numba import njit
+
+T = TypeVar("T")
 
 
 def calc_len(data: np.ndarray) -> float:
@@ -24,7 +28,6 @@ def calc_len(data: np.ndarray) -> float:
     Returns:
         Length of path
     """
-
     index = np.arange(len(data)).astype(int)
 
     not_shifted = data[index[:-1]]
@@ -98,7 +101,18 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
 # TODO: Add type hints
 # TODO: Add docstrings
 # return the first element not present in a list
-def _get_closest(used, choices, world_size):
+def _get_closest(used: list[T], choices: list[T], world_size: Any) -> T | None:
+    """Greedily select the first unvisited element in a list of k-nearest neighbors
+
+    Args:
+        used: List of elements that have been used already
+        choices: List of all available choices (nearest neighbors)
+        world_size: Unused argument
+
+    Returns:
+        T: First element in `choices` that is not in `used`
+        None: If all nearest neighbors have been visited, or `-1` in choices.
+    """
     for element in choices:
         if element not in used:
             # knn matrix contains -1 if the number of elements is smaller than k
@@ -107,8 +121,8 @@ def _get_closest(used, choices, world_size):
             else:
                 return element
 
-    return None
     # all choices have been taken, return closest free index due to local optimality
+    return None
 
 
 # TODO: Add type hints
