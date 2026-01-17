@@ -135,7 +135,6 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     """
     samples = len(data)
 
-    print(f"{samples} nodes left")
     # recursive abort
     if samples == 1:
         return data
