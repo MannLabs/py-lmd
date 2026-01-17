@@ -5,7 +5,7 @@ to optimize the order of cutting shapes, minimizing total travel distance for
 laser microdissection operations.
 """
 
-from typing import Any, TypeVar
+from typing import Any, TypeVar, Union
 
 import numpy as np
 from hilbertcurve.hilbertcurve import HilbertCurve
@@ -101,7 +101,7 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
 
 # TODO: Remove unused argument `world_size`
 # return the first element not present in a list
-def _get_closest(used: list[T], choices: list[T], world_size: Any) -> T | None:
+def _get_closest(used: list[T], choices: list[T], world_size: Any) -> Union[T, None]:
     """Greedily select the first unvisited element in a list of k-nearest neighbors
 
     Args:
@@ -208,7 +208,7 @@ def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
 
 def tsp_greedy_solve(
     node_list: np.ndarray, k: int = 100, return_sorted: bool = False
-) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+) -> Union[np.ndarray, tuple[np.ndarray, np.ndarray]]:
     """Find an approximation of the closest path through a list of coordinates
 
     Args:
