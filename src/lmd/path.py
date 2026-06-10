@@ -25,7 +25,7 @@ def calc_len(data: np.ndarray) -> float:
     """Calculate the length of a path based on a list of coordinates
 
     Args:
-        data (np.array): Array of shape `(N, 2)` containing a list of coordinates
+        data: Array of shape `(N, 2)` containing a list of coordinates
 
     Returns:
         Length of path
@@ -110,8 +110,8 @@ def _get_closest(used: list[T], choices: list[T], world_size: Any) -> Union[T, N
         world_size: Unused argument
 
     Returns:
-        T: First element in `choices` that is not in `used`
-        None: If all nearest neighbors have been visited, or `-1` in choices.
+        First element in `choices` that is not in `used` or
+        None if all nearest neighbors have been visited.
     """
     for element in choices:
         if element not in used:
@@ -217,8 +217,9 @@ def tsp_greedy_solve(
         return_sorted: If set to False a list of indices is returned. If set to True the sorted coordinates are returned.
 
     Returns:
-        `return_sorted=True`: Array of sorted nodes
-        `return_sorted=False`: Ordered indices of nodes
+        An array
+            - `return_sorted=True`: Array of sorted nodes.
+            - `return_sorted=False`: Ordered indices of nodes
     """
     sorted_nodes = _tsp_greedy_solve(node_list)
 
