@@ -108,7 +108,7 @@ def _download(
         else:
             download_to_path.with_name(output_file_name)
 
-    Path(lock_path).unlink()
+    Path(lock_path).unlink(missing_ok=True)
 
 
 def _download_glyphs() -> Path:
