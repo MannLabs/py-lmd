@@ -82,7 +82,7 @@ def _download(
             warning = f"File {download_to_path} already exists!"
             if not overwrite:
                 print(warning)
-                Path(lock_path).unlink()
+                Path(lock_path).unlink(missing_ok=True)
                 return
             else:
                 print(f"{warning} Overwriting...")
@@ -108,7 +108,7 @@ def _download(
         else:
             download_to_path.with_name(output_file_name)
 
-    Path(lock_path).unlink()
+    Path(lock_path).unlink(missing_ok=True)
 
 
 def _download_glyphs() -> Path:
