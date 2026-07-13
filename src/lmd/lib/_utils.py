@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from typing import Callable, Union
+from typing import Callable
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -46,7 +46,7 @@ def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_kwargs: dict =
 # TODO: Remove debug argument [Breaking]
 def transform_to_map(
     coords: np.ndarray, dilation: int = 0, erosion: int = 0, coord_format: bool = True, debug: bool = False
-) -> Union[np.ndarray | tuple[np.ndarray, np.ndarray]]:  # noqa: UP007 (not supported in python 3.9)
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
     """Rasterize a set of coordinates into a binary mask and clean it up morphologically.
 
     The coordinates are shifted into a local, tightly cropped frame, marked on a

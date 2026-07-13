@@ -550,7 +550,7 @@ class SegmentationLoader:
                 self.log("No well of type str specified for cell set")
                 raise TypeError("No well of type str specified for cell set")
 
-    def load_classes(self, cell_set: dict) -> Union[list, np.ndarray, str]:  # noqa: UP007 (not supported for python 3.9)
+    def load_classes(self, cell_set: dict) -> list | np.ndarray | str:
         """Identify cell class definition and load classes
 
         Identify if cell classes are provided as list of integers or as path pointing to a csv file.

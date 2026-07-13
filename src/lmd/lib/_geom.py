@@ -281,7 +281,7 @@ class Collection:
         save_name: str | None = None,
         return_fig: bool = False,
         **kwargs,
-    ) -> Union[None, Figure]:  # noqa: UP007 (not supported in python 3.9)
+    ) -> None | Figure:
         """This function can be used to plot all shapes of the corresponding shape collection.
 
         Args:
