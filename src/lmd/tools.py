@@ -228,7 +228,7 @@ def make_cross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) 
         center: center of the new crosshair
         arms: length of the individual arms [top, right, bottom, left]
         width: width of each individual element of the crosshair
-        dist: half the distance between the center of the crosshair and the inner edge of each arm. The value is multiplied by a factor of two internally, so the effective gap between the center and each arm is ``2 * dist``.
+        dist: Controls the gap between the center dot and the arms. The inner edge of each arm sits at a distance of ``2 * dist`` from the center, so larger values spread the arms further out.
 
     Returns:
         lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the calibration cross.
