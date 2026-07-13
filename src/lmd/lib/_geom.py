@@ -163,10 +163,10 @@ class Shape:
         for i, point in enumerate(transformed_points):
             id = i + 1
             x = ET.SubElement(shape, f"X_{id}")
-            x.text = f"{np.floor(point[0]).astype(int)}"
+            x.text = f"{int(round(point[0], 0))}"
 
             y = ET.SubElement(shape, f"Y_{id}")
-            y.text = f"{np.floor(point[1]).astype(int)}"
+            y.text = f"{int(round(point[1], 0))}"
 
         return shape
 
