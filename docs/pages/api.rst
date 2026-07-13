@@ -7,3 +7,4 @@ API
 
    module/lib
    module/tools
+   module/path
