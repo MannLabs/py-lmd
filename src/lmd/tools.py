@@ -1,4 +1,5 @@
 import os
+import warnings
 
 import numpy as np
 
@@ -220,19 +221,14 @@ def ellipse(major_axis, minor_axis, offset=(0, 0), rotation=0, polygon_resolutio
     return Shape(ellipse)
 
 
-# TODO: Rename to make_cross to make name more pythonic.
-# TODO: Update documentation of `dist` parameter: The dist parameter is currently multiplied by a factor of 2 (2*dist) to make the shape work
-def makeCross(center, arms, width, dist):
+def make_cross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) -> Collection:
     """Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.
 
     Args:
-        center (numpy.array): center of the new crosshair
-
-        arms (numpy.array): length of the individual arms [top, right, bottom, left]
-
-        width (float): width of each individual element of the crosshair
-
-        dist (float): distance between the center of the cross hair and each arm
+        center: center of the new crosshair
+        arms: length of the individual arms [top, right, bottom, left]
+        width: width of each individual element of the crosshair
+        dist: half the distance between the center of the crosshair and the inner edge of each arm. The value is multiplied by a factor of two internally, so the effective gap between the center and each arm is ``2 * dist``.
 
     Returns:
         lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the calibration cross.
@@ -248,7 +244,7 @@ def makeCross(center, arms, width, dist):
             calibration = np.array([[0, 0], [0, 100], [50, 50]])
             my_first_collection = Collection(calibration_points=calibration)
 
-            cross_1 = tools.makeCross([20, 20], [50, 50, 50, 50], 1, 10)
+            cross_1 = tools.make_cross([20, 20], [50, 50, 50, 50], 1, 10)
             my_first_collection.join(cross_1)
             my_first_collection.plot(calibration=True)
 
@@ -287,3 +283,24 @@ def makeCross(center, arms, width, dist):
     heap.add_shape(leftarm)
 
     return heap
+
+
+def makeCross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) -> Collection:
+    """Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.
+
+    Notes
+    -----
+    Deprecated and will be removed in version 2.0.0. Use `lmd.tools.make_cross` instead.
+
+    See Also
+    --------
+    :func:`lmd.tools.make_cross`
+    """
+    warnings.warn(
+        "lmd.tools.makeCross has been renamed to lmd.tools.make_cross. "
+        "The function is deprecated and will be removed in v2.0.0. "
+        "Please use: `from lmd.tools import make_cross` for equivalent functionality",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return make_cross(center=center, arms=arms, width=width, dist=dist)

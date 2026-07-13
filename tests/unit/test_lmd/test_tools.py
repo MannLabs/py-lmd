@@ -346,9 +346,9 @@ class TestEllipse:
 
 
 class TestMakeCross:
-    def test_makeCross(self) -> None:
+    def test_make_cross(self) -> None:
         """Test that collection is created with correct number of shapes"""
-        cross_1 = tools.makeCross([20, 20], [50, 50, 50, 50], 1, 10)
+        cross_1 = tools.make_cross([20, 20], [50, 50, 50, 50], 1, 10)
         assert isinstance(cross_1, Collection)
         assert len(cross_1.shapes) == 5  # 4 arms + centroid
 
@@ -357,9 +357,9 @@ class TestMakeCross:
         [([0, 0],), ([20, 20],), ([100, 50],), ([-10, 10],)],
         ids=("origin", "positive", "large_positive", "mixed"),
     )
-    def test_makeCross__center_position(self, center: list[int]) -> None:
+    def test_make_cross__center_position(self, center: list[int]) -> None:
         """Test that center dot is at specified center"""
-        cross = tools.makeCross(center, [10, 10, 10, 10], 2, 5)
+        cross = tools.make_cross(center, [10, 10, 10, 10], 2, 5)
 
         # First shape is the center dot (rectangle at center)
         center_shape = cross.shapes[0]
@@ -382,7 +382,7 @@ class TestMakeCross:
     def test_makeCross__collection_dimensions(self, center: list[int], arms: list[int], dist: int) -> None:
         """Test that collection has correct total width and height based on arms and dist"""
         width = 2
-        cross = tools.makeCross(center, arms, width, dist)
+        cross = tools.make_cross(center, arms, width, dist)
 
         # Get bounding box of entire collection
         all_points = np.vstack([shape.points for shape in cross.shapes])
@@ -404,7 +404,7 @@ class TestMakeCross:
     )
     def test_makeCross__width_affects_shapes(self, width: int) -> None:
         """Test that width parameter affects shape dimensions"""
-        cross = tools.makeCross([0, 0], [20, 20, 20, 20], width, 5)
+        cross = tools.make_cross([0, 0], [20, 20, 20, 20], width, 5)
 
         # Center dot should be width x width
         center_shape = cross.shapes[0]
@@ -430,7 +430,7 @@ class TestMakeCross:
         arm_length = 20
         width = 2
 
-        cross = tools.makeCross(center, [arm_length] * 4, width, dist)
+        cross = tools.make_cross(center, [arm_length] * 4, width, dist)
 
         # Top arm's closest edge to center should be at 2*dist from center
         top_arm = cross.shapes[1]
@@ -438,3 +438,22 @@ class TestMakeCross:
         expected_min_y = center[1] + 2 * dist
 
         assert np.isclose(top_arm_min_y, expected_min_y, atol=1e-6)
+
+    @pytest.mark.parametrize(
+        ("center",),
+        [
+            ([0, 0],),
+        ],
+        ids=("origin",),
+    )
+    def test_makeCross_deprecated(self, center: list[int]) -> None:
+        """Test that deprecation warning gets emitted by deprecated function"""
+        with pytest.warns(DeprecationWarning, match="2.0.0"):
+            cross = tools.makeCross(center, [10, 10, 10, 10], 2, 5)
+
+        # First shape is the center dot (rectangle at center)
+        center_shape = cross.shapes[0]
+        # Use bounding box center (mean is biased due to closed polygon with duplicate point)
+        bbox_center = (center_shape.points.max(axis=0) + center_shape.points.min(axis=0)) / 2
+
+        assert np.allclose(bbox_center, center, atol=1e-6)
