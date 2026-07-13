@@ -28,7 +28,7 @@ def calc_len(data: np.ndarray) -> float:
         data: Array of shape `(N, 2)` containing a list of coordinates
 
     Returns:
-        Length of path
+        The total length of the path.
     """
     index = np.arange(len(data)).astype(int)
 
@@ -68,7 +68,6 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
     typically yields a shorter traversal path than a random ordering, but does
     not guarantee an optimal Traveling Salesperson solution.
 
-
     Args:
         data: 2D Array of shape `(N, 2)` containing a list of coordinates
         p: Iterations to use in constructing the Hilbert curve.
@@ -101,7 +100,7 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
 
 # TODO: Remove unused argument `world_size`
 # return the first element not present in a list
-def _get_closest(used: list[T], choices: list[T], world_size: Any) -> Union[T, None]:
+def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size: Any) -> Union[T, None]:
     """Greedily select the first unvisited element in a list of k-nearest neighbors
 
     Args:
@@ -133,7 +132,8 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
         k: K-Nearest neighbors selection
 
     Returns:
-        Ordered indices of data of the shape `(N,)`.
+        Array of shape `(N, 2)` containing the input coordinates ordered
+        along the greedy TSP path.
     """
     if not UMAP_INSTALLED:
         raise ImportError(
@@ -175,8 +175,6 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     return np.concatenate([data[nodes], _tsp_greedy_solve(node_data_left, k=k)])
 
 
-# TODO: Add type hints
-# TODO: Add docstrings
 @njit()
 def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     """Find indices that map original coordinates to their sorted positions.
@@ -206,10 +204,8 @@ def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     return nodes
 
 
-def tsp_greedy_solve(
-    node_list: np.ndarray, k: int = 100, return_sorted: bool = False
-) -> Union[np.ndarray, tuple[np.ndarray, np.ndarray]]:
-    """Find an approximation of the closest path through a list of coordinates
+def tsp_greedy_solve(node_list: np.ndarray, k: int = 100, return_sorted: bool = False) -> Union[np.ndarray, list[int]]:
+    """Find an approximation of the shortest path through a list of coordinates
 
     Args:
         node_list: Array of shape `(N, 2)` containing a list of coordinates
@@ -221,7 +217,7 @@ def tsp_greedy_solve(
             - `return_sorted=True`: Array of sorted nodes.
             - `return_sorted=False`: Ordered indices of nodes
     """
-    sorted_nodes = _tsp_greedy_solve(node_list)
+    sorted_nodes = _tsp_greedy_solve(node_list, k=k)
 
     if return_sorted:
         return sorted_nodes
