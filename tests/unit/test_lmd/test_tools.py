@@ -186,7 +186,7 @@ class TestText:
 
     def test_text__numeric_input(self) -> None:
         """Test that numeric input is converted to string"""
-        result = tools.text(text=123)
+        result = tools.text(text="123")
 
         assert isinstance(result, Collection)
         # "123" has 3 characters
