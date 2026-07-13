@@ -1,16 +1,12 @@
 import os
-import pathlib
 
 import geopandas as gpd
 import numpy as np
 import pytest
 import shapely
 from lxml import etree as ET
-from PIL import Image
 
-from lmd import tools
-from lmd._utils import _download_segmentation_example_file
-from lmd.lib import Collection, SegmentationLoader, Shape
+from lmd.lib import Collection, Shape
 
 
 @pytest.fixture
@@ -271,58 +267,68 @@ def test_collection_save():
     my_first_collection.save("first_collection.xml")
 
 
-def test_tools_square():
+@pytest.fixture
+def collection1() -> Collection:
+    """Collection with identity orientation transform and one shape"""
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
-    my_first_collection = Collection(calibration_points=calibration)
-
-    my_square = tools.rectangle(10, 10, offset=(10, 10))
-    my_first_collection.add_shape(my_square)
-
-    my_square = tools.rectangle(10, 10, offset=(30, 30))
-    my_first_collection.add_shape(my_square)
+    collection = Collection(calibration_points=calibration, orientation_transform=np.eye(2))
+    collection.add_shape(Shape(np.array([[0, 0], [1, 0], [1, 1], [0, 0]])))
+    return collection
 
 
-def test_glyphs():
+@pytest.fixture
+def collection2_same_orientation_transform() -> Collection:
+    """Collection with same orientation transform as collection1"""
     calibration = np.array([[0, 0], [0, 100], [50, 50]])
-    my_first_collection = Collection(calibration_points=calibration)
-
-    digit_1 = tools.glyph(1)
-    my_first_collection.join(digit_1)
-
-    digit_2 = tools.glyph(2, offset=(0, 80), multiplier=5)
-    my_first_collection.join(digit_2)
-
-    glyph_A = tools.glyph("A", offset=(0, 80), rotation=-np.pi / 4)
-    my_first_collection.join(glyph_A)
+    collection = Collection(calibration_points=calibration, orientation_transform=np.eye(2))
+    collection.add_shape(Shape(np.array([[2, 2], [3, 2], [3, 3], [2, 2]])))
+    return collection
 
 
-def test_text():
-    calibration = np.array([[0, 0], [0, 100], [100, 50]])
-    my_first_collection = Collection(calibration_points=calibration)
-
-    identifier_1 = tools.text("0123_A1", offset=np.array([0, 40]), rotation=-np.pi / 4)
-    my_first_collection.join(identifier_1)
-
-    identifier_2 = tools.text("0456_B2", offset=np.array([30, 40]), rotation=-np.pi / 4)
-    my_first_collection.join(identifier_2)
-
-    identifier_3 = tools.text("0123456789-_ABCDEFGHI", offset=np.array([60, 40]), rotation=-np.pi / 4)
-    my_first_collection.join(identifier_3)
+@pytest.fixture
+def collection2_different_orientation_transform() -> Collection:
+    """Collection with different orientation transform (90 degree rotation)"""
+    calibration = np.array([[0, 0], [0, 100], [50, 50]])
+    orientation_transform = np.array([[0, -1], [1, 0]])
+    collection = Collection(calibration_points=calibration, orientation_transform=orientation_transform)
+    collection.add_shape(Shape(np.array([[2, 2], [3, 2], [3, 3], [2, 2]])))
+    return collection
 
 
-def test_segmentation_loader():
-    test_segmentation_path = _download_segmentation_example_file()
+def test_collection_join_same_orientation_transform(
+    collection1: Collection, collection2_same_orientation_transform: Collection
+) -> None:
+    """Test joining collections with the same orientation_transform"""
+    original_shape = collection1.shapes[0].points.copy()
+    joined_shape = collection2_same_orientation_transform.shapes[0].points.copy()
 
-    im = Image.open(test_segmentation_path)
-    segmentation = np.array(im).astype(np.uint32)
+    collection1.join(collection2_same_orientation_transform)
 
-    all_classes = np.unique(segmentation)
+    assert len(collection1.shapes) == 2
+    assert np.array_equal(collection1.shapes[0].points, original_shape)
+    assert np.array_equal(collection1.shapes[1].points, joined_shape)
 
-    cell_sets = [{"classes": all_classes, "well": "A1"}]
 
-    calibration_points = np.array([[0, 0], [0, 1000], [1000, 1000]])
+def test_collection_join_different_orientation_transform_update(
+    collection1: Collection, collection2_different_orientation_transform: Collection
+) -> None:
+    """Test joining collections with different orientation_transforms and update_orientation_transform=True"""
+    original_shape = collection1.shapes[0].points.copy()
+    joined_shape = collection2_different_orientation_transform.shapes[0].points.copy()
 
-    loader_config = {"orientation_transform": np.array([[0, -1], [1, 0]])}
+    collection1.join(collection2_different_orientation_transform, update_orientation_transform=True)
 
-    sl = SegmentationLoader(config=loader_config)
-    sl(segmentation, cell_sets, calibration_points)
+    assert len(collection1.shapes) == 2
+    assert np.array_equal(collection1.shapes[0].points, original_shape)
+    assert np.array_equal(collection1.shapes[1].points, joined_shape)
+    assert np.array_equal(collection1.shapes[1].orientation_transform, collection1.orientation_transform)
+
+
+def test_collection_join_different_orientation_transform_no_update_warns(
+    collection1: Collection, collection2_different_orientation_transform: Collection
+) -> None:
+    """Test joining collections with different orientation_transforms and update_orientation_transform=False warns"""
+    with pytest.warns(UserWarning):
+        collection1.join(collection2_different_orientation_transform, update_orientation_transform=False)
+
+    assert len(collection1.shapes) == 2

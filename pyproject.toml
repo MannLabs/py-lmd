@@ -19,7 +19,7 @@ authors = [
 ]
 maintainers = [
   {name = "Sophia Maedler", email = "hello@sophia-maedler.com"},
-  {name = "Lucas Diedrich", email = "wallmann@biochem.mpg.de"},
+  {name = "Lucas Diedrich", email = "diedrich@biochem.mpg.de"},
   {name = "Georg Wallmann", email = "wallmann@biochem.mpg.de"},
 ]
 
@@ -36,6 +36,7 @@ classifiers = [
 dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.dynamic.optional-dependencies]
+umap = {file = ["requirements_umap.txt"]}
 dev_only = {file = ["requirements_dev.txt"]}
 doc = {file = ["requirements_doc.txt"]}
 test = {file = ["requirements_test.txt"]}
