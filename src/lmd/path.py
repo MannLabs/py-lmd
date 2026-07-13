@@ -45,6 +45,21 @@ def calc_len(data: np.ndarray) -> float:
 
 @njit()
 def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.ndarray:
+    """Order data points according to their position along a Hilbert curve.
+
+    For each point on the Hilbert curve, the matching data point is located and its
+    index appended to the output, yielding an ordering of the data points that follows
+    the curve.
+
+    Args:
+        hilbert_points: Array of shape `(M, 2)` with the integer coordinates of the
+            Hilbert curve points, in curve order.
+        data_rounded: Array of shape `(N, 2)` with the data coordinates rounded to the
+            Hilbert curve grid.
+
+    Returns:
+        Array of shape `(N,)` with the indices of `data_rounded` ordered along the Hilbert curve.
+    """
     data_rounded = data_rounded.astype(np.int64)
     hilbert_points = hilbert_points.astype(np.int64)
 

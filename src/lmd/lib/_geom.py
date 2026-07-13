@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import Any
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -13,6 +13,11 @@ import pandas as pd
 import shapely
 from lxml import etree as ET
 from svgelements import SVG
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from matplotlib.figure import Figure
 
 
 class Shape:
@@ -23,9 +28,9 @@ class Shape:
         points: np.ndarray = np.empty((1, 2)),
         well: str | None = None,
         name: str | None = None,
-        orientation_transform=None,
+        orientation_transform: np.ndarray | None = None,
         **custom_attributes: dict[str, str],
-    ):
+    ) -> None:
         """Class for creating a single shape.
 
         Args:
@@ -64,7 +69,7 @@ class Shape:
         self.custom_attributes = custom_attributes
 
     @classmethod
-    def from_xml(cls, root, orientation_transform: np.ndarray | None = None):
+    def from_xml(cls, root: ET.Element, orientation_transform: np.ndarray | None = None) -> Shape:
         """Load a shape from an XML shape node. Used internally for reading LMD generated XML files.
 
         Args:
@@ -120,16 +125,13 @@ class Shape:
         scale: float,
         *,
         write_custom_attributes: bool = True,
-    ):
+    ) -> ET.Element:
         """Generate XML shape node needed internally for export.
 
         Args:
             id: Sequential identifier of the shape as used in the LMD XML format.
-
-            orientation_transform (np.array): Pass orientation_transform which is used if no local orientation transform is set.
-
-            scale (float): Scalling factor used to enable higher decimal precision.
-
+            orientation_transform: Pass orientation_transform which is used if no local orientation transform is set.
+            scale: Scalling factor used to enable higher decimal precision.
             write_custom_attributes: Write custom attributes to xml file
 
         Note:
@@ -191,7 +193,8 @@ class Shape:
             warnings.warn(f"Attribute {name} not found in shape attributes. Returning None.", stacklevel=2)
             return None
 
-    def to_shapely(self):
+    def to_shapely(self) -> shapely.Polygon:
+        """Represent shape as :class:`shapely.Polygon`"""
         return shapely.Polygon(self.points)
 
 
@@ -213,7 +216,7 @@ class Collection:
         calibration_points: np.ndarray | None = None,
         orientation_transform: np.ndarray | None = None,
         scale: float = 100,
-    ):
+    ) -> None:
         self.shapes: list[Shape] = []
 
         self.calibration_points: np.ndarray | None = calibration_points
@@ -227,7 +230,7 @@ class Collection:
 
         self.global_coordinates = 1
 
-    def stats(self):
+    def stats(self) -> None:
         """Print statistics about the Collection in the form of:
 
         .. code-block::
@@ -277,7 +280,7 @@ class Collection:
         save_name: str | None = None,
         return_fig: bool = False,
         **kwargs,
-    ):
+    ) -> Union[None, Figure]:  # noqa: UP007 (not supported in python 3.9)
         """This function can be used to plot all shapes of the corresponding shape collection.
 
         Args:
@@ -350,8 +353,9 @@ class Collection:
             return fig
 
         plt.show()
+        return None
 
-    def add_shape(self, shape: Shape):
+    def add_shape(self, shape: Shape) -> None:
         """Add a new shape to the collection.
 
         Args:
@@ -369,7 +373,7 @@ class Collection:
         well: str | None = None,
         name: str | None = None,
         **custom_attributes,
-    ):
+    ) -> None:
         """Directly create a new Shape in the current collection.
 
         Args:
@@ -392,7 +396,7 @@ class Collection:
         )
         self.add_shape(to_add)
 
-    def join(self, collection: Collection, update_orientation_transform: bool = True):
+    def join(self, collection: Collection, update_orientation_transform: bool = True) -> Collection:
         """Join the collection with the shapes of a different collection. The calibration markers of the current collection are kept. Please keep in mind that coordinate systems and calibration points must be compatible for correct joining of collections.
 
         Args:
@@ -460,8 +464,7 @@ class Collection:
 
         return gpd.GeoDataFrame(data=metadata, geometry=geometry)
 
-    # load xml from file
-    def load(self, file_location: str, *, raise_shape_errors: bool = False):
+    def load(self, file_location: str, *, raise_shape_errors: bool = False) -> None:
         """Can be used to load a shape file from XML. Both, XMLs generated with py-lmd and the Leica software can be used.
         Args:
             file_location: File path pointing to the XML file.
@@ -572,8 +575,8 @@ class Collection:
             for _, row in gdf.iterrows()
         ]
 
-    # save xml to file
-    def save(self, file_location: str, encoding: str = "utf-8"):
+    # TODO: Remove encoding (unused)
+    def save(self, file_location: str, encoding: str = "utf-8") -> None:
         """Can be used to save the shape collection as XML file.
 
         file_location: File path pointing to the XML file.
@@ -616,22 +619,22 @@ class Collection:
 
     def svg_to_lmd(
         self,
-        file_location,
-        offset=None,
-        divisor=3,
-        multiplier=60,
-        rotation_matrix=np.eye(2),
-        orientation_transform=None,
-    ):
+        file_location: str | Path,
+        offset: list[float] | None = None,
+        divisor: int = 3,
+        multiplier: float = 60,
+        rotation_matrix: np.ndarray = np.eye(2),
+        orientation_transform: np.ndarray | None = None,
+    ) -> None:
         """Can be used to save the shape collection as XML file.
 
         Args:
             file_location: File path pointing to the SVG file.
-
+            offset: Location of the glyph based on the top left corner. Defaults to no offset.
+            divisor: Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph.
+            multiplier: Size multiplier
+            rotation_matrix: Rotation of shape
             orientation_transform: Will superseed the global transform of the Collection.
-
-            rotation_matrix:
-
         """
 
         if offset is None:
