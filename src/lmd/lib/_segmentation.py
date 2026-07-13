@@ -7,8 +7,7 @@ import platform
 import sys
 import warnings
 from functools import partial, reduce
-from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import matplotlib.pyplot as plt
 import networkx as nx

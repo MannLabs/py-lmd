@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import operator
-from typing import Optional
 
 import numpy as np
 import pytest
@@ -8,7 +9,7 @@ from lmd.lib import _create_poly, _execute_indexed_parallel, _sort_edges, transf
 
 
 @pytest.mark.parametrize("tqdm_kwargs", [None, {}])
-def test__execute_indexed_parallel(tqdm_kwargs: Optional[dict]) -> None:
+def test__execute_indexed_parallel(tqdm_kwargs: dict | None) -> None:
     """Test parallelized execution"""
     values = range(10)
     result = _execute_indexed_parallel(

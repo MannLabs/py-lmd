@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 import warnings
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Union
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -204,11 +204,12 @@ class Collection:
     Args:
         calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
         orientation_transform: defines transformations performed on the provided coordinate system prior to export as XML. Defaults to the identity matrix.
+        scale: Scaling factor of shape coordinates
 
     Attributes:
-        shapes (List[Shape]): Contains all shapes which are part of the collection.
-        calibration_points (Optional[np.ndarray]): Calibration coordinates in the form of :math:`(3, 2)`.
-        orientation_transform (np.ndarray): defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orientation_transform provided.
+        shapes: Contains all shapes which are part of the collection.
+        calibration_points: Calibration coordinates in the form of :math:`(3, 2)`.
+        orientation_transform: defines transformations performed on the provided coordinate system prior to export as XML. This orientation_transform is always applied to shapes when there is no individual orientation_transform provided.
     """
 
     def __init__(
@@ -285,12 +286,9 @@ class Collection:
 
         Args:
             calibration: Controls wether the calibration points should be plotted as crosshairs. Deactivating the crosshairs will result in the size of the canvas adapting to the shapes. Can be especially usefull for small shapes or debugging.
-
-            fig_size: Defaults to :math:`(10, 10)` Controls the size of the matplotlib figure. See `matplotlib documentation <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib-pyplot-figure>`_ for more information.
-
+            fig_size: Controls the size of the matplotlib figure. See `matplotlib documentation <https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib-pyplot-figure>`_ for more information.
             apply_orientation_transform: Define wether the orientation transform should be applied before plotting.
-
-            save_name (Optional[str], default: None): Specify a filename  for saving the generated figure. By default `None` is provided which will not save a figure.
+            save_name: Specify a filename  for saving the generated figure. By default `None` is provided which will not save a figure.
         """
 
         modes = ["line", "dots"]
