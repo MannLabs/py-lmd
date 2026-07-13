@@ -7,11 +7,13 @@ import pytest
 from lmd.lib import _create_poly, _execute_indexed_parallel, _sort_edges, transform_to_map
 
 
-@pytest.mark.parametrize("tqdm_args", [None, {}])
-def test__execute_indexed_parallel(tqdm_args: Optional[dict]) -> None:
+@pytest.mark.parametrize("tqdm_kwargs", [None, {}])
+def test__execute_indexed_parallel(tqdm_kwargs: Optional[dict]) -> None:
     """Test parallelized execution"""
     values = range(10)
-    result = _execute_indexed_parallel(operator.mul, args=[[i, 2] for i in values], tqdm_args=tqdm_args, n_threads=2)
+    result = _execute_indexed_parallel(
+        operator.mul, args=[[i, 2] for i in values], tqdm_kwargs=tqdm_kwargs, n_threads=2
+    )
 
     assert result == [2 * value for value in values]
 

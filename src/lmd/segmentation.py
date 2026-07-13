@@ -1,5 +1,6 @@
 import gc
 import warnings
+from typing import Any, TypeVar, Union
 
 import numba as nb
 import numpy as np
@@ -34,7 +35,8 @@ from lmd.path import (
 )
 
 # TODO: Rename index_list to index_dict to correctly represent type
-# TODO: Rename index_list to index_dict to correctly represent type
+
+T = TypeVar("T")
 
 
 # TODO: Add parameter documentation, return information
@@ -105,11 +107,15 @@ def _create_coord_index_sparse(mask: np.ndarray) -> dict:
     return coords_lookup
 
 
-# TODO: add type hints. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689850963
 # TODO: Remove unused argument `background`. See GitHub comment by @sophiamaedler: https://github.com/MannLabs/py-lmd/pull/54#discussion_r2689831082
 # TODO: Clarify whether it is desired that non-existent classes (e.g. 1 in case classes=[0, 2]) are still returned
 @njit
-def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64), dtype=np.uint64):
+def _create_coord_index(
+    mask: np.ndarray,
+    background: int = 0,
+    classes: np.ndarray = np.array([], dtype=np.uint64),
+    dtype: np.typing.DTypeLike = np.uint64,
+) -> dict:
     if len(classes) == 0:
         num_classes = np.max(mask) + 1
         classes = np.arange(num_classes, dtype=dtype)
@@ -149,21 +155,22 @@ def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64
     return index_list
 
 
-# TODO: add type hints
-def _filter_coord_index(index_list, classes, background=0):
+def _filter_coord_index(index_list: dict, classes: np.ndarray, background: int = 0) -> list[np.ndarray]:
     filtered_index_list = []
-    for _idx, class_id in enumerate(classes):
+    for class_id in classes:
         if class_id != background:
             _coords = index_list[class_id]
             if len(_coords) > 0:
                 filtered_index_list.append(index_list[class_id])
             else:
-                Warning(f"Coordinate list for {class_id} is empty and was dropped.")
+                warnings.warn(f"Coordinate list for {class_id} is empty and was dropped.", stacklevel=2)
     return filtered_index_list
 
 
 # TODO: Make private
-def get_coordinate_form(classes, coords_lookup, debug=False):
+def get_coordinate_form(
+    classes: np.ndarray, coords_lookup: dict, debug: bool = False
+) -> tuple[list[np.ndarray], list[int], list[np.ndarray]]:
     # return with empty lists if no classes are provided
     if len(classes) == 0:
         return [], [], []
@@ -181,7 +188,7 @@ def get_coordinate_form(classes, coords_lookup, debug=False):
     return center, length, coords_filtered
 
 
-def calc_len(data):
+def calc_len(data: np.ndarray) -> float:
     """Deprecated: Use lmd.path.calc_len instead."""
     warnings.warn(
         "calc_len has been moved to lmd.path. "
@@ -193,7 +200,7 @@ def calc_len(data):
     return _calc_len(data)
 
 
-def tsp_hilbert_solve(data, p=3):
+def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
     """Deprecated: Use lmd.path.tsp_hilbert_solve instead."""
     warnings.warn(
         "tsp_hilbert_solve has been moved to lmd.path. "
@@ -205,7 +212,7 @@ def tsp_hilbert_solve(data, p=3):
     return _tsp_hilbert_solve(data, p=p)
 
 
-def tsp_greedy_solve(node_list, k=100, return_sorted=False):
+def tsp_greedy_solve(node_list: np.ndarray, k: int = 100, return_sorted: bool = False) -> Union[np.ndarray, list[int]]:
     """Deprecated: Use lmd.path.tsp_greedy_solve instead."""
     warnings.warn(
         "tsp_greedy_solve has been moved to lmd.path. "
@@ -217,7 +224,7 @@ def tsp_greedy_solve(node_list, k=100, return_sorted=False):
     return _tsp_greedy_solve(node_list, k=k, return_sorted=return_sorted)
 
 
-def assign_vertices(hilbert_points, data_rounded):
+def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.ndarray:
     """Deprecated: Use lmd.path.assign_vertices instead."""
     warnings.warn(
         "assign_vertices has been moved to lmd.path. "
@@ -229,7 +236,7 @@ def assign_vertices(hilbert_points, data_rounded):
     return _assign_vertices(hilbert_points, data_rounded)
 
 
-def _get_closest(used, choices, world_size):
+def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size: Any) -> Union[T, None]:
     """Deprecated: Use lmd.path._get_closest instead."""
     warnings.warn(
         "_get_closest has been moved to lmd.path. "
@@ -241,7 +248,7 @@ def _get_closest(used, choices, world_size):
     return __get_closest(used, choices, world_size)
 
 
-def _get_nodes(data, sorted_data):
+def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     """Deprecated: Use lmd.path._get_nodes instead."""
     warnings.warn(
         "_get_nodes has been moved to lmd.path. "
@@ -253,7 +260,7 @@ def _get_nodes(data, sorted_data):
     return __get_nodes(data, sorted_data)
 
 
-def _tps_greedy_solve(data, k=100):
+def _tps_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     """Deprecated: Use lmd.path._tsp_greedy_solve instead."""
     warnings.warn(
         "_tps_greedy_solve has been moved to lmd.path and renamed to _tsp_greedy_solve. "
