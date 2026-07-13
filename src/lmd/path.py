@@ -44,7 +44,7 @@ def calc_len(data: np.ndarray) -> float:
 
 
 @njit()
-def assign_vertices(hilbert_points, data_rounded):
+def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.ndarray:
     data_rounded = data_rounded.astype(np.int64)
     hilbert_points = hilbert_points.astype(np.int64)
 
