@@ -152,7 +152,7 @@ def _create_coord_index(mask, background=0, classes=np.array([], dtype=np.uint64
 # TODO: add type hints
 def _filter_coord_index(index_list, classes, background=0):
     filtered_index_list = []
-    for _idx, class_id in enumerate(classes):
+    for class_id in classes:
         if class_id != background:
             _coords = index_list[class_id]
             if len(_coords) > 0:
