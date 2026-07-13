@@ -39,52 +39,64 @@ def glyph_path(glyph):
         raise NotImplementedError(f"You tried to load the glyph {glyph}. This has not been implemented yet.")
 
 
-# TODO: Remove unused function argument `divisor`
-# TODO: Document local_multiplier
-def glyph(glyph, offset=np.array([0, 0]), rotation=0, divisor=10, multiplier=1, **kwargs):
+def glyph(
+    glyph: str,
+    offset: np.ndarray = np.array([0, 0]),
+    rotation: float = 0,
+    divisor: int = 3,
+    multiplier: float = 1,
+    **kwargs,
+) -> Collection:
     """Get an uncalibrated lmd.lib.Collection for a glyph of interest.
 
     Args:
-        glyph (str): Single glyph as string.
-
-        divisor (int): Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph. Default value: 10
-
-        offset (np.ndarray): Location of the glyph based on the top left corner. Default value: np.array((0, 0))
-
-        multiplier (float): Scaling parameter for defining the size of the glyph. The default height of a glyph is 10 units. Default value: 1
+        glyph: Single glyph as string.
+        offset: Location of the glyph based on the top left corner. Defaults to no offset.
+        rotation: Rotation of glyph in radians
+        divisor: Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph.
+        multiplier: Scaling parameter for defining the size of the glyph. The default height of a glyph is 10 units.
 
     Returns:
         lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the glyph.
     """
-
     svg_path = glyph_path(glyph)
 
+    # TODO: Document local_multiplier
     local_multiplier = 0.2
     multiplier = multiplier * local_multiplier
 
     shapefile = Collection()
     shapefile.svg_to_lmd(
-        svg_path, offset=offset, rotation_matrix=_get_rotation_matrix(rotation), multiplier=multiplier, **kwargs
+        svg_path,
+        offset=offset,
+        rotation_matrix=_get_rotation_matrix(rotation),
+        divisor=divisor,
+        multiplier=multiplier,
+        **kwargs,
     )
 
     return shapefile
 
 
-# TODO: Remove unused function argument - divisor
-def text(text, offset=np.array([0, 0]), divisor=1, multiplier=1, rotation=0, **kwargs):
+def text(
+    text: str,
+    offset: np.ndarray = np.array([0, 0]),
+    divisor: int = 3,
+    multiplier: float = 1,
+    rotation: float = 0,
+    **kwargs,
+) -> Collection:
     """Get an uncalibrated lmd.lib.Collection for a text.
 
     Args:
-        text (str): Text as string.
-
-        divisor (int): Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph. Default value: 10
-
-        offset (np.ndarray): Location of the text based on the top left corner. Default value: np.array((0, 0))
-
-        multiplier (float): Scaling parameter for defining the size of the text. The default height of a glyph is 10 units. Default value: 1
+        text: Text as string.
+        offset: Location of the text based on the top left corner. Defaults to no offset.
+        divisor: Parameter which determines the resolution when creating a polygon from a SVG. A larger divisor will lead to fewer datapoints for the glyph.
+        multiplier: Scaling parameter for defining the size of the text. The default height of a glyph is 10 units.
+        rotation: Rotation of glyph in radians
 
     Returns:
-        lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the text.
+        Uncalibrated Collection which contains the Shapes for the text.
 
     Example:
 
@@ -115,30 +127,40 @@ def text(text, offset=np.array([0, 0]), divisor=1, multiplier=1, rotation=0, **k
 
     # enumerate all glyphs and append shapes
     for i, current_glyph in enumerate(text):
-        current = glyph(current_glyph, offset=offset + i * delta, multiplier=multiplier, rotation=rotation, **kwargs)
+        current = glyph(
+            current_glyph,
+            offset=offset + i * delta,
+            multiplier=multiplier,
+            divisor=divisor,
+            rotation=rotation,
+            **kwargs,
+        )
         heap.join(current)
 
     return heap
 
 
-def rectangle(width, height, offset=(0, 0), rotation=0, rotation_offset=(0, 0)):
+def rectangle(
+    width: float,
+    height: float,
+    offset: np.ndarray = np.array([0, 0]),
+    rotation: float = 0,
+    rotation_offset: np.ndarray = np.array([0, 0]),
+) -> Shape:
     """Get a lmd.lib.Shape for rectangle of choosen dimensions.
 
     Args:
-        width (float): Width of the rectangle.
-
-        offset (np.ndarray): Location of the rectangle based on the center. Default value: np.array((0, 0))
-
-        rotation (float): Rotation in radian.
-
-        rotation_offset (np.ndarray): Location of the center of rotation relative to the center of the rectangle. Default value: np.array((0, 0))
+        width: Width of the rectangle.
+        height: Height of the rectangle.
+        offset: Location of the rectangle based on the center. Defaults to no offset
+        rotation: Rotation in radian.
+        rotation_offset: Location of the center of rotation relative to the center of the rectangle. Defaults to no offset.
 
     Returns:
-        lmd.lib.Shape: Shape which contains the rectangle.
+        Shape which contains the rectangle.
 
     Example:
     """
-
     offset = np.array(offset)
     rotation_offset = np.array(rotation_offset)
     rotation_mat = _get_rotation_matrix(rotation)
@@ -157,22 +179,24 @@ def rectangle(width, height, offset=(0, 0), rotation=0, rotation_offset=(0, 0)):
     return Shape(points)
 
 
-def ellipse(major_axis, minor_axis, offset=(0, 0), rotation=0, polygon_resolution=1):
+def ellipse(
+    major_axis: float,
+    minor_axis: float,
+    offset: np.ndarray = np.array([0, 0]),
+    rotation: float = 0,
+    polygon_resolution: float = 1,
+) -> Shape:
     """Get a lmd.lib.Shape for ellipse of choosen dimensions.
 
     Args:
-        major_axis (float): Major axis of the ellipse. The major axis is defined from the center to the perimeter and therefore half the diameter. The major axis is placed along the x-axis before rotation.
-
-        minor_axis (float): Minor axis of the ellipse. The minor axis is defined from the center to the perimeter and therefore half the diameter. The minor axis is placed along the y-axis before rotation.
-
-        offset (np.ndarray): Location of the ellipse based on the center given in the form of `(x, y)`. Default value: np.array((0, 0))
-
-        rotation (float): Clockwise rotation in radian.
-
-        polygon_resolution (float): The polygon resolution defines how far the vertices should be spaced on average. A polygon_resolution of 10 will place a vertex on average every ten units.
+        major_axis: Major axis of the ellipse. The major axis is defined from the center to the perimeter and therefore half the diameter. The major axis is placed along the x-axis before rotation.
+        minor_axis: Minor axis of the ellipse. The minor axis is defined from the center to the perimeter and therefore half the diameter. The minor axis is placed along the y-axis before rotation.
+        offset: Location of the ellipse based on the center given in the form of `(x, y)`. Defaults to no offset.
+        rotation: Clockwise rotation in radian.
+        polygon_resolution: The polygon resolution defines how far the vertices should be spaced on average. A polygon_resolution of 10 will place a vertex on average every ten units.
 
     Returns:
-        lmd.lib.Shape: Shape which contains the ellipse.
+        Shape which contains the ellipse.
 
     Example:
 
@@ -231,7 +255,7 @@ def make_cross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) 
         dist: Controls the gap between the center dot and the arms. The inner edge of each arm sits at a distance of ``2 * dist`` from the center, so larger values spread the arms further out.
 
     Returns:
-        lmd.lib.Collection: Uncalibrated Collection which contains the Shapes for the calibration cross.
+        Uncalibrated Collection which contains the Shapes for the calibration cross.
 
     Example:
 
@@ -290,7 +314,7 @@ def makeCross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) -
 
     Notes
     -----
-    Deprecated and will be removed in version 2.0.0. Use `lmd.tools.make_cross` instead.
+    Deprecated and will be removed in version 2.0.0. Use :func:`lmd.tools.make_cross` instead.
 
     See Also
     --------
