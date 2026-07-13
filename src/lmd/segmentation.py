@@ -2,9 +2,8 @@ import gc
 import warnings
 from typing import Any, TypeVar, Union
 
-import numba as nb
 import numpy as np
-from numba import njit, prange, types
+from numba import njit
 from scipy.sparse import coo_array
 
 # =============================================================================
