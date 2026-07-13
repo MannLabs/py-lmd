@@ -174,11 +174,9 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     # nodes: [0, 2, 5], nodes_left: [1, 3, 4, 6, 7, 8, 9]
     # add the last node assigned as starting point to the new list
     # nodes: [0, 2], nodes_left: [5, 1, 3, 4, 6, 7, 8, 9]
-
     nodes_left = list(set(range(samples)) - set(nodes))
 
     # add last node from nodes to nodes_left
-
     nodes_left = [nodes.pop(-1)] + nodes_left
 
     node_data_left = data[nodes_left]
