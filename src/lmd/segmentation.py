@@ -11,7 +11,7 @@ from scipy.sparse import coo_array
 # Deprecation Aliases - Path Optimization Functions
 # =============================================================================
 # These functions have been moved to lmd.path module.
-# Imports from lmd.segmentation are deprecated and will be removed in v3.0.0
+# Imports from lmd.segmentation are deprecated and will be removed in v2.0.0
 from lmd.path import (
     _get_closest as __get_closest,
 )
@@ -192,7 +192,7 @@ def calc_len(data: np.ndarray) -> float:
     """Deprecated: Use lmd.path.calc_len instead."""
     warnings.warn(
         "calc_len has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import calc_len",
         DeprecationWarning,
         stacklevel=2,
@@ -204,7 +204,7 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
     """Deprecated: Use lmd.path.tsp_hilbert_solve instead."""
     warnings.warn(
         "tsp_hilbert_solve has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import tsp_hilbert_solve",
         DeprecationWarning,
         stacklevel=2,
@@ -216,7 +216,7 @@ def tsp_greedy_solve(node_list: np.ndarray, k: int = 100, return_sorted: bool = 
     """Deprecated: Use lmd.path.tsp_greedy_solve instead."""
     warnings.warn(
         "tsp_greedy_solve has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import tsp_greedy_solve",
         DeprecationWarning,
         stacklevel=2,
@@ -228,7 +228,7 @@ def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.
     """Deprecated: Use lmd.path.assign_vertices instead."""
     warnings.warn(
         "assign_vertices has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import assign_vertices",
         DeprecationWarning,
         stacklevel=2,
@@ -240,7 +240,7 @@ def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size:
     """Deprecated: Use lmd.path._get_closest instead."""
     warnings.warn(
         "_get_closest has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import _get_closest",
         DeprecationWarning,
         stacklevel=2,
@@ -252,7 +252,7 @@ def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     """Deprecated: Use lmd.path._get_nodes instead."""
     warnings.warn(
         "_get_nodes has been moved to lmd.path. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import _get_nodes",
         DeprecationWarning,
         stacklevel=2,
@@ -264,7 +264,7 @@ def _tps_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     """Deprecated: Use lmd.path._tsp_greedy_solve instead."""
     warnings.warn(
         "_tps_greedy_solve has been moved to lmd.path and renamed to _tsp_greedy_solve. "
-        "Import from lmd.segmentation is deprecated and will be removed in v3.0.0. "
+        "Import from lmd.segmentation is deprecated and will be removed in v2.0.0. "
         "Please use: from lmd.path import _tsp_greedy_solve",
         DeprecationWarning,
         stacklevel=2,

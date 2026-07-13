@@ -1,5 +1,3 @@
-import warnings
-
 import numpy as np
 import pytest
 
@@ -260,85 +258,47 @@ class TestDeprecationWarnings:
         """Test that calc_len raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import calc_len
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.warns(DeprecationWarning, match="calc_len has been moved to lmd.path"):
             calc_len(np.array([[0, 0], [1, 1]]))
-
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "calc_len has been moved to lmd.path" in str(w[0].message)
 
     def test_tsp_hilbert_solve_deprecation_warning(self) -> None:
         """Test that tsp_hilbert_solve raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import tsp_hilbert_solve
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.warns(DeprecationWarning, match="tsp_hilbert_solve has been moved to lmd.path"):
             tsp_hilbert_solve(np.array([[0.0, 0.0], [1.0, 1.0]]), p=3)
-
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "tsp_hilbert_solve has been moved to lmd.path" in str(w[0].message)
 
     def test_tsp_greedy_solve_deprecation_warning(self) -> None:
         """Test that tsp_greedy_solve raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import tsp_greedy_solve
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-            # Note: tsp_greedy_solve requires umap, so we just check the warning is raised
-            # before the actual call would happen
+        with pytest.warns(DeprecationWarning, match="tsp_greedy_solve has been moved to lmd.path"):
             tsp_greedy_solve(np.array([[0.0, 0.0], [1.0, 1.0]]))
-
-            assert len(w) >= 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "tsp_greedy_solve has been moved to lmd.path" in str(w[0].message)
 
     def test_assign_vertices_deprecation_warning(self) -> None:
         """Test that assign_vertices raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import assign_vertices
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.warns(DeprecationWarning, match="assign_vertices has been moved to lmd.path"):
             assign_vertices(np.array([[0, 0]]), np.array([[0, 0]]))
-
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "assign_vertices has been moved to lmd.path" in str(w[0].message)
 
     def test__get_closest_deprecation_warning(self) -> None:
         """Test that _get_closest raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import _get_closest
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.warns(DeprecationWarning, match="_get_closest has been moved to lmd.path"):
             _get_closest([], [0, 1, 2], 10)
-
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "_get_closest has been moved to lmd.path" in str(w[0].message)
 
     def test__get_nodes_deprecation_warning(self) -> None:
         """Test that _get_nodes raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import _get_nodes
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
+        with pytest.warns(DeprecationWarning, match="_get_nodes has been moved to lmd.path"):
             _get_nodes(np.array([[0, 0]]), np.array([[0, 0]]))
-
-            assert len(w) == 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "_get_nodes has been moved to lmd.path" in str(w[0].message)
 
     def test__tps_greedy_solve_deprecation_warning(self) -> None:
         """Test that _tps_greedy_solve raises DeprecationWarning when imported from segmentation."""
         from lmd.segmentation import _tps_greedy_solve
 
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter("always")
-
+        with pytest.warns(DeprecationWarning, match="_tps_greedy_solve has been moved to lmd.path"):
             _tps_greedy_solve(np.array([[0.0, 0.0], [1.0, 1.0]]))
-
-            assert len(w) >= 1
-            assert issubclass(w[0].category, DeprecationWarning)
-            assert "_tps_greedy_solve has been moved to lmd.path" in str(w[0].message)
