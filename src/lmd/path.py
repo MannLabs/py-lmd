@@ -123,7 +123,6 @@ def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size:
             else:
                 return element
 
-    return None
     # all choices have been taken, return closest free index due to local optimality
     return None
 
