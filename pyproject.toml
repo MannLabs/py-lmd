@@ -19,7 +19,7 @@ authors = [
 ]
 maintainers = [
   {name = "Sophia Maedler", email = "hello@sophia-maedler.com"},
-  {name = "Lucas Diedrich", email = "wallmann@biochem.mpg.de"},
+  {name = "Lucas Diedrich", email = "diedrich@biochem.mpg.de"},
   {name = "Georg Wallmann", email = "wallmann@biochem.mpg.de"},
 ]
 
