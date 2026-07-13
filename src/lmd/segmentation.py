@@ -35,7 +35,6 @@ from lmd.path import (
 )
 
 # TODO: Rename index_list to index_dict to correctly represent type
-# TODO: Rename index_list to index_dict to correctly represent type
 
 T = TypeVar("T")
 
