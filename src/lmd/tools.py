@@ -39,6 +39,7 @@ def glyph_path(glyph):
         raise NotImplementedError(f"You tried to load the glyph {glyph}. This has not been implemented yet.")
 
 
+# TODO: Default divisor=3 is unintuitive and should be revisited. Current default is applied to prevent breaking changes (Shape.svg_to_lmd default is 3)
 def glyph(
     glyph: str,
     offset: np.ndarray = np.array([0, 0]),
@@ -78,6 +79,7 @@ def glyph(
     return shapefile
 
 
+# TODO: Default divisor=3 is unintuitive and should be revisited. Current default is applied to prevent breaking changes (Shape.svg_to_lmd default is 3)
 def text(
     text: str,
     offset: np.ndarray = np.array([0, 0]),
@@ -309,6 +311,7 @@ def make_cross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) 
     return heap
 
 
+# TODO: Remove with version 2.0.0
 def makeCross(center: np.ndarray, arms: np.ndarray, width: float, dist: float) -> Collection:
     """Generate lmd.lib.Shapes to represent a crosshair and add them to an exisiting lmd.lib.Collection.
 

@@ -188,6 +188,7 @@ def get_coordinate_form(
     return center, length, coords_filtered
 
 
+# TODO: Remove with version 2.0.0
 def calc_len(data: np.ndarray) -> float:
     """Deprecated: Use lmd.path.calc_len instead."""
     warnings.warn(
@@ -200,6 +201,7 @@ def calc_len(data: np.ndarray) -> float:
     return _calc_len(data)
 
 
+# TODO: Remove with version 2.0.0
 def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
     """Deprecated: Use lmd.path.tsp_hilbert_solve instead."""
     warnings.warn(
@@ -212,6 +214,7 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
     return _tsp_hilbert_solve(data, p=p)
 
 
+# TODO: Remove with version 2.0.0
 def tsp_greedy_solve(node_list: np.ndarray, k: int = 100, return_sorted: bool = False) -> Union[np.ndarray, list[int]]:
     """Deprecated: Use lmd.path.tsp_greedy_solve instead."""
     warnings.warn(
@@ -224,6 +227,7 @@ def tsp_greedy_solve(node_list: np.ndarray, k: int = 100, return_sorted: bool = 
     return _tsp_greedy_solve(node_list, k=k, return_sorted=return_sorted)
 
 
+# TODO: Remove with version 2.0.0
 def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.ndarray:
     """Deprecated: Use lmd.path.assign_vertices instead."""
     warnings.warn(
@@ -236,6 +240,7 @@ def assign_vertices(hilbert_points: np.ndarray, data_rounded: np.ndarray) -> np.
     return _assign_vertices(hilbert_points, data_rounded)
 
 
+# TODO: Remove with version 2.0.0
 def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size: Any) -> Union[T, None]:
     """Deprecated: Use lmd.path._get_closest instead."""
     warnings.warn(
@@ -248,6 +253,7 @@ def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size:
     return __get_closest(used, choices, world_size)
 
 
+# TODO: Remove with version 2.0.0
 def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     """Deprecated: Use lmd.path._get_nodes instead."""
     warnings.warn(
@@ -260,6 +266,7 @@ def _get_nodes(data: np.ndarray, sorted_data: np.ndarray) -> list[int]:
     return __get_nodes(data, sorted_data)
 
 
+# TODO: Remove with version 2.0.0
 def _tps_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     """Deprecated: Use lmd.path._tsp_greedy_solve instead."""
     warnings.warn(
