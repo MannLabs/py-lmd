@@ -225,7 +225,7 @@ class SegmentationLoader:
             collections = _execute_indexed_parallel(
                 self.generate_cutting_data,
                 args=args,
-                tqdm_args={
+                tqdm_kwargs={
                     "file": sys.stdout,
                     "disable": not self.verbose,
                     "desc": "collecting cell sets",
@@ -351,32 +351,30 @@ class SegmentationLoader:
                 )
 
         # perform path optimization to minimize the total distance that the LMD travels during cutting (this improves cutting speed and focus)
-        center = np.array(center)
-        unoptimized_length = calc_len(center)
+        center_array = np.array(center)
+        unoptimized_length = calc_len(center_array)
         self.log(f"Current path length: {unoptimized_length:,.2f} units")
 
         if self.optimization_method != "none":
             if self.optimization_method == "greedy":
-                optimized_idx = tsp_greedy_solve(center, k=self.config["greedy_k"])
+                optimized_idx = tsp_greedy_solve(center_array, k=self.config["greedy_k"])
 
             elif self.optimization_method == "hilbert":
-                optimized_idx = tsp_hilbert_solve(center, p=self.config["hilbert_p"])
+                optimized_idx = tsp_hilbert_solve(center_array, p=self.config["hilbert_p"])
 
             # update order of centers
-            center = center[optimized_idx]
+            center_array = center_array[optimized_idx]
             self.indexes = optimized_idx
 
             # calculate optimized path length and optimization factor
-            optimized_length = calc_len(center)
+            optimized_length = calc_len(center_array)
             self.log(f"Optimized path length: {optimized_length:,.2f} units")
 
-            # TODO: Remove unused variable optimization_factor
             optimization_factor = unoptimized_length / optimized_length
             self.log(f"Optimization factor: {optimization_factor:,.1f}x")
         else:
             self.log("No path optimization used")
-            optimization_factor = 1
-            optimized_idx = list(range(len(center)))
+            optimized_idx = list(range(len(center_array)))
         # order list of shapes by the optimized index array
         polygons = [x for _, x in sorted(zip(optimized_idx, polygons))]
 
@@ -387,7 +385,7 @@ class SegmentationLoader:
             if "background_image" in self.config:
                 axs.imshow(self.config["background_image"])
 
-            axs.scatter(center[:, 1], center[:, 0], s=1)
+            axs.scatter(center_array[:, 1], center_array[:, 0], s=1)
 
             for shape in polygons:
                 axs.plot(shape[:, 1], shape[:, 0], color="red", linewidth=1)
@@ -397,7 +395,7 @@ class SegmentationLoader:
                 self.calibration_points[:, 0],
                 color="blue",
             )
-            axs.plot(center[:, 1], center[:, 0], color="grey")
+            axs.plot(center_array[:, 1], center_array[:, 0], color="grey")
             axs.invert_yaxis()
             axs.set_aspect("equal", adjustable="box")
             axs.axis("off")
@@ -545,11 +543,11 @@ class SegmentationLoader:
             else:
                 path = os.path.join(Path(self.directory).parents[0], cell_set["classes"])
 
-            # TODO: Close file again https://github.com/MannLabs/py-lmd/pull/61#discussion_r2692370486
             if os.path.isfile(path):
                 try:
-                    cr = csv.reader(open(path))
-                    filtered_classes = np.array([int(el[0]) for el in list(cr)], dtype="int64")
+                    with open(path) as f:
+                        cr = csv.reader(f)
+                        filtered_classes = np.array([int(el[0]) for el in list(cr)], dtype="int64")
                     self.log(f"Loaded {len(filtered_classes)} classes from csv")
                     return filtered_classes
                 except (ValueError, TypeError) as e:

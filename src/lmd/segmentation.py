@@ -163,7 +163,7 @@ def _filter_coord_index(index_list: dict, classes: np.ndarray, background: int =
             if len(_coords) > 0:
                 filtered_index_list.append(index_list[class_id])
             else:
-                Warning(f"Coordinate list for {class_id} is empty and was dropped.")
+                warnings.warn(f"Coordinate list for {class_id} is empty and was dropped.", stacklevel=2)
     return filtered_index_list
 
 

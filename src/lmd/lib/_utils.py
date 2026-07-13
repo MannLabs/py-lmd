@@ -14,27 +14,26 @@ from skimage.segmentation import find_boundaries
 from tqdm.auto import tqdm
 
 
-# TODO: Rename tqdm_args to tqdm_kwargs
-def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_args: dict = None, n_threads: int = 10) -> list:
+def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_kwargs: dict = None, n_threads: int = 10) -> list:
     """parallelization of function call with indexed arguments using ThreadPoolExecutor. Returns a list of results in the order of the input arguments.
 
     Args:
         func (Callable): _description_
         args (list): _description_
-        tqdm_args (dict, optional): _description_. Defaults to None.
+        tqdm_kwargs (dict, optional): _description_. Defaults to None.
         n_threads (int, optional): _description_. Defaults to 10.
 
     Returns:
         list: containing the results of the function calls in the same order as the input arguments
     """
-    if tqdm_args is None:
-        tqdm_args = {"total": len(args)}
-    elif "total" not in tqdm_args:
-        tqdm_args["total"] = len(args)
+    if tqdm_kwargs is None:
+        tqdm_kwargs = {"total": len(args)}
+    elif "total" not in tqdm_kwargs:
+        tqdm_kwargs["total"] = len(args)
 
     results = [None for _ in range(len(args))]
     with ProcessPoolExecutor(n_threads) as executor:
-        with tqdm(**tqdm_args) as pbar:
+        with tqdm(**tqdm_kwargs) as pbar:
             futures = {executor.submit(func, *arg): i for i, arg in enumerate(args)}
             for future in as_completed(futures):
                 index = futures[future]
