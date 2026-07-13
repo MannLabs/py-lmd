@@ -100,9 +100,6 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
 
 
 # TODO: Remove unused argument `world_size`
-# TODO: Add type hints
-# TODO: Add docstrings
-# return the first element not present in a list
 def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size: Any) -> Union[T, None]:
     """Greedily select the first unvisited element in a list of k-nearest neighbors
 
