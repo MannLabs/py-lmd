@@ -30,6 +30,7 @@ def calc_len(data: np.ndarray) -> float:
     Returns:
         The total length of the path.
     """
+
     index = np.arange(len(data)).astype(int)
 
     not_shifted = data[index[:-1]]
@@ -99,6 +100,8 @@ def tsp_hilbert_solve(data: np.ndarray, p: int = 3) -> np.ndarray:
 
 
 # TODO: Remove unused argument `world_size`
+# TODO: Add type hints
+# TODO: Add docstrings
 # return the first element not present in a list
 def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size: Any) -> Union[T, None]:
     """Greedily select the first unvisited element in a list of k-nearest neighbors
@@ -120,6 +123,7 @@ def _get_closest(used: list[T], choices: Union[list[T], np.ndarray], world_size:
             else:
                 return element
 
+    return None
     # all choices have been taken, return closest free index due to local optimality
     return None
 
@@ -141,9 +145,17 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
         ) from None
     samples = len(data)
 
+    print(f"{samples} nodes left")
     # recursive abort
     if samples == 1:
         return data
+
+    try:
+        import umap
+    except ImportError:
+        raise ImportError(
+            "umap-learn is required for this function. " "Install it with: pip install py-lmd[umap]"
+        ) from None
 
     knn_index, knn_dist, _ = umap.umap_.nearest_neighbors(
         data, n_neighbors=k, metric="euclidean", metric_kwds={}, angular=True, random_state=np.random.RandomState(42)
@@ -157,6 +169,7 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     current_node = 0
     while current_node is not None:
         nodes.append(current_node)
+        # print(current_node, knn_index[current_node], next_node)
         next_node = _get_closest(nodes, knn_index[current_node], samples)
 
         current_node = next_node
@@ -165,10 +178,13 @@ def _tsp_greedy_solve(data: np.ndarray, k: int = 100) -> np.ndarray:
     # nodes: [0, 2, 5], nodes_left: [1, 3, 4, 6, 7, 8, 9]
     # add the last node assigned as starting point to the new list
     # nodes: [0, 2], nodes_left: [5, 1, 3, 4, 6, 7, 8, 9]
+
     nodes_left = list(set(range(samples)) - set(nodes))
 
     # add last node from nodes to nodes_left
+
     nodes_left = [nodes.pop(-1)] + nodes_left
+
     node_data_left = data[nodes_left]
 
     # join lists
