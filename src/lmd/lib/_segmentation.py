@@ -7,7 +7,7 @@ import platform
 import sys
 import warnings
 from functools import partial, reduce
-from pathlib import Path
+from typing import Any, Union
 
 import matplotlib.pyplot as plt
 import networkx as nx
@@ -27,19 +27,13 @@ class SegmentationLoader:
     """Select single cells from a segmentation and generate cutting data
 
         Args:
-            config (dict): Dict containing configuration parameters. See Note for further explanation.
-
-            processes (int): Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
-
-            threads (int): Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
-
-            cell_sets (list(dict)): List of dictionaries containing the sets of cells which should be sorted into a single well.
-
-            calibration_points (np.array): Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.
-
-            coords_lookup (None, dict): precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
-
-            classes (np.array): Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
+            config: Dict containing configuration parameters. See Note for further explanation.
+            processes: Number of processes used for parallel processing of cell sets. Total processes can be calculated as `processes * threads`.
+            threads: Number of threads used for parallel processing of shapes within a cell set. Total processes can be calculated as `processes * threads`.
+            cell_sets: List of dictionaries containing the sets of cells which should be sorted into a single well.
+            calibration_points: Array of size '(3,2)' containing the calibration marker coordinates in the '(row, column)' format.
+            coords_lookup: precalculated lookup table for coordinates of individual cell ids. If not provided will be calculated.
+            classes: Array of classes found in the provided segmentation mask. If not provided will be calculated based on the assumption that cell_ids are assigned in ascending order.
 
         Example:
 
@@ -127,7 +121,7 @@ class SegmentationLoader:
     VALID_PATH_OPTIMIZERS = ["none", "hilbert", "greedy"]
     DEFAULT_SEGMENTATION_DTYPE = np.uint64
 
-    def __init__(self, config=None, verbose=False, processes=1):
+    def __init__(self, config: dict[str, Any] | None = None, verbose: bool = False, processes: int = 1) -> None:
         if config is None:
             config = {}
         self.config = config
@@ -148,12 +142,12 @@ class SegmentationLoader:
         self.register_parameter("orientation_transform", np.eye(2))
         self.register_parameter("threads", 10)
 
-        self.coords_lookup = None
+        self.coords_lookup: dict | None = None
         self.processes = processes
 
         self._configure_path_optimizer()
 
-    def _configure_path_optimizer(self):
+    def _configure_path_optimizer(self) -> None:
         # configure path optimizer
         if "path_optimization" in self.config:
             optimization_method = self.config["path_optimization"]
@@ -170,7 +164,7 @@ class SegmentationLoader:
         self.log(f"Path optimizer used for XML generation: {optimization_method}")
         self.optimization_method = pathoptimizer
 
-    def _get_context(self):
+    def _get_context(self) -> None:
         if platform.system() == "Windows":
             self.context = "spawn"
         elif platform.system() == "Darwin":
@@ -181,11 +175,11 @@ class SegmentationLoader:
     def __call__(
         self,
         input_segmentation: np.ndarray | None,
-        cell_sets,
-        calibration_points,
-        coords_lookup=None,
-        classes=np.array([], dtype=np.uint64),
-    ):
+        cell_sets: list[dict],
+        calibration_points: np.ndarray,
+        coords_lookup: dict | None = None,
+        classes: np.ndarray = np.array([], dtype=np.uint64),
+    ) -> Collection:
         if input_segmentation is None:
             assert coords_lookup is not None, "If no input segmentation is provided, a coords_lookup must be provided."
 
@@ -242,6 +236,21 @@ class SegmentationLoader:
         return reduce(lambda a, b: a.join(b), collections)
 
     def generate_cutting_data(self, i: int, cell_set: dict) -> Collection:
+        """Generate the cutting data for a single cell set.
+
+        Converts the loaded classes of the cell set into shapes, optionally merges
+        intersecting shapes, applies smoothing and compression, optimizes the cutting
+        path and assembles the result into a :class:`~lmd.lib.Collection`.
+
+        Args:
+            i: Index of the cell set within the list of cell sets. Used to label
+                debug output.
+            cell_set: Cell set definition. Must contain the ``classes_loaded`` key
+                and may contain a ``well`` key that is propagated to every generated shape.
+
+        Returns:
+            Collection of the generated shapes for this cell set.
+        """
         if 0 in cell_set["classes_loaded"]:
             cell_set["classes_loaded"] = cell_set["classes_loaded"][cell_set["classes_loaded"] != 0]
             warnings.warn("Class 0 is not a valid class and was removed from the cell set", stacklevel=2)
@@ -422,7 +431,25 @@ class SegmentationLoader:
                 ds.new_shape(shape)
         return ds
 
-    def merge_dilated_shapes(self, input_center, input_length, input_coords, dilation=0, erosion=0):
+    def merge_dilated_shapes(
+        self, input_center: list, input_length: list, input_coords: list, dilation: int = 0, erosion: int = 0
+    ) -> tuple[list, list, list]:
+        """Merge intersecting shapes into single shapes after dilation.
+
+        Each shape is dilated, and shapes that overlap within the configured distance
+        heuristic are combined into a single shape. Non-intersecting shapes are passed
+        through unchanged.
+
+        Args:
+            input_center: Center coordinates of the input shapes.
+            input_length: Number of coordinates (vertices) of each input shape.
+            input_coords: Coordinate arrays of the input shapes.
+            dilation: Radius in pixels of the disk used for binary dilation before merging.
+            erosion: Radius in pixels of the disk used for binary erosion before merging.
+
+        Returns:
+            The centers, lengths and coordinate arrays of the merged shapes.
+        """
         print("Intersecting Shapes will be merged into a single shape.")
 
         # initialize all shapes and create dilated coordinates
@@ -507,7 +534,7 @@ class SegmentationLoader:
         )
         return output_center, output_length, output_coords
 
-    def check_cell_set_sanity(self, cell_set):
+    def check_cell_set_sanity(self, cell_set: dict) -> None:
         """Check if cell_set dictionary contains the right keys"""
 
         if "classes" in cell_set:
@@ -523,7 +550,7 @@ class SegmentationLoader:
                 self.log("No well of type str specified for cell set")
                 raise TypeError("No well of type str specified for cell set")
 
-    def load_classes(self, cell_set):
+    def load_classes(self, cell_set: dict) -> list | np.ndarray | str:
         """Identify cell class definition and load classes
 
         Identify if cell classes are provided as list of integers or as path pointing to a csv file.
@@ -537,11 +564,8 @@ class SegmentationLoader:
                 return cell_set["classes"]
 
         if isinstance(cell_set["classes"], str):
-            # If the path is relative, it is interpreted relative to the project directory
-            if os.path.isabs(cell_set["classes"]):
-                path = cell_set["classes"]
-            else:
-                path = os.path.join(Path(self.directory).parents[0], cell_set["classes"])
+            # If the path is relative, it is interpreted relative to the current working directory
+            path = os.path.abspath(cell_set["classes"])
 
             if os.path.isfile(path):
                 try:
@@ -564,11 +588,29 @@ class SegmentationLoader:
                 "classes argument for a cell set needs to be a list of integer ids or a path pointing to a csv of integer ids."
             )
 
-    def log(self, msg):
+    def log(self, msg: str) -> None:
+        """Print a message if the loader was created in verbose mode.
+
+        Args:
+            msg (str): Message to print.
+        """
         if self.verbose:
             print(msg)
 
-    def register_parameter(self, key, value):
+    def register_parameter(self, key: str, value: Any) -> None:
+        """Register a default configuration parameter.
+
+        Sets ``key`` to ``value`` in the configuration only if it is not already present,
+        so that existing user-provided settings are preserved.
+
+        Args:
+            key: Name of the configuration parameter.
+            value: Default value to assign if the parameter is not already configured.
+
+        Raises:
+            NotImplementedError: If ``key`` is a list (nested parameters are not supported).
+            TypeError: If ``key`` is neither a string nor a list of strings.
+        """
         if isinstance(key, str):
             config_handle = self.config
 

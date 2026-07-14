@@ -1,5 +1,6 @@
 import os
 import warnings
+from pathlib import Path
 
 import numpy as np
 
@@ -7,7 +8,7 @@ from lmd._utils import _download_glyphs
 from lmd.lib import Collection, Shape
 
 
-def _get_rotation_matrix(angle: float):
+def _get_rotation_matrix(angle: float) -> np.ndarray:
     """Returns a rotation matrix for clockwise rotation.
 
     Args:
@@ -19,11 +20,11 @@ def _get_rotation_matrix(angle: float):
     return np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
 
 
-def glyph_path(glyph):
+def glyph_path(glyph: str) -> Path:
     """Returns the path for a glyph of interest. Raises a NotImplementedError if an unknown glyph is requested.
 
     Args:
-        glyph (str): Single glyph as string.
+        glyph: Single glyph as string.
 
     Returns:
         str: Path for the glyph.

@@ -44,9 +44,32 @@ def _execute_indexed_parallel(func: Callable, *, args: list, tqdm_kwargs: dict =
 
 
 # TODO: Remove debug argument [Breaking]
-# TODO: Add type hints
-# TODO: Add docstring to public method
-def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=False):
+def transform_to_map(
+    coords: np.ndarray, dilation: int = 0, erosion: int = 0, coord_format: bool = True, debug: bool = False
+) -> np.ndarray | tuple[np.ndarray, np.ndarray]:
+    """Rasterize a set of coordinates into a binary mask and clean it up morphologically.
+
+    The coordinates are shifted into a local, tightly cropped frame, marked on a
+    binary map, and then processed by binary dilation, binary erosion and hole
+    filling. The result is returned either as a sparse coordinate list (in the
+    original global frame) or as a dense mask together with its offset.
+
+    Args:
+        coords: Array of ``(row, column)`` coordinates describing the shape.
+        dilation: Radius in pixels of the disk used for binary dilation.
+        erosion: Radius in pixels of the disk used for binary erosion.
+        coord_format: If ``True``, return sparse global coordinates. If ``False``,
+            return the dense binary map and the offset that maps it back to the global frame.
+        debug: If ``True``, display the intermediate map before and after
+            morphological processing using matplotlib.
+
+    Returns:
+        - If ``coord_format`` is ``True``, an array of ``(row, column)`` coordinates of all set pixels in the global frame.
+        - If ``coord_format`` is ``False`` a tuple ``(offset_map, offset)`` of the dense binary map and its top-left offset.
+
+    Raises:
+        ValueError: If ``coords`` is empty.
+    """
     # safety boundary which extends the generated map size
     safety_offset = 3
     dilation_offset = int(dilation)
@@ -98,11 +121,11 @@ def transform_to_map(coords, dilation=0, erosion=0, coord_format=True, debug=Fal
 
 # TODO: Remove debugging logic
 def _create_poly(
-    in_tuple,
+    in_tuple: tuple,
     smoothing_filter_size: int = 12,
     rdp_epsilon: float = 0,
     debug: bool = False,
-):
+) -> np.ndarray:
     """Converts a list of pixels into a polygon.
     Args
         smoothing_filter_size (int, default = 12): The smoothing filter is the circular convolution with a vector of length smoothing_filter_size and all elements 1 / smoothing_filter_size.
@@ -143,7 +166,7 @@ def _create_poly(
     return poly + offset
 
 
-def _sort_edges(edges):
+def _sort_edges(edges: np.ndarray) -> np.ndarray:
     """Sorts the vertices of the polygon.
 
     Greedy sorting is performed, might have difficulties with complex shapes.
