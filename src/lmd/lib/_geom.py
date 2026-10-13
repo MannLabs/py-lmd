@@ -229,7 +229,7 @@ class Collection:
 
         self.scale: float = scale
 
-        self.global_coordinates = 1
+        self.global_coordinates = len(self.calibration_points) if self.calibration_points is not None else None
 
     def stats(self) -> None:
         """Print statistics about the Collection in the form of:
@@ -579,12 +579,14 @@ class Collection:
 
         file_location: File path pointing to the XML file.
         """
+        if self.calibration_points is None:
+            raise ValueError("Set calibration points first.")
 
         root = ET.Element("ImageData")
 
         # write global coordinates
         global_coordinates = ET.SubElement(root, "GlobalCoordinates")
-        global_coordinates.text = "1"
+        global_coordinates.text = str(len(self.calibration_points))
 
         # transform calibration points
         transformed_calibration_points = self.calibration_points @ self.orientation_transform * self.scale
