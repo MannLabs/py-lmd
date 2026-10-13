@@ -508,6 +508,7 @@ class Collection:
                         warnings.warn(str(e), stacklevel=1)
                     continue
 
+    # TODO: Drop global_coordinates (can be derived directly from calibration points)
     def load_geopandas(
         self,
         gdf: gpd.GeoDataFrame,
@@ -557,6 +558,8 @@ class Collection:
             self.calibration_points = calibration_points
         if global_coordinates is not None:
             self.global_coordinates = global_coordinates
+        else:
+            self.global_coordinates = len(self.calibration_points) if self.calibration_points is not None else None
 
         if custom_attribute_columns is None:
             custom_attribute_columns = []
