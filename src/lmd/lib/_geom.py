@@ -231,6 +231,7 @@ class Collection:
 
         self.global_coordinates = len(self.calibration_points) if self.calibration_points is not None else None
 
+    # TODO: Make __repr__ and _html_repr_
     def stats(self) -> None:
         """Print statistics about the Collection in the form of:
 
@@ -271,6 +272,7 @@ class Collection:
         print(f"95% percentile vertices: {percentile_95:,.0f}")
         print(f"Max vertices: {max_dp:,.0f}")
 
+    # TODO: Make external method
     def plot(
         self,
         calibration: bool = True,
@@ -508,6 +510,7 @@ class Collection:
                         warnings.warn(str(e), stacklevel=1)
                     continue
 
+    # TODO: Make classmethod
     # TODO: Drop global_coordinates (can be derived directly from calibration points)
     def load_geopandas(
         self,
