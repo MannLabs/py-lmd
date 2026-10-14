@@ -554,6 +554,12 @@ class Collection:
         # Update attributes
         if calibration_points is not None:
             self.calibration_points = calibration_points
+        if global_coordinates is not None:
+            warnings.warn(
+                "`global_coordinates` argument is ignored and will be removed in the next minor release.",
+                category=FutureWarning,
+                stacklevel=2,
+            )
 
         if custom_attribute_columns is None:
             custom_attribute_columns = []
@@ -583,7 +589,7 @@ class Collection:
 
         # write global coordinates
         global_coordinates = ET.SubElement(root, "GlobalCoordinates")
-        global_coordinates.text = str(len(self.calibration_points))
+        global_coordinates.text = str(self.global_coordinates)
 
         # transform calibration points
         transformed_calibration_points = self.calibration_points @ self.orientation_transform * self.scale
@@ -656,5 +662,12 @@ class Collection:
             self.add_shape(to_add)
 
     @property
-    def global_coordinates(self) -> int:
+    def global_coordinates(self) -> int | None:
+        """Number of global coordinates in collection
+
+        Returns
+        -------
+        Number of calibration points if calibration points are defined.
+        Else `None`
+        """
         return len(self.calibration_points) if self.calibration_points is not None else None
