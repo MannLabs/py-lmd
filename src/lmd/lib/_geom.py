@@ -229,8 +229,6 @@ class Collection:
 
         self.scale: float = scale
 
-        self.global_coordinates = len(self.calibration_points) if self.calibration_points is not None else None
-
     # TODO: Make __repr__ and _html_repr_
     def stats(self) -> None:
         """Print statistics about the Collection in the form of:
@@ -485,11 +483,8 @@ class Collection:
         self.calibration_points = np.ones((cal_point_len // 2, 2), dtype=int)
 
         for child in root:
-            if child.tag == "GlobalCoordinates":
-                self.global_coordinates = int(child.text)
-
             # Load calibration points
-            elif "CalibrationPoint" in child.tag:
+            if "CalibrationPoint" in child.tag:
                 axes = child.tag[0]
                 axes_id = 0 if axes == "X" else 1
                 shape_id = int(child.tag[-1]) - 1
@@ -559,10 +554,6 @@ class Collection:
         # Update attributes
         if calibration_points is not None:
             self.calibration_points = calibration_points
-        if global_coordinates is not None:
-            self.global_coordinates = global_coordinates
-        else:
-            self.global_coordinates = len(self.calibration_points) if self.calibration_points is not None else None
 
         if custom_attribute_columns is None:
             custom_attribute_columns = []
@@ -663,3 +654,7 @@ class Collection:
 
             to_add = Shape(points=arr, orientation_transform=orientation_transform)
             self.add_shape(to_add)
+
+    @property
+    def global_coordinates(self) -> int:
+        return len(self.calibration_points) if self.calibration_points is not None else None
