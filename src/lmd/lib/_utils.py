@@ -119,6 +119,7 @@ def transform_to_map(
         return (offset_map, offset)
 
 
+# TODO: Drop when RDP package gets replaced with shapely-native RDP algorithm
 def _point_line_distance_2d(point: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
     """Compute the distance of a 2D point to the line through `start` and `end`.
 
