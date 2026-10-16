@@ -119,6 +119,31 @@ def transform_to_map(
         return (offset_map, offset)
 
 
+# TODO: Drop when RDP package gets replaced with shapely-native RDP algorithm
+def _point_line_distance_2d(point: np.ndarray, start: np.ndarray, end: np.ndarray) -> float:
+    """Compute the distance of a 2D point to the line through `start` and `end`.
+
+    Args:
+        point: Point of shape (2,)
+        start: First point on the line, shape (2,)
+        end: Second point on the line, shape (2,)
+
+    Returns:
+        Euclidean distance of `point` to the line, or to `start` if `start` and `end` coincide.
+
+    References:
+          `Distance from a point to a line <https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line>`_
+    """
+    # Replaces rdp.pldist, which calls np.cross on 2D vectors. This was removed in numpy 2.5
+    if np.all(start == end):
+        return float(np.linalg.norm(point - start))
+
+    line = end - start
+    offset = start - point
+    cross_z = line[0] * offset[1] - line[1] * offset[0]
+    return float(np.abs(cross_z) / np.linalg.norm(line))
+
+
 # TODO: Remove debugging logic
 def _create_poly(
     in_tuple: tuple,
@@ -148,7 +173,9 @@ def _create_poly(
     edges = convolve2d(edges, smk, mode="full", boundary="wrap")
 
     # compression of the resulting polygon
-    poly = rdp(edges, epsilon=rdp_epsilon)  # Ramer-Douglas-Peucker algorithm for polygon simplification
+    poly = rdp(
+        edges, epsilon=rdp_epsilon, dist=_point_line_distance_2d
+    )  # Ramer-Douglas-Peucker algorithm for polygon simplification
 
     # debuging
     """
