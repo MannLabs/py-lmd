@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from lmd.lib import _create_poly, _execute_indexed_parallel, _sort_edges, transform_to_map
+from lmd.lib._utils import _point_line_distance_2d
 
 
 @pytest.mark.parametrize("tqdm_kwargs", [None, {}])
@@ -60,6 +61,28 @@ def test__create_poly_rdp_epsilon_reduces_points(square_mask: np.ndarray) -> Non
     result_with_compression = _create_poly(in_tuple, smoothing_filter_size=3, rdp_epsilon=1.0)
 
     assert len(result_with_compression) <= len(result_no_compression)
+
+
+@pytest.mark.parametrize(
+    ("point", "start", "end", "expected_distance"),
+    [
+        (np.array([1.0, 1.0]), np.array([0.0, 0.0]), np.array([2.0, 0.0]), 1.0),
+        (np.array([1.0, 0.0]), np.array([0.0, 0.0]), np.array([2.0, 0.0]), 0.0),
+        # Distance to the infinite line, not the segment
+        (np.array([5.0, -2.0]), np.array([0.0, 0.0]), np.array([2.0, 0.0]), 2.0),
+        (np.array([0.0, 1.0]), np.array([0.0, 0.0]), np.array([1.0, 1.0]), np.sqrt(2) / 2),
+        # Degenerate line falls back to point-to-point distance
+        (np.array([3.0, 4.0]), np.array([0.0, 0.0]), np.array([0.0, 0.0]), 5.0),
+    ],
+    ids=("above_line", "on_line", "beyond_segment", "diagonal_line", "degenerate_line"),
+)
+def test__point_line_distance_2d(
+    point: np.ndarray, start: np.ndarray, end: np.ndarray, expected_distance: float
+) -> None:
+    """Test `_point_line_distance_2d` against analytically known distances"""
+    result = _point_line_distance_2d(point, start, end)
+
+    assert result == pytest.approx(expected_distance)
 
 
 @pytest.mark.parametrize(
