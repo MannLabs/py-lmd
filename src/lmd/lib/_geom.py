@@ -229,8 +229,7 @@ class Collection:
 
         self.scale: float = scale
 
-        self.global_coordinates = 1
-
+    # TODO: Make __repr__ and _html_repr_
     def stats(self) -> None:
         """Print statistics about the Collection in the form of:
 
@@ -271,6 +270,7 @@ class Collection:
         print(f"95% percentile vertices: {percentile_95:,.0f}")
         print(f"Max vertices: {max_dp:,.0f}")
 
+    # TODO: Make external method
     def plot(
         self,
         calibration: bool = True,
@@ -483,11 +483,8 @@ class Collection:
         self.calibration_points = np.ones((cal_point_len // 2, 2), dtype=int)
 
         for child in root:
-            if child.tag == "GlobalCoordinates":
-                self.global_coordinates = int(child.text)
-
             # Load calibration points
-            elif "CalibrationPoint" in child.tag:
+            if "CalibrationPoint" in child.tag:
                 axes = child.tag[0]
                 axes_id = 0 if axes == "X" else 1
                 shape_id = int(child.tag[-1]) - 1
@@ -508,6 +505,8 @@ class Collection:
                         warnings.warn(str(e), stacklevel=1)
                     continue
 
+    # TODO: Make classmethod
+    # TODO: Drop global_coordinates (can be derived directly from calibration points)
     def load_geopandas(
         self,
         gdf: gpd.GeoDataFrame,
@@ -556,7 +555,11 @@ class Collection:
         if calibration_points is not None:
             self.calibration_points = calibration_points
         if global_coordinates is not None:
-            self.global_coordinates = global_coordinates
+            warnings.warn(
+                "`global_coordinates` argument is ignored and will be removed in the next minor release.",
+                category=FutureWarning,
+                stacklevel=2,
+            )
 
         if custom_attribute_columns is None:
             custom_attribute_columns = []
@@ -579,12 +582,14 @@ class Collection:
 
         file_location: File path pointing to the XML file.
         """
+        if self.calibration_points is None:
+            raise ValueError("Set calibration points first.")
 
         root = ET.Element("ImageData")
 
         # write global coordinates
         global_coordinates = ET.SubElement(root, "GlobalCoordinates")
-        global_coordinates.text = "1"
+        global_coordinates.text = str(self.global_coordinates)
 
         # transform calibration points
         transformed_calibration_points = self.calibration_points @ self.orientation_transform * self.scale
@@ -655,3 +660,14 @@ class Collection:
 
             to_add = Shape(points=arr, orientation_transform=orientation_transform)
             self.add_shape(to_add)
+
+    @property
+    def global_coordinates(self) -> int | None:
+        """Number of global coordinates in collection
+
+        Returns
+        -------
+        Number of calibration points if calibration points are defined.
+        Else `None`
+        """
+        return len(self.calibration_points) if self.calibration_points is not None else None

@@ -56,7 +56,7 @@ def collection_xml(tmpdir, shape_xml):
     collection = f"""
     <?xml version='1.0' encoding='UTF-8'?>
     <ImageData>
-        <GlobalCoordinates>1</GlobalCoordinates>
+        <GlobalCoordinates>3</GlobalCoordinates>
         <X_CalibrationPoint_1>0</X_CalibrationPoint_1>
         <Y_CalibrationPoint_1>0</Y_CalibrationPoint_1>
         <X_CalibrationPoint_2>0</X_CalibrationPoint_2>
@@ -82,7 +82,7 @@ def incorrect_collection_xml(tmpdir, incorrect_shape_xml):
     collection = f"""
     <?xml version='1.0' encoding='UTF-8'?>
     <ImageData>
-        <GlobalCoordinates>1</GlobalCoordinates>
+        <GlobalCoordinates>3</GlobalCoordinates>
         <X_CalibrationPoint_1>0</X_CalibrationPoint_1>
         <Y_CalibrationPoint_1>0</Y_CalibrationPoint_1>
         <X_CalibrationPoint_2>0</X_CalibrationPoint_2>
@@ -111,6 +111,9 @@ def test_collection_load(collection_xml) -> None:
     """Test collection loading from xml"""
     collection = Collection()
     collection.load(collection_xml)
+
+    assert len(collection.shapes) == 1
+    assert len(collection.calibration_points) == collection.global_coordinates
 
 
 def test_collection_invalid_shapes_raise(incorrect_collection_xml) -> None:
@@ -232,6 +235,7 @@ def test_collection_load_geopandas(
 
     assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_old).all()
+    assert len(c.calibration_points) == c.global_coordinates
 
     # Overwrite calibration points
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
@@ -246,6 +250,7 @@ def test_collection_load_geopandas(
     )
     assert c.to_geopandas(*all_columns).equals(geopandas_collection[[*all_columns, "geometry"]])  # type: ignore  # mixed-type unpacking; safe by inspection
     assert (c.calibration_points == calibration_points_new).all()
+    assert len(c.calibration_points) == c.global_coordinates
 
     # Do not export well metadata
     c = Collection(calibration_points=np.array([[-1, -1], [1, 1], [0, 1]]))
@@ -307,6 +312,7 @@ def test_collection_join_same_orientation_transform(
     assert len(collection1.shapes) == 2
     assert np.array_equal(collection1.shapes[0].points, original_shape)
     assert np.array_equal(collection1.shapes[1].points, joined_shape)
+    assert len(collection1.calibration_points) == collection1.global_coordinates
 
 
 def test_collection_join_different_orientation_transform_update(
@@ -322,6 +328,7 @@ def test_collection_join_different_orientation_transform_update(
     assert np.array_equal(collection1.shapes[0].points, original_shape)
     assert np.array_equal(collection1.shapes[1].points, joined_shape)
     assert np.array_equal(collection1.shapes[1].orientation_transform, collection1.orientation_transform)
+    assert len(collection1.calibration_points) == collection1.global_coordinates
 
 
 def test_collection_join_different_orientation_transform_no_update_warns(
@@ -332,3 +339,4 @@ def test_collection_join_different_orientation_transform_no_update_warns(
         collection1.join(collection2_different_orientation_transform, update_orientation_transform=False)
 
     assert len(collection1.shapes) == 2
+    assert len(collection1.calibration_points) == collection1.global_coordinates
