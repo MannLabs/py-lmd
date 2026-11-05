@@ -32,7 +32,8 @@ Citing our Work
 
 py-lmd was developed by Georg Wallmann, Sophia Mädler and Niklas Schmacke in the labs of Veit Hornung and Matthias Mann. If you use our code please cite the [following article](https://www.cell.com/cell/fulltext/S0092-8674(26)01123-2):
 
-SPARCS enables scalable recovery of complex image-based phenotypes for genetic screening  
+SPARCS enables scalable recovery of complex image-based phenotypes for genetic screening
+
 Niklas A. Schmacke, Sophia C. Mädler, Georg Wallmann, Andreas Metousis, Varvara Varlamova, Sophia Steigerwald, Sarah B. Christ, Marleen Bérouti, Hartmann Harz, Heinrich Leonhardt, Fabian J. Theis, Matthias Mann, Veit Hornung
 Cell 2026; doi: https://doi.org/10.1016/j.cell.2026.09.021
 
