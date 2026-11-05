@@ -40,11 +40,11 @@ Citing our Work
 ===============
 
 py-lmd was developed by Georg Wallmann, Sophia Mädler and Niklas Schmacke in the labs of Veit Hornung and
-Matthias Mann. If you use our code please cite the `following manuscript <https://doi.org/10.1101/2023.06.01.542416>`_:
+Matthias Mann. If you use our code please cite the `following article <https://www.cell.com/cell/fulltext/S0092-8674(26)01123-2>`_:
 
-SPARCS, a platform for genome-scale CRISPR screening for spatial cellular phenotypes
-Niklas Arndt Schmacke, Sophia Clara Maedler, Georg Wallmann, Andreas Metousis, Marleen Berouti, Hartmann Harz, Heinrich Leonhardt, Matthias Mann, Veit Hornung
-bioRxiv 2023.06.01.542416; doi: https://doi.org/10.1101/2023.06.01.542416
+SPARCS enables scalable recovery of complex image-based phenotypes for genetic screening
+Niklas A. Schmacke, Sophia C. Mädler, Georg Wallmann, Andreas Metousis, Varvara Varlamova, Sophia Steigerwald, Sarah B. Christ, Marleen Bérouti, Hartmann Harz, Heinrich Leonhardt, Fabian J. Theis, Matthias Mann, Veit Hornung
+Cell 2026; doi: https://doi.org/10.1016/j.cell.2026.09.021
 
 .. toctree::
    :maxdepth: 2
